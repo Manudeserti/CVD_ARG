@@ -78,3 +78,88 @@ def crear_institucion(institucion: InstitucionCreate):
         if 'conexion' in locals():
             conexion.rollback()
         raise HTTPException(status_code=500, detail=f"Error al crear: {str(e)}")
+
+    # --- ENDPOINT PUT (Editar) ---
+@router.put("/{id}", status_code=status.HTTP_200_OK)
+def actualizar_institucion(id: int, institucion: InstitucionCreate):
+    """
+    Actualiza el nombre o la ciudad de una institución existente.
+    """
+    try:
+        conexion = get_db_connection()
+        cursor = conexion.cursor()
+        
+        # El UPDATE también puede usar RETURNING para confirmar los datos guardados
+        update_query = """
+            UPDATE instituciones 
+            SET nombre = %s, ciudad = %s 
+            WHERE id = %s 
+            RETURNING id, nombre, ciudad, fecha_creacion;
+        """
+        
+        cursor.execute(update_query, (institucion.nombre, institucion.ciudad, id))
+        inst_actualizada = cursor.fetchone()
+        
+        # Si el ID no existe en la base de datos, fetchone() devuelve None
+        if not inst_actualizada:
+            conexion.rollback()
+            raise HTTPException(status_code=404, detail="Institución no encontrada")
+            
+        conexion.commit()
+        cursor.close()
+        conexion.close()
+        
+        return {
+            "status": "success",
+            "message": "Institución actualizada correctamente",
+            "data": {
+                "id": inst_actualizada[0],
+                "nombre": inst_actualizada[1],
+                "ciudad": inst_actualizada[2],
+                "fecha_creacion": inst_actualizada[3]
+            }
+        }
+        
+    except HTTPException:
+        # Esto es para que FastAPI no pise el error 404 que lanzamos arriba
+        raise
+    except Exception as e:
+        if 'conexion' in locals():
+            conexion.rollback()
+        raise HTTPException(status_code=500, detail=f"Error al actualizar: {str(e)}")
+
+
+# --- ENDPOINT DELETE (Borrar) ---
+@router.delete("/{id}", status_code=status.HTTP_200_OK)
+def eliminar_institucion(id: int):
+    """
+    Elimina permanentemente una institución por su ID.
+    """
+    try:
+        conexion = get_db_connection()
+        cursor = conexion.cursor()
+        
+        delete_query = "DELETE FROM instituciones WHERE id = %s RETURNING id;"
+        
+        cursor.execute(delete_query, (id,))
+        inst_eliminada = cursor.fetchone()
+        
+        if not inst_eliminada:
+            conexion.rollback()
+            raise HTTPException(status_code=404, detail="Institución no encontrada")
+            
+        conexion.commit()
+        cursor.close()
+        conexion.close()
+        
+        return {
+            "status": "success",
+            "message": f"Institución con ID {id} eliminada con éxito"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        if 'conexion' in locals():
+            conexion.rollback()
+        raise HTTPException(status_code=500, detail=f"Error al eliminar: {str(e)}")

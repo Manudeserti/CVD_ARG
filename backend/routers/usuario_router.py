@@ -1,7 +1,7 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from database.database import get_db_connection
 from schemas.usuario_schema import UsuarioCreate, UsuarioResponse, UsuarioLogin
-from utils.security import hash_password, verify_password
+from utils.security import hash_password, verify_password, crear_token_acceso, obtener_usuario_actual
 
 router = APIRouter(
     prefix="/api/usuarios",
@@ -68,14 +68,12 @@ def registrar_usuario(usuario: UsuarioCreate):
 @router.post("/login", status_code=status.HTTP_200_OK)
 def login_usuario(credenciales: UsuarioLogin):
     """
-    Verifica las credenciales de un usuario.
-    Si son correctas, devuelve los datos básicos (próximamente devolverá un Token JWT).
+    Verifica las credenciales y, si son válidas, devuelve un Token JWT de acceso.
     """
     try:
         conexion = get_db_connection()
         cursor = conexion.cursor()
         
-        # 1. Buscamos al usuario por su email
         query = "SELECT id, email, nombre_completo, password_hash, rol FROM usuarios WHERE email = %s;"
         cursor.execute(query, (credenciales.email,))
         usuario_db = cursor.fetchone()
@@ -83,25 +81,32 @@ def login_usuario(credenciales: UsuarioLogin):
         cursor.close()
         conexion.close()
         
-        # 2. Si la base de datos devuelve None, el email no existe
-        # (Por seguridad, siempre decimos "Credenciales incorrectas" para no avivar a los hackers de qué correos existen en nuestra BD)
         if not usuario_db:
             raise HTTPException(status_code=401, detail="Credenciales incorrectas")
             
-        # 3. La prueba de fuego: Comparamos la clave tipeada con el hash guardado
         hash_guardado = usuario_db[3]
         clave_correcta = verify_password(credenciales.password, hash_guardado)
         
         if not clave_correcta:
             raise HTTPException(status_code=401, detail="Credenciales incorrectas")
             
-        # 4. ¡Acceso concedido! 
+        # 1. Elegimos qué datos queremos "guardar" adentro del token
+        # (Nunca se guardan contraseñas acá, solo identificadores)
+        token_data = {
+            "sub": credenciales.email, # 'sub' (subject) es estándar para el identificador principal
+            "id": str(usuario_db[0]),
+            "rol": usuario_db[4]
+        }
+        
+        # 2. Fabricamos el token
+        token = crear_token_acceso(token_data)
+        
+        # 3. Devolvemos la respuesta usando el formato OAuth2
         return {
-            "status": "success",
-            "message": f"¡Bienvenido de nuevo, {usuario_db[2]}!",
-            "data": {
+            "access_token": token,
+            "token_type": "bearer",
+            "usuario": {
                 "id": usuario_db[0],
-                "email": usuario_db[1],
                 "nombre_completo": usuario_db[2],
                 "rol": usuario_db[4]
             }
@@ -111,3 +116,18 @@ def login_usuario(credenciales: UsuarioLogin):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error interno del servidor: {str(e)}")
+
+
+
+    # --- ENDPOINT GET (Perfil Privado) ---
+@router.get("/mi-perfil", status_code=status.HTTP_200_OK)
+def ver_perfil_privado(usuario_actual: dict = Depends(obtener_usuario_actual)):
+    """
+    Ruta protegida. Solo se puede acceder con un Token JWT válido.
+    """
+    # Si el código llega hasta acá, es porque el "cerrojo" validó la firma correctamente
+    return {
+        "status": "success",
+        "message": "¡Lograste pasar el control de seguridad!",
+        "datos_del_token": usuario_actual
+    }

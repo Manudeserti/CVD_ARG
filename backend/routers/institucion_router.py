@@ -46,13 +46,17 @@ def crear_institucion(institucion: InstitucionCreate):
         
         # Inserción con RETURNING para que PostgreSQL nos devuelva el registro creado
         insert_query = """
-            INSERT INTO instituciones (nombre, ciudad)
-            VALUES (%s, %s)
-            RETURNING id, nombre, ciudad, fecha_creacion;
+            INSERT INTO instituciones (nombre, ciudad, provincia)
+            VALUES (%s, %s, %s)
+            RETURNING id, nombre, ciudad, provincia, fecha_creacion;
         """
         
         # Ejecutamos pasando los datos validados por Pydantic
-        cursor.execute(insert_query, (institucion.nombre, institucion.ciudad))
+        cursor.execute(insert_query, (
+            institucion.nombre,
+            institucion.ciudad,
+            institucion.provincia
+        ))
         nueva_inst = cursor.fetchone()
         
         # IMPORTANTE: Confirmamos la transacción para que se guarde de verdad
@@ -69,7 +73,8 @@ def crear_institucion(institucion: InstitucionCreate):
                 "id": nueva_inst[0],
                 "nombre": nueva_inst[1],
                 "ciudad": nueva_inst[2],
-                "fecha_creacion": nueva_inst[3]
+                "provincia": nueva_inst[3],
+                "fecha_creacion": nueva_inst[4]
             }
         }
         
@@ -78,6 +83,7 @@ def crear_institucion(institucion: InstitucionCreate):
         if 'conexion' in locals():
             conexion.rollback()
         raise HTTPException(status_code=500, detail=f"Error al crear: {str(e)}")
+    
 
     # --- ENDPOINT PUT (Editar) ---
 @router.put("/{id}", status_code=status.HTTP_200_OK)

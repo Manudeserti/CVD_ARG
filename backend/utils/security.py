@@ -65,7 +65,7 @@ def crear_token_acceso(data: dict) -> str:
 # Esto además hace que en Swagger aparezca mágicamente un botón verde de "Authorize"
 seguridad_token = HTTPBearer()
 
-def obtener_usuario_actual(credenciales: HTTPAuthorizationCredentials = Depends(seguridad_token)):
+def get_usuario_actual(credenciales: HTTPAuthorizationCredentials = Depends(seguridad_token)):
     """
     Intercepta la request, extrae el JWT, 
     verifica su firma y devuelve los datos del usuario.

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status, Depends
 from database.database import get_db_connection
 from schemas.usuario_schema import UsuarioCreate, UsuarioResponse, UsuarioLogin
-from utils.security import hash_password, verify_password, crear_token_acceso, obtener_usuario_actual
+from utils.security import hash_password, verify_password, crear_token_acceso, get_usuario_actual
 
 router = APIRouter(
     prefix="/api/usuarios",
@@ -121,7 +121,7 @@ def login_usuario(credenciales: UsuarioLogin):
 
     # --- ENDPOINT GET (Perfil Privado) ---
 @router.get("/mi-perfil", status_code=status.HTTP_200_OK)
-def ver_perfil_privado(usuario_actual: dict = Depends(obtener_usuario_actual)):
+def ver_perfil_privado(usuario_actual: dict = Depends(get_usuario_actual)):
     """
     Ruta protegida. Solo se puede acceder con un Token JWT válido.
     """

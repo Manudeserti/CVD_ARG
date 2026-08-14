@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from routers import institucion_router
 from routers import usuario_router
 from routers import publicacion_router
+from routers import transaccion_router
+
 # Inicializamos la API
 app = FastAPI(
     title="API - Plataforma Escolar",
@@ -13,6 +15,7 @@ app = FastAPI(
 app.include_router(institucion_router.router)
 app.include_router(usuario_router.router)
 app.include_router(publicacion_router.router)
+app.include_router(transaccion_router.router)
 # Endpoint 1: Health Check
 @app.get("/", tags=["Estado"])
 def read_root():

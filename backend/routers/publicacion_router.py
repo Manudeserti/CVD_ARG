@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status, Depends
 from database.database import get_db_connection
 from schemas.publicacion_schema import PublicacionCreate, PublicacionResponse
-from utils.security import obtener_usuario_actual
+from utils.security import get_usuario_actual
 from uuid import UUID
 
 router = APIRouter(
@@ -12,7 +12,7 @@ router = APIRouter(
 @router.post("/", response_model=PublicacionResponse, status_code=status.HTTP_201_CREATED)
 def crear_publicacion(
     publicacion: PublicacionCreate, 
-    usuario_actual: dict = Depends(obtener_usuario_actual) # <- ¡Acá está el guardia de seguridad!
+    usuario_actual: dict = Depends(get_usuario_actual) # <- ¡Acá está el guardia de seguridad!
 ):
     """
     Crea una nueva publicación en el Marketplace.

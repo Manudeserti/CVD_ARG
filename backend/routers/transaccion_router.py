@@ -31,7 +31,7 @@ def iniciar_transaccion(
     try:
         # 1. Buscamos el artículo en la base de datos real
         cursor.execute('''
-            SELECT vendedor_id, precio, estado 
+            SELECT vendedor_id, precio, estado, tipo
             FROM publicaciones 
             WHERE id = %s;
         ''', (str(compra.publicacion_id),))
@@ -41,7 +41,7 @@ def iniciar_transaccion(
         if not publicacion:
             raise HTTPException(status_code=404, detail="El artículo no existe")
             
-        vendedor_id, precio_original, estado_actual = publicacion
+        vendedor_id, precio_original, estado_actual , tipo_publicacion = publicacion
 
         # 2. Validaciones estrictas de negocio
         if estado_actual != 'disponible':

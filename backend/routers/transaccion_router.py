@@ -51,7 +51,11 @@ def iniciar_transaccion(
             raise HTTPException(status_code=400, detail="No puedes comprar tu propio artículo")
 
         # 3. Cálculos financieros
-        comision_calculada = precio_original * PORCENTAJE_COMISION
+        if tipo_publicacion== 'venta':
+            comision_calculada = precio_original * PORCENTAJE_COMISION
+        else:
+            #Si es donacion, no hay comision
+            comision_calculada= Decimal('0.00')
 
         # === INICIO DE TRANSACCIÓN SQL ===
         

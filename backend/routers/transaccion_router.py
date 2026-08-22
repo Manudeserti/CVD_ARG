@@ -4,6 +4,8 @@ from uuid import UUID
 from schemas.transaccion_schema import TransaccionCreate, TransaccionResponse
 from database.database import get_db_connection
 from utils.security import get_usuario_actual
+from schemas.transaccion_schema import ContactoResponse
+
 
 router = APIRouter(
     prefix="/api/transacciones",
@@ -240,3 +242,74 @@ def liberar_fondos(
     finally:
         cursor.close()
         conexion.close()
+
+@router.get("/{id}/contacto", response_model=ContactoResponse, status_code=status.HTTP_200_OK)
+def obtener_datos_contacto(
+    id: UUID,
+    usuario_actual: dict = Depends(get_usuario_actual)
+):
+    """
+    Devuelve los datos de contacto de la otra parte involucrada en la transacción.
+    Solo el comprador y el vendedor de esta orden tienen permiso para acceder.
+    """
+    usuario_id = usuario_actual["id"]
+    
+    conexion = None
+    cursor = None
+
+    try:
+        conexion = get_db_connection()
+        cursor = conexion.cursor()
+
+        # 1. Buscamos la transacción para ver quiénes son los involucrados
+        cursor.execute('''
+            SELECT comprador_id, vendedor_id 
+            FROM transacciones_escrow 
+            WHERE id = %s;
+        ''', (str(id),))
+        
+        transaccion = cursor.fetchone()
+
+        if not transaccion:
+            raise HTTPException(status_code=404, detail="Transacción no encontrada")
+            
+        comprador_id, vendedor_id = transaccion
+
+        # 2. Barrera de Privacidad: ¿El usuario que pregunta es parte de la transacción?
+        if str(usuario_id) != str(comprador_id) and str(usuario_id) != str(vendedor_id):
+            raise HTTPException(
+                status_code=403, 
+                detail="Acceso denegado. Solo las partes involucradas pueden ver los datos de contacto."
+            )
+
+        # 3. Determinamos quién es la "contraparte"
+        # Si yo soy el comprador, quiero los datos del vendedor. Y viceversa.
+        contraparte_id = vendedor_id if str(usuario_id) == str(comprador_id) else comprador_id
+
+# 4. Buscamos los datos de contacto en la tabla de usuarios
+        cursor.execute('''
+            SELECT nombre, apellido, telefono 
+            FROM usuarios 
+            WHERE id = %s;
+        ''', (str(contraparte_id),))
+        
+        datos_usuario = cursor.fetchone()
+        
+        if not datos_usuario:
+            raise HTTPException(status_code=404, detail="Usuario no encontrado en la base de datos")
+
+        return {
+            "nombre": datos_usuario[0],
+            "apellido":datos_usuario[1],
+            "telefono": datos_usuario[2]
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al obtener los datos de contacto: {str(e)}")
+    finally:
+        if cursor:
+            cursor.close()
+        if conexion:
+            conexion.close()

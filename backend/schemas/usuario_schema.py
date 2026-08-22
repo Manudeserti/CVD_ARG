@@ -6,7 +6,8 @@ from datetime import datetime
 # 1. Molde Base:  datos que comparten la creación y la respuesta
 class UsuarioBase(BaseModel):
     email: EmailStr = Field(..., description="Correo electrónico válido")
-    nombre_completo: str = Field(..., min_length=3, max_length=150)
+    nombre: str = Field(..., min_length=2, max_length=100)
+    apellido: str = Field(..., min_length=2, max_length=100)
     telefono: Optional[str] = Field(None, max_length=20, description="Teléfono de contacto opcional")
 
 # 2. Molde de Entrada: Lo que pone alguien que se registra

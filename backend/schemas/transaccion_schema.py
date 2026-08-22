@@ -34,3 +34,10 @@ class TransaccionResponse(BaseModel):
 # Este es el molde para cuando el vendedor escanea el QR
 class TransaccionLiberar(BaseModel):
     qr_token: UUID = Field(..., description="El token único del código QR")
+
+
+
+class ContactoResponse(BaseModel):
+    nombre: str
+    apellido:str
+    telefono: str 

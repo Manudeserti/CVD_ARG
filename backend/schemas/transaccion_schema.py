@@ -22,8 +22,8 @@ class TransaccionResponse(BaseModel):
     id_pago_externo: Optional[str] = None
     estado_pago: Literal['pendiente', 'retenido', 'liberado', 'cancelado', 'reembolsado']
     
-    # Seguridad y tiempos
-    qr_token: UUID
+    # Seguridad y tiempos (el qr_token solo se le envía al comprador)
+    qr_token: Optional[UUID] = None
     fecha_creacion: datetime
     fecha_liberacion: Optional[datetime] = None
 
@@ -39,5 +39,6 @@ class TransaccionLiberar(BaseModel):
 
 class ContactoResponse(BaseModel):
     nombre: str
-    apellido:str
-    telefono: str 
+    apellido: str
+    email: str
+    telefono: Optional[str] = None # Es opcional en el registro

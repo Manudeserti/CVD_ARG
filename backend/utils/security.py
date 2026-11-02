@@ -36,7 +36,8 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return bcrypt.checkpw(password_bytes, hashed_password_bytes)
 
 
-SECRET_KEY = os.getenv("SECRET_KEY", "clave_insegura_de_respaldo")
+# Sin valor por defecto: si falta en el .env, el servidor no arranca (mejor que firmar tokens con una clave conocida)
+SECRET_KEY = os.environ["SECRET_KEY"]
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 120
 
@@ -88,6 +89,18 @@ def get_usuario_actual(credenciales: HTTPAuthorizationCredentials = Depends(segu
     except jwt.InvalidTokenError:
         # Si alguien alteró el token o está mal formado
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, 
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Credenciales inválidas o token alterado."
         )
+
+
+def requerir_admin(usuario_actual: dict = Depends(get_usuario_actual)):
+    """
+    Igual que get_usuario_actual, pero además exige rol 'admin'.
+    """
+    if usuario_actual.get("rol") != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Esta acción requiere permisos de administrador."
+        )
+    return usuario_actual

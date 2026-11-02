@@ -52,3 +52,11 @@ CREATE TABLE transacciones_escrow (
     fecha_creacion       TIMESTAMPTZ NOT NULL DEFAULT now(),
     fecha_liberacion     TIMESTAMPTZ
 );
+
+-- Supabase expone el esquema public en su API REST con la clave anon (que va a estar en el frontend).
+-- El backend se conecta como dueño de las tablas y RLS no le aplica, así que activarlo
+-- sin políticas cierra el acceso directo desde la API REST sin afectar a la app.
+ALTER TABLE instituciones ENABLE ROW LEVEL SECURITY;
+ALTER TABLE usuarios ENABLE ROW LEVEL SECURITY;
+ALTER TABLE publicaciones ENABLE ROW LEVEL SECURITY;
+ALTER TABLE transacciones_escrow ENABLE ROW LEVEL SECURITY;

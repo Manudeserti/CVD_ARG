@@ -30,7 +30,7 @@ class PublicacionCreate(PublicacionBase):
 class PublicacionResponse(PublicacionBase):
     id: UUID
     vendedor_id: UUID
-    estado: Literal['disponible', 'reservado', 'vendido']
+    estado: Literal['disponible', 'reservado', 'vendido', 'baja']
     fecha_publicacion: datetime
 
     class Config:

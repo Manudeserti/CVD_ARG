@@ -1,6 +1,8 @@
-from fastapi import APIRouter, HTTPException,status
+from fastapi import APIRouter, HTTPException, status, Depends
+from typing import Optional
 from database.database import get_db_connection
-from schemas.institucion_schema import InstitucionCreate # <- Nueva importación
+from schemas.institucion_schema import InstitucionCreate, InstitucionResponse
+from utils.security import requerir_admin
 
 # Inicializamos el router para esta entidad
 router = APIRouter(
@@ -8,34 +10,44 @@ router = APIRouter(
     tags=["Instituciones"]
 )
 
-@router.get("/test-db")
-def test_database_connection():
+# --- ENDPOINT GET (Listado público para los filtros del catálogo) ---
+@router.get("/", response_model=list[InstitucionResponse], status_code=status.HTTP_200_OK)
+def listar_instituciones(provincia: Optional[str] = None, ciudad: Optional[str] = None):
     """
-    Endpoint para probar la conexión a la tabla instituciones.
+    Lista las instituciones, opcionalmente filtradas por provincia y/o ciudad.
+    Alimenta los filtros en cascada Provincia > Ciudad > Institución del frontend.
     """
+    conexion = None
+    cursor = None
+
     try:
-        # Usamos la función centralizada que creamos en database.py
         conexion = get_db_connection()
         cursor = conexion.cursor()
-        
-        # Ejecutamos la consulta
-        cursor.execute("SELECT id, nombre, ciudad FROM instituciones LIMIT 5;")
-        instituciones = cursor.fetchall()
-        
-        # Cerramos conexiones
-        cursor.close()
-        conexion.close()
-        
-        return {
-            "status": "success",
-            "message": "Conexión a Supabase exitosa desde el router",
-            "data": instituciones
-        }
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error conectando a la BD: {str(e)}")
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+        # Cada filtro es opcional: si viene en NULL, la condición se cumple siempre
+        cursor.execute("""
+            SELECT id, nombre, ciudad, provincia, fecha_creacion
+            FROM instituciones
+            WHERE (%(provincia)s::text IS NULL OR provincia ILIKE %(provincia)s)
+              AND (%(ciudad)s::text IS NULL OR ciudad ILIKE %(ciudad)s)
+            ORDER BY provincia, ciudad, nombre;
+        """, {"provincia": provincia, "ciudad": ciudad})
+
+        return [
+            {"id": i[0], "nombre": i[1], "ciudad": i[2], "provincia": i[3], "fecha_creacion": i[4]}
+            for i in cursor.fetchall()
+        ]
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al listar instituciones: {str(e)}")
+    finally:
+        if cursor:
+            cursor.close()
+        if conexion:
+            conexion.close()
+
+
+@router.post("/", status_code=status.HTTP_201_CREATED, dependencies=[Depends(requerir_admin)])
 def crear_institucion(institucion: InstitucionCreate):
     """
     Crea una nueva institución en la base de datos.
@@ -86,24 +98,24 @@ def crear_institucion(institucion: InstitucionCreate):
     
 
     # --- ENDPOINT PUT (Editar) ---
-@router.put("/{id}", status_code=status.HTTP_200_OK)
+@router.put("/{id}", status_code=status.HTTP_200_OK, dependencies=[Depends(requerir_admin)])
 def actualizar_institucion(id: int, institucion: InstitucionCreate):
     """
-    Actualiza el nombre o la ciudad de una institución existente.
+    Actualiza el nombre, la ciudad o la provincia de una institución existente.
     """
     try:
         conexion = get_db_connection()
         cursor = conexion.cursor()
-        
+
         # El UPDATE también puede usar RETURNING para confirmar los datos guardados
         update_query = """
-            UPDATE instituciones 
-            SET nombre = %s, ciudad = %s 
-            WHERE id = %s 
-            RETURNING id, nombre, ciudad, fecha_creacion;
+            UPDATE instituciones
+            SET nombre = %s, ciudad = %s, provincia = %s
+            WHERE id = %s
+            RETURNING id, nombre, ciudad, provincia, fecha_creacion;
         """
-        
-        cursor.execute(update_query, (institucion.nombre, institucion.ciudad, id))
+
+        cursor.execute(update_query, (institucion.nombre, institucion.ciudad, institucion.provincia, id))
         inst_actualizada = cursor.fetchone()
         
         # Si el ID no existe en la base de datos, fetchone() devuelve None
@@ -122,7 +134,8 @@ def actualizar_institucion(id: int, institucion: InstitucionCreate):
                 "id": inst_actualizada[0],
                 "nombre": inst_actualizada[1],
                 "ciudad": inst_actualizada[2],
-                "fecha_creacion": inst_actualizada[3]
+                "provincia": inst_actualizada[3],
+                "fecha_creacion": inst_actualizada[4]
             }
         }
         
@@ -136,7 +149,7 @@ def actualizar_institucion(id: int, institucion: InstitucionCreate):
 
 
 # --- ENDPOINT DELETE (Borrar) ---
-@router.delete("/{id}", status_code=status.HTTP_200_OK)
+@router.delete("/{id}", status_code=status.HTTP_200_OK, dependencies=[Depends(requerir_admin)])
 def eliminar_institucion(id: int):
     """
     Elimina permanentemente una institución por su ID.

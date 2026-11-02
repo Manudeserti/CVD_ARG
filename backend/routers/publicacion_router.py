@@ -3,6 +3,7 @@ from database.database import get_db_connection
 from schemas.publicacion_schema import PublicacionCreate, PublicacionResponse
 from utils.security import get_usuario_actual
 from uuid import UUID
+from typing import Optional
 
 router = APIRouter(
     prefix="/api/publicaciones",
@@ -90,9 +91,17 @@ def crear_publicacion(
 
 # --- ENDPOINT GET (Catálogo Público) ---
 @router.get("/", response_model=list[PublicacionResponse], status_code=status.HTTP_200_OK)
-def listar_publicaciones():
+def listar_publicaciones(
+    provincia: Optional[str] = None,
+    ciudad: Optional[str] = None,
+    institucion_id: Optional[int] = None,
+    categoria: Optional[str] = None,
+    tipo: Optional[str] = None,
+    talle: Optional[str] = None
+):
     """
-    Obtiene el catálogo completo de publicaciones disponibles.
+    Obtiene el catálogo de publicaciones disponibles.
+    Todos los filtros son opcionales y se combinan (Provincia > Ciudad > Institución > Tipo de artículo).
     Ruta pública (no requiere Token).
     """
     conexion = None
@@ -101,14 +110,26 @@ def listar_publicaciones():
     try:
         conexion = get_db_connection()
         cursor = conexion.cursor()
-        
+
+        # LEFT JOIN porque institucion_id es opcional: sin filtros de ubicación, esas publicaciones también aparecen
         query = """
-            SELECT id, vendedor_id, institucion_id, titulo, descripcion, 
-                   categoria, talle, tipo, precio, estado, imagenes_urls, fecha_publicacion 
-            FROM publicaciones 
-            ORDER BY fecha_publicacion DESC;
+            SELECT p.id, p.vendedor_id, p.institucion_id, p.titulo, p.descripcion,
+                   p.categoria, p.talle, p.tipo, p.precio, p.estado, p.imagenes_urls, p.fecha_publicacion
+            FROM publicaciones p
+            LEFT JOIN instituciones i ON i.id = p.institucion_id
+            WHERE p.estado = 'disponible'
+              AND (%(provincia)s::text IS NULL OR i.provincia ILIKE %(provincia)s)
+              AND (%(ciudad)s::text IS NULL OR i.ciudad ILIKE %(ciudad)s)
+              AND (%(institucion_id)s::int IS NULL OR p.institucion_id = %(institucion_id)s)
+              AND (%(categoria)s::text IS NULL OR p.categoria = %(categoria)s)
+              AND (%(tipo)s::text IS NULL OR p.tipo = %(tipo)s)
+              AND (%(talle)s::text IS NULL OR p.talle = %(talle)s)
+            ORDER BY p.fecha_publicacion DESC;
         """
-        cursor.execute(query)
+        cursor.execute(query, {
+            "provincia": provincia, "ciudad": ciudad, "institucion_id": institucion_id,
+            "categoria": categoria, "tipo": tipo, "talle": talle
+        })
         publicaciones_db = cursor.fetchall()
         
         lista_publicaciones = []
@@ -126,6 +147,98 @@ def listar_publicaciones():
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al obtener el catálogo: {str(e)}")
+    finally:
+        if cursor:
+            cursor.close()
+        if conexion:
+            conexion.close()
+
+
+# --- ENDPOINT GET (Mis publicaciones) ---
+# Tiene que declararse antes de "/{id}", si no FastAPI intenta leer "mias" como un UUID
+@router.get("/mias", response_model=list[PublicacionResponse], status_code=status.HTTP_200_OK)
+def listar_mis_publicaciones(usuario_actual: dict = Depends(get_usuario_actual)):
+    """
+    Devuelve todas las publicaciones del usuario logueado, en cualquier estado salvo las dadas de baja.
+    """
+    conexion = None
+    cursor = None
+
+    try:
+        conexion = get_db_connection()
+        cursor = conexion.cursor()
+
+        cursor.execute("""
+            SELECT id, vendedor_id, institucion_id, titulo, descripcion,
+                   categoria, talle, tipo, precio, estado, imagenes_urls, fecha_publicacion
+            FROM publicaciones
+            WHERE vendedor_id = %s AND estado <> 'baja'
+            ORDER BY fecha_publicacion DESC;
+        """, (usuario_actual["id"],))
+
+        return [
+            {
+                "id": pub[0], "vendedor_id": pub[1], "institucion_id": pub[2],
+                "titulo": pub[3], "descripcion": pub[4], "categoria": pub[5],
+                "talle": pub[6], "tipo": pub[7], "precio": pub[8],
+                "estado": pub[9], "imagenes_urls": pub[10], "fecha_publicacion": pub[11]
+            }
+            for pub in cursor.fetchall()
+        ]
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al obtener tus publicaciones: {str(e)}")
+    finally:
+        if cursor:
+            cursor.close()
+        if conexion:
+            conexion.close()
+
+
+# --- ENDPOINT DELETE (Dar de baja) ---
+@router.delete("/{id}", status_code=status.HTTP_200_OK)
+def dar_de_baja_publicacion(id: UUID, usuario_actual: dict = Depends(get_usuario_actual)):
+    """
+    Retira una publicación del catálogo. No se borra la fila para no perder el historial de transacciones.
+    Solo el dueño puede hacerlo y solo si no hay una operación en curso.
+    """
+    conexion = None
+    cursor = None
+
+    try:
+        conexion = get_db_connection()
+        cursor = conexion.cursor()
+
+        cursor.execute("SELECT vendedor_id, estado FROM publicaciones WHERE id = %s FOR UPDATE;", (str(id),))
+        pub = cursor.fetchone()
+
+        if not pub:
+            raise HTTPException(status_code=404, detail="Publicación no encontrada")
+
+        vendedor_id, estado_actual = pub
+
+        if str(vendedor_id) != str(usuario_actual["id"]):
+            raise HTTPException(status_code=403, detail="Solo el dueño puede dar de baja esta publicación")
+
+        if estado_actual != 'disponible':
+            raise HTTPException(
+                status_code=400,
+                detail=f"No se puede dar de baja una publicación en estado '{estado_actual}'"
+            )
+
+        cursor.execute("UPDATE publicaciones SET estado = 'baja' WHERE id = %s;", (str(id),))
+        conexion.commit()
+
+        return {"status": "success", "message": "Publicación dada de baja"}
+
+    except HTTPException:
+        if conexion:
+            conexion.rollback()
+        raise
+    except Exception as e:
+        if conexion:
+            conexion.rollback()
+        raise HTTPException(status_code=500, detail=f"Error al dar de baja: {str(e)}")
     finally:
         if cursor:
             cursor.close()

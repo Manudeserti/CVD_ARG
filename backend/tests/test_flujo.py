@@ -1,5 +1,6 @@
 """
-Tests de punta a punta del flujo de compra, donación, cancelación y vencimiento.
+Tests de punta a punta del flujo de compra, pago, donación, cancelación y vencimiento.
+Mercado Pago se reemplaza por un doble en memoria: los tests no hacen llamadas reales.
 
 Corren contra un Postgres de prueba (NUNCA contra Supabase: borran todo).
     docker run -d --name cvd-test-db -e POSTGRES_PASSWORD=test -e POSTGRES_DB=cvd_test -p 5433:5432 postgres:16-alpine
@@ -7,6 +8,8 @@ Corren contra un Postgres de prueba (NUNCA contra Supabase: borran todo).
     pip install -r requirements-dev.txt
     pytest
 """
+import hashlib
+import hmac
 import os
 import sys
 from pathlib import Path
@@ -22,13 +25,41 @@ if not TEST_DB:
 # Tienen que estar definidas antes de importar la app (load_dotenv no pisa variables ya existentes)
 os.environ["DATABASE_URL"] = TEST_DB
 os.environ["SECRET_KEY"] = "clave-solo-para-tests-de-32-bytes-o-mas"
+os.environ["MP_WEBHOOK_SECRET"] = "secreto-webhook-de-prueba"
+os.environ["CRON_SECRET"] = "secreto-cron-de-prueba"
 BACKEND = Path(__file__).parents[1]
 sys.path.insert(0, str(BACKEND))
 
 from fastapi.testclient import TestClient  # noqa: E402
 from main import app  # noqa: E402
+from utils import pagos  # noqa: E402
 
 client = TestClient(app)
+CRON = {"Authorization": f"Bearer {os.environ['CRON_SECRET']}"}
+
+
+class MercadoPagoFalso:
+    """Reemplaza las llamadas a la API de Mercado Pago y registra lo que se le pidió."""
+    def __init__(self):
+        self.pagos = {}        # pago_id -> respuesta de GET /v1/payments
+        self.reembolsos = []   # pago_id de cada devolución
+
+    def crear_preferencia(self, transaccion_id, titulo, monto):
+        return f"https://mercadopago.test/checkout?ref={transaccion_id}"
+
+    def obtener_pago(self, pago_id):
+        return self.pagos[pago_id]
+
+    def reembolsar(self, pago_id, clave_idempotencia):
+        self.reembolsos.append(pago_id)
+
+
+@pytest.fixture(autouse=True)
+def mp(monkeypatch):
+    falso = MercadoPagoFalso()
+    for nombre in ("crear_preferencia", "obtener_pago", "reembolsar"):
+        monkeypatch.setattr(pagos, nombre, getattr(falso, nombre))
+    return falso
 
 
 def sql(query, params=()):
@@ -79,16 +110,31 @@ def comprar(headers, publicacion_id):
     return client.post("/api/transacciones/", headers=headers, json={"publicacion_id": publicacion_id})
 
 
-def simular_pago_aprobado(transaccion_id):
-    # Lo que en el Sprint B va a hacer el webhook de Mercado Pago
-    sql("UPDATE transacciones_escrow SET estado_pago = 'retenido' WHERE id = %s", (transaccion_id,))
+def avisar_pago(pago_id, secreto=None):
+    """Envía el webhook tal como lo firma Mercado Pago."""
+    ts, request_id = "1700000000", uuid4().hex
+    manifest = f"id:{pago_id};request-id:{request_id};ts:{ts};"
+    firma = hmac.new((secreto or os.environ["MP_WEBHOOK_SECRET"]).encode(), manifest.encode(), hashlib.sha256).hexdigest()
+    return client.post(
+        f"/api/pagos/webhook?data.id={pago_id}&type=payment",
+        headers={"x-signature": f"ts={ts},v1={firma}", "x-request-id": request_id},
+        json={"type": "payment", "data": {"id": pago_id}}
+    )
+
+
+def pagar(mp, transaccion_id):
+    """El comprador paga en Mercado Pago y llega el webhook de pago aprobado."""
+    pago_id = str(len(mp.pagos) + 1000)
+    mp.pagos[pago_id] = {"id": int(pago_id), "status": "approved", "external_reference": transaccion_id}
+    assert avisar_pago(pago_id).status_code == 200
+    return pago_id
 
 
 def estado_publicacion(publicacion_id):
     return sql("SELECT estado FROM publicaciones WHERE id = %s", (publicacion_id,))[0][0]
 
 
-def test_venta_completa():
+def test_venta_completa(mp):
     _, vendedor = usuario()
     _, comprador = usuario()
     _, otro = usuario()
@@ -112,7 +158,16 @@ def test_venta_completa():
     assert client.post("/api/transacciones/liberar", headers=vendedor, json=liberar).status_code == 400
     assert client.get(f"/api/transacciones/{compra['id']}/contacto", headers=comprador).status_code == 400
 
-    simular_pago_aprobado(compra["id"])
+    # Solo el comprador obtiene el link de pago
+    assert client.post(f"/api/transacciones/{compra['id']}/pago", headers=vendedor).status_code == 403
+    r = client.post(f"/api/transacciones/{compra['id']}/pago", headers=comprador)
+    assert r.status_code == 200 and compra["id"] in r.json()["url_pago"]
+
+    pago_id = pagar(mp, compra["id"])
+    assert sql("SELECT estado_pago, id_pago_externo FROM transacciones_escrow WHERE id = %s", (compra["id"],))[0] == ("retenido", pago_id)
+
+    # Una vez pagada, no se puede volver a pagar
+    assert client.post(f"/api/transacciones/{compra['id']}/pago", headers=comprador).status_code == 400
 
     contacto = client.get(f"/api/transacciones/{compra['id']}/contacto", headers=comprador)
     assert contacto.status_code == 200 and contacto.json()["email"].endswith("@test.com")
@@ -127,18 +182,19 @@ def test_venta_completa():
     assert client.post(f"/api/transacciones/{compra['id']}/cancelar", headers=comprador).status_code == 400
 
 
-def test_cancelacion_devuelve_el_articulo_al_catalogo():
+def test_cancelacion_reembolsa_y_devuelve_el_articulo_al_catalogo(mp):
     _, vendedor = usuario()
     _, comprador = usuario()
     _, otro = usuario()
     pub = publicar(vendedor)
     compra = comprar(comprador, pub).json()
-    simular_pago_aprobado(compra["id"])
+    pago_id = pagar(mp, compra["id"])
 
     assert client.post(f"/api/transacciones/{compra['id']}/cancelar", headers=otro).status_code == 403
 
     r = client.post(f"/api/transacciones/{compra['id']}/cancelar", headers=comprador)
     assert r.status_code == 200 and r.json()["estado_pago"] == "reembolsado"
+    assert mp.reembolsos == [pago_id]
     assert estado_publicacion(pub) == "disponible"
 
     # El QR de una operación cancelada ya no sirve
@@ -160,21 +216,60 @@ def test_donacion_sin_pago():
     assert estado_publicacion(pub) == "vendido"
 
 
-def test_vencimiento_del_plazo_de_encuentro():
-    _, admin = usuario(admin=True)
+def test_webhook_rechaza_firmas_falsas_y_es_idempotente(mp):
     _, vendedor = usuario()
     _, comprador = usuario()
-    pub = publicar(vendedor)
-    compra = comprar(comprador, pub).json()
-    simular_pago_aprobado(compra["id"])
-    sql("UPDATE transacciones_escrow SET fecha_creacion = now() - interval '8 days' WHERE id = %s", (compra["id"],))
+    compra = comprar(comprador, publicar(vendedor)).json()
+    mp.pagos["555"] = {"id": 555, "status": "approved", "external_reference": compra["id"]}
 
-    assert client.post("/api/transacciones/vencer", headers=comprador).status_code == 403
+    assert avisar_pago("555", secreto="otro-secreto").status_code == 401
+    assert sql("SELECT estado_pago FROM transacciones_escrow WHERE id = %s", (compra["id"],))[0][0] == "pendiente"
 
-    r = client.post("/api/transacciones/vencer", headers=admin)
-    assert r.status_code == 200 and r.json()["vencidas"] >= 1
+    # Mercado Pago reintenta: el mismo aviso dos veces no cambia nada la segunda vez
+    assert avisar_pago("555").status_code == 200
+    assert avisar_pago("555").status_code == 200
+    assert sql("SELECT estado_pago FROM transacciones_escrow WHERE id = %s", (compra["id"],))[0][0] == "retenido"
+
+
+def test_pago_tardio_de_una_reserva_vencida_se_devuelve(mp):
+    _, vendedor = usuario()
+    _, comprador = usuario()
+    compra = comprar(comprador, publicar(vendedor)).json()
+    assert client.post(f"/api/transacciones/{compra['id']}/cancelar", headers=comprador).json()["estado_pago"] == "cancelado"
+
+    pago_id = pagar(mp, compra["id"])
+    assert mp.reembolsos == [pago_id]
     assert sql("SELECT estado_pago FROM transacciones_escrow WHERE id = %s", (compra["id"],))[0][0] == "reembolsado"
-    assert estado_publicacion(pub) == "disponible"
+
+
+def test_vencimientos(mp):
+    _, vendedor = usuario()
+    _, comprador = usuario()
+
+    # Venta pagada sin encuentro después de 8 días: se reembolsa
+    pub_pagada = publicar(vendedor)
+    pagada = comprar(comprador, pub_pagada).json()
+    pago_id = pagar(mp, pagada["id"])
+    sql("UPDATE transacciones_escrow SET fecha_creacion = now() - interval '8 days' WHERE id = %s", (pagada["id"],))
+
+    # Venta reservada sin pagar después de 25 horas: se cancela
+    pub_impaga = publicar(vendedor)
+    impaga = comprar(comprador, pub_impaga).json()
+    sql("UPDATE transacciones_escrow SET fecha_creacion = now() - interval '25 hours' WHERE id = %s", (impaga["id"],))
+
+    # Donación de hace 25 horas: todavía está dentro del plazo de encuentro
+    donacion = comprar(comprador, publicar(vendedor, tipo="donacion", precio=0)).json()
+    sql("UPDATE transacciones_escrow SET fecha_creacion = now() - interval '25 hours' WHERE id = %s", (donacion["id"],))
+
+    # Solo el cron de Vercel puede ejecutarlo
+    assert client.get("/api/transacciones/vencer", headers=comprador).status_code == 403
+
+    assert client.get("/api/transacciones/vencer", headers=CRON).status_code == 200
+    estado = lambda t: sql("SELECT estado_pago FROM transacciones_escrow WHERE id = %s", (t["id"],))[0][0]  # noqa: E731
+    assert estado(pagada) == "reembolsado" and pago_id in mp.reembolsos
+    assert estado(impaga) == "cancelado"
+    assert estado(donacion) == "pendiente"
+    assert estado_publicacion(pub_pagada) == estado_publicacion(pub_impaga) == "disponible"
 
 
 def test_catalogo_filtros_y_baja():

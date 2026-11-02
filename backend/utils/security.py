@@ -1,4 +1,5 @@
 import bcrypt
+import hmac
 import jwt
 import os
 from datetime import datetime, timedelta, timezone
@@ -91,6 +92,18 @@ def get_usuario_actual(credenciales: HTTPAuthorizationCredentials = Depends(segu
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Credenciales inválidas o token alterado."
+        )
+
+
+def requerir_cron(credenciales: HTTPAuthorizationCredentials = Depends(seguridad_token)):
+    """
+    Autoriza las tareas programadas de Vercel Cron, que envían "Authorization: Bearer <CRON_SECRET>".
+    """
+    secreto = os.getenv("CRON_SECRET")
+    if not secreto or not hmac.compare_digest(credenciales.credentials, secreto):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Solo las tareas programadas pueden ejecutar esta acción."
         )
 
 

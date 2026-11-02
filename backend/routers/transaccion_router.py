@@ -3,7 +3,8 @@ from decimal import Decimal
 from uuid import UUID
 from schemas.transaccion_schema import TransaccionCreate, TransaccionResponse, TransaccionLiberar, ContactoResponse
 from database.database import get_db_connection
-from utils.security import get_usuario_actual, requerir_admin
+from utils.security import get_usuario_actual, requerir_cron
+from utils import pagos
 
 
 router = APIRouter(
@@ -257,14 +258,65 @@ def liberar_fondos(
         conexion.close()
 
 
-def _cancelar(cursor, transaccion_id, publicacion_id, estado_actual) -> str:
+@router.post("/{id}/pago", status_code=status.HTTP_200_OK)
+def iniciar_pago(
+    id: UUID,
+    usuario_actual: dict = Depends(get_usuario_actual)
+):
+    """
+    Devuelve la URL de Mercado Pago (Checkout Pro) para pagar una compra pendiente.
+    Se puede volver a llamar si el comprador cerró la ventana sin pagar.
+    """
+    conexion = get_db_connection()
+    cursor = conexion.cursor()
+
+    try:
+        cursor.execute('''
+            SELECT t.comprador_id, t.estado_pago, t.monto, p.tipo, p.titulo
+            FROM transacciones_escrow t
+            JOIN publicaciones p ON p.id = t.publicacion_id
+            WHERE t.id = %s;
+        ''', (str(id),))
+        transaccion = cursor.fetchone()
+
+        if not transaccion:
+            raise HTTPException(status_code=404, detail="Transacción no encontrada")
+
+        comprador_id, estado_actual, monto, tipo, titulo = transaccion
+
+        if str(comprador_id) != str(usuario_actual["id"]):
+            raise HTTPException(status_code=403, detail="Solo el comprador puede pagar esta operación")
+
+        if tipo != 'venta':
+            raise HTTPException(status_code=400, detail="Las donaciones no requieren pago")
+
+        if estado_actual != 'pendiente':
+            raise HTTPException(status_code=400, detail=f"La operación no se puede pagar en estado: {estado_actual}")
+
+        try:
+            url_pago = pagos.crear_preferencia(str(id), titulo, monto)
+        except Exception as e:
+            raise HTTPException(status_code=502, detail=f"Mercado Pago no respondió correctamente: {str(e)}")
+
+        return {"url_pago": url_pago}
+
+    finally:
+        cursor.close()
+        conexion.close()
+
+
+def _cancelar(cursor, transaccion_id, publicacion_id, estado_actual, id_pago_externo) -> str:
     """
     Cancela una transacción y vuelve a poner el artículo en el catálogo.
     No hace commit: lo hace quien la llama. Devuelve el nuevo estado.
+    Si Mercado Pago rechaza la devolución, lanza la excepción y no se toca la base.
     """
     # Si el pago ya estaba retenido hay que devolverlo; si no, no hay nada que devolver
-    nuevo_estado = 'reembolsado' if estado_actual == 'retenido' else 'cancelado'
-    # ponytail: Sprint B — antes de marcar 'reembolsado' va la llamada de reembolso a Mercado Pago
+    if estado_actual == 'retenido':
+        pagos.reembolsar(id_pago_externo, f"reembolso-{transaccion_id}")
+        nuevo_estado = 'reembolsado'
+    else:
+        nuevo_estado = 'cancelado'
 
     cursor.execute('''
         UPDATE transacciones_escrow SET estado_pago = %s WHERE id = %s;
@@ -293,7 +345,7 @@ def cancelar_transaccion(
 
     try:
         cursor.execute('''
-            SELECT comprador_id, vendedor_id, publicacion_id, estado_pago
+            SELECT comprador_id, vendedor_id, publicacion_id, estado_pago, id_pago_externo
             FROM transacciones_escrow
             WHERE id = %s
             FOR UPDATE;
@@ -304,7 +356,7 @@ def cancelar_transaccion(
         if not transaccion:
             raise HTTPException(status_code=404, detail="Transacción no encontrada")
 
-        comprador_id, vendedor_id, publicacion_id, estado_actual = transaccion
+        comprador_id, vendedor_id, publicacion_id, estado_actual, id_pago_externo = transaccion
 
         if str(usuario_id) not in (str(comprador_id), str(vendedor_id)):
             raise HTTPException(status_code=403, detail="Solo las partes involucradas pueden cancelar la operación")
@@ -315,7 +367,10 @@ def cancelar_transaccion(
                 detail=f"La transacción no se puede cancelar porque su estado actual es: {estado_actual}"
             )
 
-        nuevo_estado = _cancelar(cursor, id, publicacion_id, estado_actual)
+        try:
+            nuevo_estado = _cancelar(cursor, id, publicacion_id, estado_actual, id_pago_externo)
+        except Exception as e:
+            raise HTTPException(status_code=502, detail=f"Mercado Pago no pudo procesar la devolución: {str(e)}")
         conexion.commit()
 
         return {"status": "success", "estado_pago": nuevo_estado, "message": "Operación cancelada"}
@@ -331,32 +386,44 @@ def cancelar_transaccion(
         conexion.close()
 
 
-@router.post("/vencer", status_code=status.HTTP_200_OK, dependencies=[Depends(requerir_admin)])
+# Vercel Cron solo hace pedidos GET y se autentica con CRON_SECRET (ver vercel.json).
+# Además de vencer operaciones, esta consulta diaria evita que Supabase pause el proyecto por inactividad.
+@router.get("/vencer", status_code=status.HTTP_200_OK, dependencies=[Depends(requerir_cron)])
 def vencer_transacciones():
     """
-    Cancela (y reembolsa si corresponde) las operaciones que superaron el plazo de encuentro sin escaneo.
-    Pensado para que lo llame una tarea programada una vez por día.
+    Cancela (y reembolsa si corresponde) las operaciones vencidas:
+    - ventas sin pagar después del plazo de pago,
+    - cualquier operación sin escaneo después del plazo de encuentro.
     """
     conexion = get_db_connection()
     cursor = conexion.cursor()
 
     try:
-        # ponytail: el plazo se cuenta desde la creación, no desde la confirmación del pago; ajustar en Sprint B si hace falta
+        # ponytail: el plazo de encuentro se cuenta desde la creación, no desde la confirmación del pago (diferencia de horas)
         cursor.execute('''
-            SELECT id, publicacion_id, estado_pago
-            FROM transacciones_escrow
-            WHERE estado_pago IN ('pendiente', 'retenido')
-              AND fecha_creacion < now() - make_interval(days => %s)
-            FOR UPDATE;
-        ''', (PLAZO_ENCUENTRO_DIAS,))
+            SELECT t.id, t.publicacion_id, t.estado_pago, t.id_pago_externo
+            FROM transacciones_escrow t
+            JOIN publicaciones p ON p.id = t.publicacion_id
+            WHERE (p.tipo = 'venta' AND t.estado_pago = 'pendiente'
+                   AND t.fecha_creacion < now() - make_interval(hours => %s))
+               OR (t.estado_pago IN ('pendiente', 'retenido')
+                   AND t.fecha_creacion < now() - make_interval(days => %s))
+            FOR UPDATE OF t;
+        ''', (pagos.PLAZO_PAGO_HORAS, PLAZO_ENCUENTRO_DIAS))
 
-        vencidas = cursor.fetchall()
-        for transaccion_id, publicacion_id, estado_actual in vencidas:
-            _cancelar(cursor, transaccion_id, publicacion_id, estado_actual)
+        vencidas = 0
+        fallidas = 0
+        for transaccion_id, publicacion_id, estado_actual, id_pago_externo in cursor.fetchall():
+            try:
+                _cancelar(cursor, transaccion_id, publicacion_id, estado_actual, id_pago_externo)
+                vencidas += 1
+            except Exception:
+                # Si Mercado Pago rechaza una devolución, esa operación queda como estaba y se reintenta mañana
+                fallidas += 1
 
         conexion.commit()
 
-        return {"status": "success", "vencidas": len(vencidas)}
+        return {"status": "success", "vencidas": vencidas, "fallidas": fallidas}
 
     except Exception as e:
         conexion.rollback()

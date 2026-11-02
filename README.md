@@ -12,14 +12,9 @@ venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-Crear `backend/.env` con:
+Crear `backend/.env` con las variables listadas en el [manual técnico](docs/manuales/manual-tecnico.md#variables-de-entorno-del-backend).
 
-```
-DATABASE_URL=postgresql://...      # cadena de conexión de Supabase
-SECRET_KEY=...                     # al menos 32 bytes: python -c "import secrets; print(secrets.token_urlsafe(48))"
-```
-
-Correr con `uvicorn main:app --reload` y abrir http://localhost:8000/docs.
+Correr con `venv\Scripts\python.exe -m uvicorn main:app --reload` y abrir http://localhost:8000/docs.
 
 ### Tests
 

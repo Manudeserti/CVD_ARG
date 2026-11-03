@@ -25,6 +25,10 @@ Registro de horas reales por actividad, para comparar con lo estimado en el prot
 
 Las filas de agosto se reconstruyeron a partir de los commits (1,5 h antes del primer commit de cada sesión más la duración entre commits); son un piso. Las del 02/11 salen de los horarios registrados de las sesiones de trabajo.
 
+## Uso de IA (`uso-de-ia.md`)
+
+[Registro de en qué grado y en qué etapas se usó IA](uso-de-ia.md), pedido por el director para el informe final. Se completa al cerrar cada sesión, junto con las horas.
+
 ## Decisiones (`decisiones/`)
 
 Registro corto de cada decisión importante: contexto, opciones, decisión y consecuencias. Se trasladan casi directo a la memoria.

@@ -18,7 +18,7 @@
 | RF-03 | Catálogo público con filtros combinables: provincia, ciudad, institución, categoría, tipo y talle | Hecho |
 | RF-04 | Ver y dar de baja las publicaciones propias | Hecho |
 | RF-05 | Iniciar una compra o solicitud de donación, que reserva el artículo | Hecho |
-| RF-06 | Pagar mediante billetera virtual; los fondos quedan retenidos y se cobra una comisión del 5% en las ventas | Hecho (falta prueba manual en sandbox) |
+| RF-06 | Pagar mediante billetera virtual; los fondos quedan retenidos y se cobra una comisión del 5% en las ventas | Hecho (probado en sandbox; devolución verificada con dinero real, ver cap. 04) |
 | RF-07 | Generar un código QR para el comprador; el vendedor lo escanea en el encuentro y se liberan los fondos | Backend hecho; pantalla en Sprint C |
 | RF-08 | Compartir los datos de contacto de la contraparte una vez confirmado el pago | Hecho |
 | RF-09 | Cancelar una operación no concretada, con reembolso si había pago | Hecho |
@@ -51,4 +51,4 @@ Instituciones por demanda, alertas automáticas por correo, panel de administrac
 - **Seguridad:** contraseñas con bcrypt; sesiones con JWT firmado (HS256, vencimiento 2 h); rutas privadas protegidas; operaciones administrativas restringidas por rol.
 - **Consistencia:** los cambios de estado de dinero y artículos se hacen en una única transacción de base de datos con bloqueo de fila.
 - **Usabilidad:** interfaz responsive pensada primero para celular, porque el escaneo ocurre en el encuentro presencial.
-- **Costo:** infraestructura en planes gratuitos (Supabase, Render, Vercel).
+- **Costo:** infraestructura en planes gratuitos (Supabase y Vercel).

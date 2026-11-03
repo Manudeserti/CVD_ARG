@@ -9,7 +9,7 @@ La memoria y los manuales se escriben a lo largo del proyecto, no al final. Cada
 | [01 · Requerimientos](memoria/01-requerimientos.md) | A | Borrador |
 | [02 · Modelo de datos y estados](memoria/02-modelo-de-datos.md) | A | Borrador |
 | [03 · Arquitectura y flujo de pago](memoria/03-arquitectura-y-pagos.md) | B | Borrador |
-| 04 · Consideraciones regulatorias y camino a producción | B | Pendiente |
+| [04 · Consideraciones regulatorias y camino a producción](memoria/04-regulatorio-y-produccion.md) | B | Borrador |
 | 05 · Pruebas | D | Pendiente |
 
 ## Manuales (`manuales/`)

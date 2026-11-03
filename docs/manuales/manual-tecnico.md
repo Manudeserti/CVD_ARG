@@ -1,6 +1,6 @@
 # Manual técnico: instalación y despliegue
 
-> Borrador (Sprint B). Se completa con capturas cuando el despliegue esté hecho.
+> Borrador (Sprint B). Backend desplegado en https://cvd-arg.vercel.app; faltan capturas.
 
 ## Requisitos
 
@@ -61,6 +61,15 @@ Los tests borran y recrean la base indicada en `TEST_DATABASE_URL`: nunca apunta
 
 ## Mercado Pago (sandbox)
 
-1. Crear una aplicación en Mercado Pago Developers (producto: Checkout Pro).
-2. Crear dos cuentas de prueba: una vendedora (sus credenciales de prueba van en `MP_ACCESS_TOKEN`) y una compradora (para pagar).
-3. En Webhooks, configurar la URL `{BACKEND_URL}/api/pagos/webhook` con el evento **Pagos**, y copiar la clave secreta en `MP_WEBHOOK_SECRET`.
+1. Crear una aplicación en Mercado Pago Developers (producto: Checkout Pro). Mercado Pago crea sola la cuenta vendedora de prueba; las **credenciales de prueba** de la aplicación (empiezan con `APP_USR-`) van en `MP_ACCESS_TOKEN`.
+2. En **Cuentas de prueba**, crear solo una cuenta **compradora**.
+3. En Webhooks, configurar la URL `{BACKEND_URL}/api/pagos/webhook` con el evento **Pagos** (la misma URL para modo de prueba y productivo), y copiar la clave secreta en `MP_WEBHOOK_SECRET`. Volver a desplegar en Vercel.
+
+### Compra de prueba
+
+1. Con la API, registrar un vendedor y un comprador, publicar un artículo, reservarlo y pedir `POST /api/transacciones/{id}/pago`.
+2. Abrir el `url_pago` en una **ventana de incógnito** e iniciar sesión con la cuenta compradora de prueba.
+3. Pagar con la tarjeta de prueba Mastercard `5031 7557 3453 0604`, vencimiento `11/30`, CVV `123`, titular `APRO` (aprueba el pago), DNI `12345678`.
+4. La operación pasa a `retenido` cuando llega el webhook.
+
+Limitación: el entorno de pruebas rechaza las devoluciones (`401 · Unauthorized use of live credentials`), así que cancelar una operación pagada da 502 y la deja como estaba. Detalle en el capítulo 04 de la memoria.

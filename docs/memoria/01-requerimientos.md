@@ -42,13 +42,15 @@ Instituciones por demanda, alertas automáticas por correo, panel de administrac
 | RN-06 | En una venta, el QR solo se puede escanear con el pago retenido. En una donación, desde que se inicia la operación. |
 | RN-07 | El escaneo del QR es la única prueba de entrega. Una vez escaneado, la operación no se puede cancelar. |
 | RN-08 | Sin escaneo, cualquiera de las partes puede cancelar y el dinero vuelve al comprador. |
-| RN-09 | Si pasan 7 días sin escaneo, la operación se cancela y se reembolsa automáticamente. Una venta reservada y no pagada se libera a las 24 horas. |
+| RN-09 | Si pasan 7 días sin escaneo (4 en las donaciones), la operación se cancela y, si había pago, se reembolsa automáticamente. Una venta reservada y no pagada se libera a las 24 horas. |
 | RN-10 | Los datos de contacto se comparten recién con el pago retenido (ventas) o con la operación iniciada (donaciones). |
 | RN-11 | Una publicación con una operación en curso no se puede dar de baja. |
+| RN-12 | Un usuario puede tener como máximo 3 donaciones pendientes de retirar a la vez. Las ventas no tienen tope. |
+| RN-13 | Una venta tiene precio mayor a 0 y una donación precio 0; la base de datos lo garantiza con una restricción. |
 
 ## Requerimientos no funcionales
 
-- **Seguridad:** contraseñas con bcrypt; sesiones con JWT firmado (HS256, vencimiento 2 h); rutas privadas protegidas; operaciones administrativas restringidas por rol.
+- **Seguridad:** contraseñas con bcrypt; sesiones con JWT firmado (HS256, vencimiento 2 h); rutas privadas protegidas; operaciones administrativas restringidas por rol; bloqueo de la cuenta por 15 minutos tras 5 intentos de login fallidos; los errores internos no exponen detalles al cliente (quedan en los logs).
 - **Consistencia:** los cambios de estado de dinero y artículos se hacen en una única transacción de base de datos con bloqueo de fila.
 - **Usabilidad:** interfaz responsive pensada primero para celular, porque el escaneo ocurre en el encuentro presencial.
 - **Costo:** infraestructura en planes gratuitos (Supabase y Vercel).

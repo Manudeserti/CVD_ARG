@@ -1,0 +1,16 @@
+fecha,actividad,horas,descripcion,fuente
+2026-08-09,3 Backend y API,0.5,Creación del repositorio,git (estimado)
+2026-08-10,3 Backend y API,3.4,Setup de FastAPI y Supabase; schemas y división del main,git (estimado)
+2026-08-11,3 Backend y API,3.9,CRUD de instituciones; registro y login,git (estimado)
+2026-08-13,3 Backend y API,1.5,Login con bcrypt y JWT,git (estimado)
+2026-08-13,2 Arquitectura y modelo de datos,1.5,Schemas de publicaciones y categorías,git (estimado)
+2026-08-14,4 Módulo transaccional,1.5,Provincia en instituciones y comisión en transacciones,git (estimado)
+2026-08-14,5 Validación QR,1.5,Historial de transacciones y liberación por QR,git (estimado)
+2026-08-16,4 Módulo transaccional,1.6,Manejo de errores y flujo de donaciones,git (estimado)
+2026-08-22,3 Backend y API,1.5,Normalización de usuarios y módulo de comunicación,git (estimado)
+2026-11-02,1 Requerimientos,0.5,Análisis del protocolo y capítulo 01,sesiones registradas
+2026-11-02,2 Arquitectura y modelo de datos,0.7,Stack del frontend y decisiones 001-003; capítulos 02-03,sesiones registradas
+2026-11-02,3 Backend y API,0.8,Seguridad del escrow; catálogo con filtros; instituciones,sesiones registradas
+2026-11-02,4 Módulo transaccional,1.8,Integración con Mercado Pago; pruebas en sandbox y devolución real,sesiones registradas
+2026-11-02,7 Testing y despliegue,0.9,Tests de punta a punta; Supabase nuevo; despliegue en Vercel,sesiones registradas
+2026-11-02,8 Memoria y manuales,0.5,Capítulo 04 y manual técnico,sesiones registradas

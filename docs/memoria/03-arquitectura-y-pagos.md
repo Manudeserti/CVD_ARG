@@ -64,4 +64,5 @@ sequenceDiagram
 | Plazo | Valor | Qué pasa al vencer |
 |---|---|---|
 | Pago de una reserva | 24 horas | La venta pasa a `cancelado` y el artículo vuelve al catálogo |
-| Encuentro | 7 días | Se cancela; si había pago, se devuelve (`reembolsado`) |
+| Encuentro (venta) | 7 días | Se cancela y el pago se devuelve (`reembolsado`) |
+| Encuentro (donación) | 4 días | Se cancela y el artículo vuelve al catálogo |

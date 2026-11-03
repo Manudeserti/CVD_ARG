@@ -21,7 +21,10 @@ CREATE TABLE usuarios (
     password_hash   TEXT NOT NULL,
     telefono        VARCHAR(20),
     rol             VARCHAR(20) NOT NULL DEFAULT 'usuario' CHECK (rol IN ('usuario', 'admin')),
-    fecha_registro  TIMESTAMPTZ NOT NULL DEFAULT now()
+    fecha_registro  TIMESTAMPTZ NOT NULL DEFAULT now(),
+    -- Bloqueo temporal tras varios intentos de login fallidos
+    intentos_fallidos INTEGER NOT NULL DEFAULT 0,
+    bloqueado_hasta   TIMESTAMPTZ
 );
 
 CREATE TABLE publicaciones (
@@ -36,7 +39,11 @@ CREATE TABLE publicaciones (
     precio             NUMERIC(10, 2) NOT NULL DEFAULT 0,
     estado             VARCHAR(20) NOT NULL DEFAULT 'disponible' CHECK (estado IN ('disponible', 'reservado', 'vendido', 'baja')),
     imagenes_urls      TEXT[] NOT NULL DEFAULT '{}',
-    fecha_publicacion  TIMESTAMPTZ NOT NULL DEFAULT now()
+    fecha_publicacion  TIMESTAMPTZ NOT NULL DEFAULT now(),
+    -- Una venta siempre tiene precio; una donación nunca
+    CONSTRAINT precio_segun_tipo CHECK (
+        (tipo = 'venta' AND precio > 0) OR (tipo = 'donacion' AND precio = 0)
+    )
 );
 
 CREATE TABLE transacciones_escrow (

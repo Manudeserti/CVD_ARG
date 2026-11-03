@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status, Depends
-from database.database import get_db_connection
+from database.database import get_db_connection, error_interno
 from schemas.usuario_schema import UsuarioCreate, UsuarioResponse, UsuarioLogin
 from utils.security import hash_password, verify_password, crear_token_acceso, get_usuario_actual
 
@@ -7,6 +7,10 @@ router = APIRouter(
     prefix="/api/usuarios",
     tags=["Usuarios"]
 )
+
+# Contra la prueba de contraseñas por fuerza bruta: el bloqueo es temporal, nunca permanente
+MAX_INTENTOS_LOGIN = 5
+MINUTOS_BLOQUEO = 15
 
 # --- ENDPOINT POST (Registro) ---
 @router.post("/", response_model=UsuarioResponse, status_code=status.HTTP_201_CREATED)
@@ -63,7 +67,7 @@ def registrar_usuario(usuario: UsuarioCreate):
         if "unique constraint" in str(e).lower() or "UniqueViolation" in str(type(e).__name__):
             raise HTTPException(status_code=400, detail="Este correo electrónico ya está registrado.")
             
-        raise HTTPException(status_code=500, detail=f"Error al registrar usuario: {str(e)}")
+        raise error_interno("Error al registrar usuario")
     finally:
         if cursor:
             cursor.close()
@@ -84,23 +88,46 @@ def login_usuario(credenciales: UsuarioLogin):
         conexion = get_db_connection()
         cursor = conexion.cursor()
         
-        # Cambiamos nombre_completo por nombre, apellido
-        query = "SELECT id, email, nombre, apellido, password_hash, rol FROM usuarios WHERE email = %s;"
+        # FOR UPDATE: dos intentos simultáneos no pueden pisarse el contador
+        query = """
+            SELECT id, email, nombre, apellido, password_hash, rol, bloqueado_hasta > now()
+            FROM usuarios WHERE email = %s FOR UPDATE;
+        """
         cursor.execute(query, (credenciales.email,))
         usuario_db = cursor.fetchone()
         
         if not usuario_db:
             raise HTTPException(status_code=401, detail="Credenciales incorrectas")
+
+        # Mientras dure el bloqueo ni siquiera se prueba la contraseña
+        if usuario_db[6]:
+            raise HTTPException(
+                status_code=429,
+                detail=f"Demasiados intentos fallidos. Probá de nuevo en {MINUTOS_BLOQUEO} minutos."
+            )
             
-        # ¡Ojo acá! El índice de password_hash se movió a [4]
         hash_guardado = usuario_db[4]
         clave_correcta = verify_password(credenciales.password, hash_guardado)
         
         if not clave_correcta:
+            # Al llegar al máximo se bloquea por un rato y el contador vuelve a cero
+            cursor.execute("""
+                UPDATE usuarios SET
+                    intentos_fallidos = CASE WHEN intentos_fallidos + 1 >= %(max)s THEN 0 ELSE intentos_fallidos + 1 END,
+                    bloqueado_hasta = CASE WHEN intentos_fallidos + 1 >= %(max)s
+                                           THEN now() + make_interval(mins => %(mins)s) ELSE bloqueado_hasta END
+                WHERE id = %(id)s;
+            """, {"max": MAX_INTENTOS_LOGIN, "mins": MINUTOS_BLOQUEO, "id": usuario_db[0]})
+            conexion.commit()
             raise HTTPException(status_code=401, detail="Credenciales incorrectas")
+
+        cursor.execute(
+            "UPDATE usuarios SET intentos_fallidos = 0, bloqueado_hasta = NULL WHERE id = %s;",
+            (usuario_db[0],)
+        )
+        conexion.commit()
             
         # 1. Elegimos qué datos queremos "guardar" adentro del token
-        # El rol también se movió, ahora es el índice [5]
         token_data = {
             "sub": credenciales.email,
             "id": str(usuario_db[0]),
@@ -125,7 +152,7 @@ def login_usuario(credenciales: UsuarioLogin):
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error interno del servidor: {str(e)}")
+        raise error_interno("Error interno del servidor")
     finally:
         if cursor:
             cursor.close()

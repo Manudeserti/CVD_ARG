@@ -267,6 +267,10 @@ def test_vencimientos(mp):
     donacion = comprar(comprador, publicar(vendedor, tipo="donacion", precio=0)).json()
     sql("UPDATE transacciones_escrow SET fecha_creacion = now() - interval '25 hours' WHERE id = %s", (donacion["id"],))
 
+    # Donación de hace 5 días: vencida (las donaciones tienen 4 días, no 7)
+    donacion_vieja = comprar(comprador, publicar(vendedor, tipo="donacion", precio=0)).json()
+    sql("UPDATE transacciones_escrow SET fecha_creacion = now() - interval '5 days' WHERE id = %s", (donacion_vieja["id"],))
+
     # Solo el cron de Vercel puede ejecutarlo
     assert client.get("/api/transacciones/vencer", headers=comprador).status_code == 403
 
@@ -275,6 +279,7 @@ def test_vencimientos(mp):
     assert estado(pagada) == "reembolsado" and pago_id in mp.reembolsos
     assert estado(impaga) == "cancelado"
     assert estado(donacion) == "pendiente"
+    assert estado(donacion_vieja) == "cancelado"
     assert estado_publicacion(pub_pagada) == estado_publicacion(pub_impaga) == "disponible"
 
 
@@ -306,3 +311,73 @@ def test_catalogo_filtros_y_baja():
     assert client.delete(f"/api/publicaciones/{pub}", headers=vendedor).status_code == 200
     assert pub not in [p["id"] for p in client.get("/api/publicaciones/").json()]
     assert pub not in [p["id"] for p in client.get("/api/publicaciones/mias", headers=vendedor).json()]
+
+
+def test_tope_de_donaciones_pendientes():
+    _, donante = usuario()
+    _, receptor = usuario()
+
+    pedidas = [comprar(receptor, publicar(donante, tipo="donacion", precio=0)).json() for _ in range(3)]
+    cuarta = publicar(donante, tipo="donacion", precio=0)
+    assert comprar(receptor, cuarta).status_code == 400
+
+    # Al cancelar una se libera un lugar
+    client.post(f"/api/transacciones/{pedidas[0]['id']}/cancelar", headers=receptor)
+    assert comprar(receptor, cuarta).status_code == 201
+
+    # Las ventas no tienen tope
+    assert all(comprar(receptor, publicar(donante)).status_code == 201 for _ in range(4))
+
+
+def test_login_se_bloquea_temporalmente():
+    email = f"{uuid4().hex[:8]}@test.com"
+    client.post("/api/usuarios/", json={"email": email, "nombre": "Test", "apellido": "Usuario", "password": "clave-segura-123"})
+    login = lambda password, mail=email: client.post("/api/usuarios/login", json={"email": mail, "password": password})  # noqa: E731
+
+    # El email no distingue mayúsculas
+    assert login("clave-segura-123", email.upper()).status_code == 200
+
+    assert all(login("incorrecta").status_code == 401 for _ in range(5))
+    # Bloqueada: ni con la contraseña correcta
+    assert login("clave-segura-123").status_code == 429
+
+    # Pasado el bloqueo vuelve a funcionar
+    sql("UPDATE usuarios SET bloqueado_hasta = now() - interval '1 minute' WHERE email = %s", (email,))
+    assert login("clave-segura-123").status_code == 200
+
+
+def test_validaciones_de_datos():
+    _, admin = usuario(admin=True)
+    _, vendedor = usuario()
+    publicar_con = lambda **datos: client.post("/api/publicaciones/", headers=vendedor, json={  # noqa: E731
+        "titulo": "Buzo del colegio", "categoria": "indumentaria", **datos})
+
+    # Precios
+    assert publicar_con(tipo="donacion", precio=-5).status_code == 422
+    assert publicar_con(tipo="venta", precio=0).status_code == 400
+    assert publicar_con(tipo="venta", precio=1_000_000_000).status_code == 422
+    with pytest.raises(psycopg2.errors.CheckViolation):
+        sql("UPDATE publicaciones SET precio = 0 WHERE tipo = 'venta'")
+
+    # Contraseñas de más de 72 bytes: error claro en el registro, credenciales incorrectas en el login
+    r = client.post("/api/usuarios/", json={"email": f"{uuid4().hex[:8]}@test.com", "nombre": "Test", "apellido": "Usuario", "password": "x" * 73})
+    assert r.status_code == 422
+    assert client.post("/api/usuarios/login", json={"email": "nadie@test.com", "password": "x" * 80}).status_code == 401
+
+    # Errores del pedido, no del servidor
+    assert publicar_con(tipo="venta", precio=100, institucion_id=999999).status_code == 400
+    con_publicaciones = institucion()
+    publicar(vendedor, institucion_id=con_publicaciones)
+    assert client.delete(f"/api/instituciones/{con_publicaciones}", headers=admin).status_code == 409
+
+
+def test_catalogo_paginado():
+    _, vendedor = usuario()
+    colegio = institucion(provincia="Tierra del Fuego", ciudad="Ushuaia")
+    publicadas = {publicar(vendedor, institucion_id=colegio) for _ in range(3)}
+
+    pagina = lambda offset: [p["id"] for p in client.get(  # noqa: E731
+        f"/api/publicaciones/?institucion_id={colegio}&limit=2&offset={offset}").json()]
+    primera, segunda = pagina(0), pagina(2)
+    assert len(primera) == 2 and len(segunda) == 1
+    assert set(primera) | set(segunda) == publicadas

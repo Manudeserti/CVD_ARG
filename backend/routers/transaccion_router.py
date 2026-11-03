@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from decimal import Decimal
 from uuid import UUID
 from schemas.transaccion_schema import TransaccionCreate, TransaccionResponse, TransaccionLiberar, ContactoResponse
-from database.database import get_db_connection
+from database.database import get_db_connection, error_interno
 from utils.security import get_usuario_actual, requerir_cron
 from utils import pagos
 
@@ -13,7 +13,10 @@ router = APIRouter(
 )
 
 PORCENTAJE_COMISION = Decimal('0.05') # 5% de comisión para la plataforma
-PLAZO_ENCUENTRO_DIAS = 7 # Si pasan estos días sin escanear el QR, la operación se cancela y se reembolsa
+# Si pasan estos días sin escanear el QR, la operación se cancela (y se reembolsa si había pago).
+# Las donaciones tienen menos plazo: nadie puso dinero y el artículo queda bloqueado para el resto.
+PLAZO_ENCUENTRO_DIAS = {'venta': 7, 'donacion': 4}
+MAX_DONACIONES_PENDIENTES = 3 # Evita que una sola persona reserve todas las donaciones del catálogo
 
 # Estado en el que tiene que estar la transacción para poder escanear el QR.
 # Las ventas necesitan el pago confirmado (retenido); las donaciones no tienen pago.
@@ -60,6 +63,21 @@ def iniciar_transaccion(
 
         if str(vendedor_id) == str(comprador_id):
             raise HTTPException(status_code=400, detail="No puedes comprar tu propio artículo")
+
+        if tipo_publicacion == 'donacion':
+            # Bloqueamos al usuario para que dos pedidos simultáneos no pasen ambos el tope
+            cursor.execute("SELECT 1 FROM usuarios WHERE id = %s FOR UPDATE;", (str(comprador_id),))
+            cursor.execute('''
+                SELECT count(*)
+                FROM transacciones_escrow t
+                JOIN publicaciones p ON p.id = t.publicacion_id
+                WHERE t.comprador_id = %s AND p.tipo = 'donacion' AND t.estado_pago = 'pendiente';
+            ''', (str(comprador_id),))
+            if cursor.fetchone()[0] >= MAX_DONACIONES_PENDIENTES:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Ya tenés {MAX_DONACIONES_PENDIENTES} donaciones pendientes de retirar. Concretá o cancelá alguna antes de pedir otra."
+                )
 
         # 3. Cálculos financieros
         if tipo_publicacion== 'venta':
@@ -118,7 +136,7 @@ def iniciar_transaccion(
         raise
     except Exception as e:
         conexion.rollback()
-        raise HTTPException(status_code=500, detail=f"Error interno en la transacción: {str(e)}")
+        raise error_interno("Error interno en la transacción")
     finally:
         cursor.close()
         conexion.close()
@@ -172,7 +190,7 @@ def obtener_mis_transacciones(
         return resultado
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al obtener el historial: {str(e)}")
+        raise error_interno("Error al obtener el historial")
     finally:
         cursor.close()
         conexion.close()
@@ -252,7 +270,7 @@ def liberar_fondos(
         raise
     except Exception as e:
         conexion.rollback()
-        raise HTTPException(status_code=500, detail=f"Error al liberar fondos: {str(e)}")
+        raise error_interno("Error al liberar fondos")
     finally:
         cursor.close()
         conexion.close()
@@ -296,7 +314,7 @@ def iniciar_pago(
         try:
             url_pago = pagos.crear_preferencia(str(id), titulo, monto)
         except Exception as e:
-            raise HTTPException(status_code=502, detail=f"Mercado Pago no respondió correctamente: {str(e)}")
+            raise error_interno("Mercado Pago no respondió correctamente", 502)
 
         return {"url_pago": url_pago}
 
@@ -370,7 +388,7 @@ def cancelar_transaccion(
         try:
             nuevo_estado = _cancelar(cursor, id, publicacion_id, estado_actual, id_pago_externo)
         except Exception as e:
-            raise HTTPException(status_code=502, detail=f"Mercado Pago no pudo procesar la devolución: {str(e)}")
+            raise error_interno("Mercado Pago no pudo procesar la devolución", 502)
         conexion.commit()
 
         return {"status": "success", "estado_pago": nuevo_estado, "message": "Operación cancelada"}
@@ -380,7 +398,7 @@ def cancelar_transaccion(
         raise
     except Exception as e:
         conexion.rollback()
-        raise HTTPException(status_code=500, detail=f"Error al cancelar: {str(e)}")
+        raise error_interno("Error al cancelar")
     finally:
         cursor.close()
         conexion.close()
@@ -407,9 +425,9 @@ def vencer_transacciones():
             WHERE (p.tipo = 'venta' AND t.estado_pago = 'pendiente'
                    AND t.fecha_creacion < now() - make_interval(hours => %s))
                OR (t.estado_pago IN ('pendiente', 'retenido')
-                   AND t.fecha_creacion < now() - make_interval(days => %s))
+                   AND t.fecha_creacion < now() - make_interval(days => CASE p.tipo WHEN 'venta' THEN %s ELSE %s END))
             FOR UPDATE OF t;
-        ''', (pagos.PLAZO_PAGO_HORAS, PLAZO_ENCUENTRO_DIAS))
+        ''', (pagos.PLAZO_PAGO_HORAS, PLAZO_ENCUENTRO_DIAS['venta'], PLAZO_ENCUENTRO_DIAS['donacion']))
 
         vencidas = 0
         fallidas = 0
@@ -427,7 +445,7 @@ def vencer_transacciones():
 
     except Exception as e:
         conexion.rollback()
-        raise HTTPException(status_code=500, detail=f"Error al vencer transacciones: {str(e)}")
+        raise error_interno("Error al vencer transacciones")
     finally:
         cursor.close()
         conexion.close()
@@ -507,7 +525,7 @@ def obtener_datos_contacto(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al obtener los datos de contacto: {str(e)}")
+        raise error_interno("Error al obtener los datos de contacto")
     finally:
         if cursor:
             cursor.close()

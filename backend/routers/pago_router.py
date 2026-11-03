@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Request, status
-from database.database import get_db_connection
+from database.database import get_db_connection, error_interno
 from utils import pagos
 
 router = APIRouter(
@@ -64,7 +64,7 @@ def webhook_mercadopago(request: Request):
     except Exception as e:
         conexion.rollback()
         # Respondemos error para que Mercado Pago reintente más tarde
-        raise HTTPException(status_code=500, detail=f"Error al procesar el pago: {str(e)}")
+        raise error_interno("Error al procesar el pago")
     finally:
         cursor.close()
         conexion.close()

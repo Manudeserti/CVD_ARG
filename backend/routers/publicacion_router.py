@@ -1,5 +1,6 @@
-from fastapi import APIRouter, HTTPException, status, Depends
-from database.database import get_db_connection
+import psycopg2
+from fastapi import APIRouter, HTTPException, status, Depends, Query
+from database.database import get_db_connection, error_interno
 from schemas.publicacion_schema import PublicacionCreate, PublicacionResponse
 from utils.security import get_usuario_actual
 from uuid import UUID
@@ -76,11 +77,14 @@ def crear_publicacion(
     except HTTPException:
         # Bypass para nuestros errores intencionales
         raise
+    except psycopg2.errors.ForeignKeyViolation:
+        conexion.rollback()
+        raise HTTPException(status_code=400, detail="La institución indicada no existe")
     except Exception as e:
         # Solo hacemos rollback si la conexión llegó a abrirse
         if conexion:
             conexion.rollback()
-        raise HTTPException(status_code=500, detail=f"Error al crear la publicación: {str(e)}")
+        raise error_interno("Error al crear la publicación")
     finally:
         # Esto garantiza que la base de datos se cierre SIEMPRE
         if cursor:
@@ -97,10 +101,12 @@ def listar_publicaciones(
     institucion_id: Optional[int] = None,
     categoria: Optional[str] = None,
     tipo: Optional[str] = None,
-    talle: Optional[str] = None
+    talle: Optional[str] = None,
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0)
 ):
     """
-    Obtiene el catálogo de publicaciones disponibles.
+    Obtiene el catálogo de publicaciones disponibles, de a bloques (scroll infinito: offset = cantidad ya cargada).
     Todos los filtros son opcionales y se combinan (Provincia > Ciudad > Institución > Tipo de artículo).
     Ruta pública (no requiere Token).
     """
@@ -124,11 +130,13 @@ def listar_publicaciones(
               AND (%(categoria)s::text IS NULL OR p.categoria = %(categoria)s)
               AND (%(tipo)s::text IS NULL OR p.tipo = %(tipo)s)
               AND (%(talle)s::text IS NULL OR p.talle = %(talle)s)
-            ORDER BY p.fecha_publicacion DESC;
+            ORDER BY p.fecha_publicacion DESC, p.id
+            LIMIT %(limit)s OFFSET %(offset)s;
         """
         cursor.execute(query, {
             "provincia": provincia, "ciudad": ciudad, "institucion_id": institucion_id,
-            "categoria": categoria, "tipo": tipo, "talle": talle
+            "categoria": categoria, "tipo": tipo, "talle": talle,
+            "limit": limit, "offset": offset
         })
         publicaciones_db = cursor.fetchall()
         
@@ -146,7 +154,7 @@ def listar_publicaciones(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al obtener el catálogo: {str(e)}")
+        raise error_interno("Error al obtener el catálogo")
     finally:
         if cursor:
             cursor.close()
@@ -187,7 +195,7 @@ def listar_mis_publicaciones(usuario_actual: dict = Depends(get_usuario_actual))
         ]
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al obtener tus publicaciones: {str(e)}")
+        raise error_interno("Error al obtener tus publicaciones")
     finally:
         if cursor:
             cursor.close()
@@ -238,7 +246,7 @@ def dar_de_baja_publicacion(id: UUID, usuario_actual: dict = Depends(get_usuario
     except Exception as e:
         if conexion:
             conexion.rollback()
-        raise HTTPException(status_code=500, detail=f"Error al dar de baja: {str(e)}")
+        raise error_interno("Error al dar de baja")
     finally:
         if cursor:
             cursor.close()
@@ -287,7 +295,7 @@ def obtener_publicacion_por_id(id: UUID):
         # Este bypass es fundamental acá para que el frontend reciba el 404 y no un 500
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al buscar la publicación: {str(e)}")
+        raise error_interno("Error al buscar la publicación")
     finally:
         if cursor:
             cursor.close()

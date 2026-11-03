@@ -6,7 +6,7 @@ from decimal import Decimal
 
 class PublicacionBase(BaseModel):
     titulo: str = Field(..., min_length=3, max_length=100)
-    descripcion: Optional[str] = None
+    descripcion: Optional[str] = Field(None, max_length=2000)
     
     # NUEVO: Lista de categorías actualizada
     categoria: Literal['indumentaria', 'utiles', 'libros', 'instrumentos', 'deportes'] = Field(
@@ -20,7 +20,8 @@ class PublicacionBase(BaseModel):
     ]] = Field(None, description="Talle (solo aplica para indumentaria)")
     
     tipo: Literal['venta', 'donacion'] = Field(...)
-    precio: Decimal = Field(default=0.00, decimal_places=2)
+    # Mismo rango que la columna NUMERIC(10, 2); sin negativos (una donación con precio -5 pasaba)
+    precio: Decimal = Field(default=0.00, ge=0, max_digits=10, decimal_places=2)
     institucion_id: Optional[int] = None
     imagenes_urls: List[str] = Field(default=[])
 

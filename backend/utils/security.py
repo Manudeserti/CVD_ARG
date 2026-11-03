@@ -32,6 +32,8 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     """
     # Convertimos ambos textos a bytes para que bcrypt los pueda procesar
     password_bytes = plain_password.encode('utf-8')
+    if len(password_bytes) > 72:
+        return False  # Nunca pudo registrarse una contraseña así (bcrypt falla con más de 72 bytes)
     hashed_password_bytes = hashed_password.encode('utf-8')
     
     return bcrypt.checkpw(password_bytes, hashed_password_bytes)

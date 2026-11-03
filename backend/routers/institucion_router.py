@@ -1,6 +1,7 @@
+import psycopg2
 from fastapi import APIRouter, HTTPException, status, Depends
 from typing import Optional
-from database.database import get_db_connection
+from database.database import get_db_connection, error_interno
 from schemas.institucion_schema import InstitucionCreate, InstitucionResponse
 from utils.security import requerir_admin
 
@@ -39,7 +40,7 @@ def listar_instituciones(provincia: Optional[str] = None, ciudad: Optional[str] 
         ]
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al listar instituciones: {str(e)}")
+        raise error_interno("Error al listar instituciones")
     finally:
         if cursor:
             cursor.close()
@@ -52,6 +53,9 @@ def crear_institucion(institucion: InstitucionCreate):
     """
     Crea una nueva institución en la base de datos.
     """
+    conexion = None
+    cursor = None
+
     try:
         conexion = get_db_connection()
         cursor = conexion.cursor()
@@ -74,8 +78,6 @@ def crear_institucion(institucion: InstitucionCreate):
         # IMPORTANTE: Confirmamos la transacción para que se guarde de verdad
         conexion.commit()
         
-        cursor.close()
-        conexion.close()
         
         # Devolvemos el objeto recién creado
         return {
@@ -92,9 +94,14 @@ def crear_institucion(institucion: InstitucionCreate):
         
     except Exception as e:
         # Si algo falla, deshacemos cualquier cambio a medias (Rollback)
-        if 'conexion' in locals():
+        if conexion:
             conexion.rollback()
-        raise HTTPException(status_code=500, detail=f"Error al crear: {str(e)}")
+        raise error_interno("Error al crear")
+    finally:
+        if cursor:
+            cursor.close()
+        if conexion:
+            conexion.close()
     
 
     # --- ENDPOINT PUT (Editar) ---
@@ -103,6 +110,9 @@ def actualizar_institucion(id: int, institucion: InstitucionCreate):
     """
     Actualiza el nombre, la ciudad o la provincia de una institución existente.
     """
+    conexion = None
+    cursor = None
+
     try:
         conexion = get_db_connection()
         cursor = conexion.cursor()
@@ -124,8 +134,6 @@ def actualizar_institucion(id: int, institucion: InstitucionCreate):
             raise HTTPException(status_code=404, detail="Institución no encontrada")
             
         conexion.commit()
-        cursor.close()
-        conexion.close()
         
         return {
             "status": "success",
@@ -143,9 +151,14 @@ def actualizar_institucion(id: int, institucion: InstitucionCreate):
         # Esto es para que FastAPI no pise el error 404 que lanzamos arriba
         raise
     except Exception as e:
-        if 'conexion' in locals():
+        if conexion:
             conexion.rollback()
-        raise HTTPException(status_code=500, detail=f"Error al actualizar: {str(e)}")
+        raise error_interno("Error al actualizar")
+    finally:
+        if cursor:
+            cursor.close()
+        if conexion:
+            conexion.close()
 
 
 # --- ENDPOINT DELETE (Borrar) ---
@@ -154,6 +167,9 @@ def eliminar_institucion(id: int):
     """
     Elimina permanentemente una institución por su ID.
     """
+    conexion = None
+    cursor = None
+
     try:
         conexion = get_db_connection()
         cursor = conexion.cursor()
@@ -168,8 +184,6 @@ def eliminar_institucion(id: int):
             raise HTTPException(status_code=404, detail="Institución no encontrada")
             
         conexion.commit()
-        cursor.close()
-        conexion.close()
         
         return {
             "status": "success",
@@ -178,7 +192,15 @@ def eliminar_institucion(id: int):
         
     except HTTPException:
         raise
+    except psycopg2.errors.ForeignKeyViolation:
+        conexion.rollback()
+        raise HTTPException(status_code=409, detail="La institución tiene publicaciones asociadas")
     except Exception as e:
-        if 'conexion' in locals():
+        if conexion:
             conexion.rollback()
-        raise HTTPException(status_code=500, detail=f"Error al eliminar: {str(e)}")
+        raise error_interno("Error al eliminar")
+    finally:
+        if cursor:
+            cursor.close()
+        if conexion:
+            conexion.close()

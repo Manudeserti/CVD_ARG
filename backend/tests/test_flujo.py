@@ -216,13 +216,19 @@ def test_donacion_sin_pago():
     assert estado_publicacion(pub) == "vendido"
 
 
-def test_webhook_rechaza_firmas_falsas_y_es_idempotente(mp):
+def test_webhook_rechaza_firmas_falsas_y_es_idempotente(mp, monkeypatch):
     _, vendedor = usuario()
     _, comprador = usuario()
     compra = comprar(comprador, publicar(vendedor)).json()
     mp.pagos["555"] = {"id": 555, "status": "approved", "external_reference": compra["id"]}
 
     assert avisar_pago("555", secreto="otro-secreto").status_code == 401
+
+    # Si falta la clave en el servidor, se rechaza el aviso en lugar de fallar con 500
+    secreto = os.environ["MP_WEBHOOK_SECRET"]
+    monkeypatch.delenv("MP_WEBHOOK_SECRET")
+    assert avisar_pago("555", secreto=secreto).status_code == 401
+    monkeypatch.setenv("MP_WEBHOOK_SECRET", secreto)
     assert sql("SELECT estado_pago FROM transacciones_escrow WHERE id = %s", (compra["id"],))[0][0] == "pendiente"
 
     # Mercado Pago reintenta: el mismo aviso dos veces no cambia nada la segunda vez

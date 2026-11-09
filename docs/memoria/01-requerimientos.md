@@ -14,21 +14,22 @@
 | Código | Requerimiento | Estado |
 |---|---|---|
 | RF-01 | Registro e inicio de sesión con correo y contraseña | Hecho |
-| RF-02 | Publicar artículos de tipo venta (precio > 0) o donación (sin precio), con categoría, talle, institución e imágenes | Backend hecho; pantalla en Sprint C |
+| RF-02 | Publicar artículos de tipo venta (precio > 0) o donación (sin precio), con categoría, talle, institución e imágenes | Hecho |
 | RF-03 | Catálogo público con filtros combinables: provincia, ciudad, institución, categoría, tipo y talle | Hecho |
 | RF-04 | Ver y dar de baja las publicaciones propias | Hecho |
 | RF-05 | Iniciar una compra o solicitud de donación, que reserva el artículo | Hecho |
 | RF-06 | Pagar mediante billetera virtual; los fondos quedan retenidos y se cobra una comisión del 5% en las ventas | Hecho (probado en sandbox; devolución verificada con dinero real, ver cap. 04) |
-| RF-07 | Generar un código QR para el comprador; el vendedor lo escanea en el encuentro y se liberan los fondos | Backend hecho; pantalla en Sprint C |
+| RF-07 | Generar un código QR para el comprador; el vendedor lo escanea en el encuentro y se liberan los fondos | Hecho (falta probar la cámara en un celular real) |
 | RF-08 | Compartir los datos de contacto de la contraparte una vez confirmado el pago | Hecho |
 | RF-09 | Cancelar una operación no concretada, con reembolso si había pago | Hecho |
 | RF-10 | Vencer automáticamente las reservas sin pagar (24 h) y las operaciones sin escaneo (7 días) | Hecho |
 | RF-11 | Historial de operaciones del usuario | Hecho |
 | RF-12 | Alta, edición y baja de instituciones por un administrador | Hecho |
+| RF-13 | Pedir el alta de un colegio que no está en la lista al publicar (funcionalidad opcional del protocolo) | Hecho |
 
 ## Funcionalidades opcionales (fuera del núcleo)
 
-Instituciones por demanda, alertas automáticas por correo, panel de administración con reclamos, calificación y reputación. Fuera de alcance: envíos por correo y pagos fuera de las billeteras virtuales.
+Alertas automáticas por correo, panel de administración con reclamos, calificación y reputación. Fuera de alcance: envíos por correo y pagos fuera de las billeteras virtuales.
 
 ## Reglas de negocio
 
@@ -48,6 +49,8 @@ Instituciones por demanda, alertas automáticas por correo, panel de administrac
 | RN-12 | Un usuario puede tener como máximo 3 donaciones pendientes de retirar a la vez. Las ventas no tienen tope. |
 | RN-13 | Una venta tiene precio mayor a 0 y una donación precio 0; la base de datos lo garantiza con una restricción. |
 | RN-14 | Una publicación tiene como máximo 5 fotos (JPG, PNG o WebP, hasta 5 MB cada una), y todas tienen que haber sido subidas por su autor. |
+| RN-15 | Una publicación que pide el alta de un colegio no aparece en el catálogo hasta que se resuelve la solicitud. Si el colegio se acepta, se publica. Si ya existía con otro nombre, se le asigna el correcto, se publica y se avisa al dueño. Si no existe, queda en borrador para que el dueño elija otro. |
+| RN-16 | El catálogo y el detalle son públicos. Reservar, publicar y ver las operaciones propias requieren sesión. |
 
 ## Requerimientos no funcionales
 

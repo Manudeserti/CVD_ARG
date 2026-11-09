@@ -67,6 +67,24 @@ Los tests borran y recrean la base indicada en `TEST_DATABASE_URL`: nunca apunta
 4. Deploy. Copiar la URL asignada y cargarla como `BACKEND_URL`; volver a desplegar.
 5. La tarea programada diaria se crea sola a partir de `backend/vercel.json`.
 
+## Frontend
+
+```powershell
+cd frontend
+npm install
+$env:VITE_API_URL = "http://localhost:8000"
+npm run dev
+```
+
+Prueba de navegador del recorrido completo: necesita Chrome, la base de prueba de la sección Tests, el backend en el puerto 8001 apuntando a esa base (`DATABASE_URL`, con valores falsos en `MP_ACCESS_TOKEN` y `SUPABASE_URL`) y el frontend en el 5173 con `VITE_API_URL` en `http://localhost:8001`. Se corre con `..\backend\venv\Scripts\python.exe e2e\reset.py` y `node e2e\flujo.mjs` desde `frontend`, y deja capturas en `e2e/capturas`.
+
+### Despliegue en Vercel
+
+1. Si la base ya existía, ejecutar una sola vez `backend/database/migraciones/2026-11-colegios-a-pedido.sql` en el SQL Editor de Supabase.
+2. En Vercel: Add New → Project → el mismo repositorio, con **Root Directory** `frontend`. Vercel detecta Vite.
+3. Cargar `VITE_API_URL` con la URL del backend, sin barra final, y desplegar.
+4. En el proyecto del backend, cargar `FRONTEND_URL` con la URL del frontend, sin barra final, y volver a desplegar. Habilita CORS y la vuelta desde Mercado Pago.
+
 ## Mercado Pago (sandbox)
 
 1. Crear una aplicación en Mercado Pago Developers (producto: Checkout Pro). Mercado Pago crea sola la cuenta vendedora de prueba; las **credenciales de prueba** de la aplicación (empiezan con `APP_USR-`) van en `MP_ACCESS_TOKEN`.

@@ -159,13 +159,15 @@ def obtener_mis_transacciones(
         # El qr_token solo se le muestra al comprador. Si el vendedor lo viera,
         # podría liberar los fondos él solo sin encontrarse con nadie.
         cursor.execute('''
-            SELECT id, publicacion_id, comprador_id, vendedor_id, monto, comision_plataforma,
-                   id_pago_externo, estado_pago,
-                   CASE WHEN comprador_id = %s THEN qr_token END,
-                   fecha_creacion, fecha_liberacion
-            FROM transacciones_escrow
-            WHERE comprador_id = %s OR vendedor_id = %s
-            ORDER BY fecha_creacion DESC;
+            SELECT t.id, t.publicacion_id, t.comprador_id, t.vendedor_id, t.monto, t.comision_plataforma,
+                   t.id_pago_externo, t.estado_pago,
+                   CASE WHEN t.comprador_id = %s THEN t.qr_token END,
+                   t.fecha_creacion, t.fecha_liberacion,
+                   p.titulo, p.tipo, p.imagenes_urls[1]
+            FROM transacciones_escrow t
+            JOIN publicaciones p ON p.id = t.publicacion_id
+            WHERE t.comprador_id = %s OR t.vendedor_id = %s
+            ORDER BY t.fecha_creacion DESC;
         ''', (str(usuario_id), str(usuario_id), str(usuario_id)))
 
         transacciones_db = cursor.fetchall()
@@ -184,7 +186,10 @@ def obtener_mis_transacciones(
                 "estado_pago": t[7],
                 "qr_token": t[8],
                 "fecha_creacion": t[9],
-                "fecha_liberacion": t[10]
+                "fecha_liberacion": t[10],
+                "titulo": t[11],
+                "tipo": t[12],
+                "imagen": t[13]
             })
 
         return resultado

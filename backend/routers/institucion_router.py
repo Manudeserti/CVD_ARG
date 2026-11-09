@@ -1,8 +1,9 @@
 import psycopg2
 from fastapi import APIRouter, HTTPException, status, Depends
 from typing import Optional
+from uuid import UUID
 from database.database import get_db_connection, error_interno
-from schemas.institucion_schema import InstitucionCreate, InstitucionResponse
+from schemas.institucion_schema import InstitucionCreate, InstitucionResponse, SolicitudResolucion
 from utils.security import requerir_admin
 
 # Inicializamos el router para esta entidad
@@ -41,6 +42,120 @@ def listar_instituciones(provincia: Optional[str] = None, ciudad: Optional[str] 
 
     except Exception as e:
         raise error_interno("Error al listar instituciones")
+    finally:
+        if cursor:
+            cursor.close()
+        if conexion:
+            conexion.close()
+
+
+@router.get("/solicitudes", status_code=status.HTTP_200_OK, dependencies=[Depends(requerir_admin)])
+def listar_solicitudes():
+    """
+    Solicitudes de alta de colegios que esperan una resolución, de la más antigua a la más nueva.
+    """
+    conexion = None
+    cursor = None
+
+    try:
+        conexion = get_db_connection()
+        cursor = conexion.cursor()
+
+        cursor.execute("""
+            SELECT s.id, s.nombre, s.ciudad, s.provincia, s.fecha_creacion, p.id, p.titulo
+            FROM solicitudes_institucion s
+            JOIN publicaciones p ON p.id = s.publicacion_id
+            WHERE s.estado = 'pendiente'
+            ORDER BY s.fecha_creacion;
+        """)
+
+        return [
+            {"id": s[0], "nombre": s[1], "ciudad": s[2], "provincia": s[3], "fecha_creacion": s[4],
+             "publicacion_id": s[5], "publicacion_titulo": s[6]}
+            for s in cursor.fetchall()
+        ]
+
+    except Exception as e:
+        raise error_interno("Error al listar las solicitudes")
+    finally:
+        if cursor:
+            cursor.close()
+        if conexion:
+            conexion.close()
+
+
+@router.post("/solicitudes/{id}/resolver", status_code=status.HTTP_200_OK, dependencies=[Depends(requerir_admin)])
+def resolver_solicitud(id: UUID, resolucion: SolicitudResolucion):
+    """
+    aceptada: crea el colegio y publica el artículo.
+    duplicada: el colegio ya existía; se le asigna ese y se publica, avisando al dueño con cuál quedó.
+    rechazada: el colegio no existe; la publicación queda en borrador para que el dueño elija otro.
+    """
+    if resolucion.resultado == 'duplicada' and resolucion.institucion_id is None:
+        raise HTTPException(status_code=400, detail="Indicá cuál es el colegio correcto.")
+
+    conexion = None
+    cursor = None
+
+    try:
+        conexion = get_db_connection()
+        cursor = conexion.cursor()
+
+        # El bloqueo evita resolver dos veces la misma solicitud si se aprieta dos veces
+        cursor.execute("""
+            SELECT publicacion_id, nombre, ciudad, provincia, estado
+            FROM solicitudes_institucion WHERE id = %s FOR UPDATE;
+        """, (str(id),))
+        solicitud = cursor.fetchone()
+
+        if not solicitud:
+            raise HTTPException(status_code=404, detail="Solicitud no encontrada")
+
+        publicacion_id, nombre, ciudad, provincia, estado = solicitud
+
+        if estado != 'pendiente':
+            raise HTTPException(status_code=409, detail="La solicitud ya fue resuelta")
+
+        # Solo se toca la publicación si sigue esperando: su dueño pudo haberla dado de baja mientras tanto
+        if resolucion.resultado == 'rechazada':
+            cursor.execute("""
+                UPDATE publicaciones SET estado = 'borrador', aviso = %s
+                WHERE id = %s AND estado = 'pendiente_colegio';
+            """, (f'No pudimos dar de alta "{nombre}". Elegí otro colegio para publicar tu artículo.', str(publicacion_id)))
+        else:
+            if resolucion.resultado == 'aceptada':
+                cursor.execute("""
+                    INSERT INTO instituciones (nombre, ciudad, provincia) VALUES (%s, %s, %s) RETURNING id;
+                """, (nombre, ciudad, provincia))
+                institucion_id = cursor.fetchone()[0]
+                aviso = None
+            else:
+                institucion_id = resolucion.institucion_id
+                cursor.execute("SELECT nombre FROM instituciones WHERE id = %s;", (institucion_id,))
+                existente = cursor.fetchone()
+                if not existente:
+                    raise HTTPException(status_code=400, detail="El colegio indicado no existe")
+                aviso = f'Tu publicación ya está activa con el colegio "{existente[0]}".'
+
+            cursor.execute("""
+                UPDATE publicaciones
+                SET institucion_id = %s, estado = 'disponible', aviso = %s, fecha_publicacion = now()
+                WHERE id = %s AND estado = 'pendiente_colegio';
+            """, (institucion_id, aviso, str(publicacion_id)))
+
+        cursor.execute("UPDATE solicitudes_institucion SET estado = %s WHERE id = %s;", (resolucion.resultado, str(id)))
+        conexion.commit()
+
+        return {"status": "success", "message": "Solicitud resuelta"}
+
+    except HTTPException:
+        if conexion:
+            conexion.rollback()
+        raise
+    except Exception as e:
+        if conexion:
+            conexion.rollback()
+        raise error_interno("Error al resolver la solicitud")
     finally:
         if cursor:
             cursor.close()

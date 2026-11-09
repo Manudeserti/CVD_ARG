@@ -37,7 +37,8 @@ CREATE TABLE publicaciones (
     talle              VARCHAR(10),
     tipo               VARCHAR(10) NOT NULL CHECK (tipo IN ('venta', 'donacion')),
     precio             NUMERIC(10, 2) NOT NULL DEFAULT 0,
-    estado             VARCHAR(20) NOT NULL DEFAULT 'disponible' CHECK (estado IN ('disponible', 'reservado', 'vendido', 'baja')),
+    estado             VARCHAR(20) NOT NULL DEFAULT 'disponible' CHECK (estado IN ('disponible', 'reservado', 'vendido', 'baja', 'pendiente_colegio', 'borrador')),
+    aviso              TEXT, -- Mensaje para el dueño cuando se resuelve el alta de su colegio
     imagenes_urls      TEXT[] NOT NULL DEFAULT '{}',
     fecha_publicacion  TIMESTAMPTZ NOT NULL DEFAULT now(),
     -- Una venta siempre tiene precio; una donación nunca
@@ -60,6 +61,17 @@ CREATE TABLE transacciones_escrow (
     fecha_liberacion     TIMESTAMPTZ
 );
 
+CREATE TABLE solicitudes_institucion (
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    publicacion_id  UUID NOT NULL REFERENCES publicaciones(id),
+    solicitante_id  UUID NOT NULL REFERENCES usuarios(id),
+    nombre          VARCHAR(150) NOT NULL,
+    ciudad          VARCHAR(100) NOT NULL,
+    provincia       VARCHAR(100) NOT NULL,
+    estado          VARCHAR(20) NOT NULL DEFAULT 'pendiente' CHECK (estado IN ('pendiente', 'aceptada', 'duplicada', 'rechazada')),
+    fecha_creacion  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 -- Supabase expone el esquema public en su API REST con la clave anon (que va a estar en el frontend).
 -- El backend se conecta como dueño de las tablas y RLS no le aplica, así que activarlo
 -- sin políticas cierra el acceso directo desde la API REST sin afectar a la app.
@@ -67,3 +79,4 @@ ALTER TABLE instituciones ENABLE ROW LEVEL SECURITY;
 ALTER TABLE usuarios ENABLE ROW LEVEL SECURITY;
 ALTER TABLE publicaciones ENABLE ROW LEVEL SECURITY;
 ALTER TABLE transacciones_escrow ENABLE ROW LEVEL SECURITY;
+ALTER TABLE solicitudes_institucion ENABLE ROW LEVEL SECURITY;

@@ -1,7 +1,7 @@
 import psycopg2
 from fastapi import APIRouter, HTTPException, status, Depends, Query
 from database.database import get_db_connection, error_interno
-from schemas.publicacion_schema import PublicacionCreate, PublicacionResponse, FotoSubida
+from schemas.publicacion_schema import PublicacionCreate, PublicacionResponse, PublicacionPropia, FotoSubida, CambioDeColegio
 from utils import fotos
 from utils.security import get_usuario_actual
 from uuid import UUID
@@ -51,6 +51,9 @@ def crear_publicacion(
     if not all(fotos.es_foto_del_usuario(url, usuario_actual["id"]) for url in publicacion.imagenes_urls):
         raise HTTPException(status_code=400, detail="Alguna de las fotos no fue subida por este usuario.")
 
+    if publicacion.colegio_nuevo and publicacion.institucion_id:
+        raise HTTPException(status_code=400, detail="Elegí un colegio de la lista o pedí el alta de uno nuevo, no ambas cosas.")
+
     conexion = None
     cursor = None
 
@@ -63,9 +66,9 @@ def crear_publicacion(
         insert_query = """
             INSERT INTO publicaciones (
                 vendedor_id, institucion_id, titulo, descripcion, 
-                categoria, talle, tipo, precio, imagenes_urls
+                categoria, talle, tipo, precio, imagenes_urls, estado
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING id, vendedor_id, institucion_id, titulo, descripcion, categoria, talle, tipo, precio, estado, imagenes_urls, fecha_publicacion;
         """
         
@@ -78,10 +81,21 @@ def crear_publicacion(
             publicacion.talle,
             publicacion.tipo,
             publicacion.precio,
-            publicacion.imagenes_urls
+            publicacion.imagenes_urls,
+            'pendiente_colegio' if publicacion.colegio_nuevo else 'disponible'
         ))
-        
+
         nueva_pub = cursor.fetchone()
+
+        if publicacion.colegio_nuevo:
+            cursor.execute("""
+                INSERT INTO solicitudes_institucion (publicacion_id, solicitante_id, nombre, ciudad, provincia)
+                VALUES (%s, %s, %s, %s, %s);
+            """, (
+                str(nueva_pub[0]), vendedor_id, publicacion.colegio_nuevo.nombre,
+                publicacion.colegio_nuevo.ciudad, publicacion.colegio_nuevo.provincia
+            ))
+
         conexion.commit()
         
         return {
@@ -181,7 +195,7 @@ def listar_publicaciones(
 
 # --- ENDPOINT GET (Mis publicaciones) ---
 # Tiene que declararse antes de "/{id}", si no FastAPI intenta leer "mias" como un UUID
-@router.get("/mias", response_model=list[PublicacionResponse], status_code=status.HTTP_200_OK)
+@router.get("/mias", response_model=list[PublicacionPropia], status_code=status.HTTP_200_OK)
 def listar_mis_publicaciones(usuario_actual: dict = Depends(get_usuario_actual)):
     """
     Devuelve todas las publicaciones del usuario logueado, en cualquier estado salvo las dadas de baja.
@@ -195,7 +209,7 @@ def listar_mis_publicaciones(usuario_actual: dict = Depends(get_usuario_actual))
 
         cursor.execute("""
             SELECT id, vendedor_id, institucion_id, titulo, descripcion,
-                   categoria, talle, tipo, precio, estado, imagenes_urls, fecha_publicacion
+                   categoria, talle, tipo, precio, estado, imagenes_urls, fecha_publicacion, aviso
             FROM publicaciones
             WHERE vendedor_id = %s AND estado <> 'baja'
             ORDER BY fecha_publicacion DESC;
@@ -206,13 +220,63 @@ def listar_mis_publicaciones(usuario_actual: dict = Depends(get_usuario_actual))
                 "id": pub[0], "vendedor_id": pub[1], "institucion_id": pub[2],
                 "titulo": pub[3], "descripcion": pub[4], "categoria": pub[5],
                 "talle": pub[6], "tipo": pub[7], "precio": pub[8],
-                "estado": pub[9], "imagenes_urls": pub[10], "fecha_publicacion": pub[11]
+                "estado": pub[9], "imagenes_urls": pub[10], "fecha_publicacion": pub[11], "aviso": pub[12]
             }
             for pub in cursor.fetchall()
         ]
 
     except Exception as e:
         raise error_interno("Error al obtener tus publicaciones")
+    finally:
+        if cursor:
+            cursor.close()
+        if conexion:
+            conexion.close()
+
+
+# --- ENDPOINT PUT (Elegir otro colegio) ---
+@router.put("/{id}/institucion", status_code=status.HTTP_200_OK)
+def elegir_otro_colegio(id: UUID, datos: CambioDeColegio, usuario_actual: dict = Depends(get_usuario_actual)):
+    """
+    Publica un borrador cuya solicitud de colegio fue rechazada, con un colegio que sí existe.
+    """
+    conexion = None
+    cursor = None
+
+    try:
+        conexion = get_db_connection()
+        cursor = conexion.cursor()
+
+        cursor.execute("SELECT vendedor_id, estado FROM publicaciones WHERE id = %s FOR UPDATE;", (str(id),))
+        pub = cursor.fetchone()
+
+        if not pub:
+            raise HTTPException(status_code=404, detail="Publicación no encontrada")
+        if str(pub[0]) != str(usuario_actual["id"]):
+            raise HTTPException(status_code=403, detail="Solo el dueño puede modificar esta publicación")
+        if pub[1] != 'borrador':
+            raise HTTPException(status_code=400, detail="Solo se puede cambiar el colegio de un borrador")
+
+        cursor.execute("""
+            UPDATE publicaciones
+            SET institucion_id = %s, estado = 'disponible', aviso = NULL, fecha_publicacion = now()
+            WHERE id = %s;
+        """, (datos.institucion_id, str(id)))
+        conexion.commit()
+
+        return {"status": "success", "message": "Publicación activa"}
+
+    except HTTPException:
+        if conexion:
+            conexion.rollback()
+        raise
+    except psycopg2.errors.ForeignKeyViolation:
+        conexion.rollback()
+        raise HTTPException(status_code=400, detail="El colegio indicado no existe")
+    except Exception as e:
+        if conexion:
+            conexion.rollback()
+        raise error_interno("Error al cambiar el colegio")
     finally:
         if cursor:
             cursor.close()
@@ -245,7 +309,7 @@ def dar_de_baja_publicacion(id: UUID, usuario_actual: dict = Depends(get_usuario
         if str(vendedor_id) != str(usuario_actual["id"]):
             raise HTTPException(status_code=403, detail="Solo el dueño puede dar de baja esta publicación")
 
-        if estado_actual != 'disponible':
+        if estado_actual not in ('disponible', 'pendiente_colegio', 'borrador'):
             raise HTTPException(
                 status_code=400,
                 detail=f"No se puede dar de baja una publicación en estado '{estado_actual}'"

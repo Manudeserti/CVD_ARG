@@ -27,6 +27,11 @@ class TransaccionResponse(BaseModel):
     fecha_creacion: datetime
     fecha_liberacion: Optional[datetime] = None
 
+    # Datos del artículo para mostrar el historial sin pedir cada publicación por separado
+    titulo: Optional[str] = None
+    tipo: Optional[Literal['venta', 'donacion']] = None
+    imagen: Optional[str] = None
+
     class Config:
         from_attributes = True
 

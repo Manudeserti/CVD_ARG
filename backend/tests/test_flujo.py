@@ -409,6 +409,88 @@ def test_fotos_de_publicaciones(monkeypatch):
     assert pedir("image/png").status_code == 502
 
 
+def test_colegios_a_pedido():
+    _, dueno = usuario()
+    _, admin = usuario(admin=True)
+    _, otro = usuario()
+    colegio = {"nombre": "Colegio Nuevo", "ciudad": "Tandil", "provincia": "Buenos Aires"}
+
+    def publicar_pidiendo_colegio():
+        r = client.post("/api/publicaciones/", headers=dueno, json={
+            "titulo": "Buzo sin colegio", "categoria": "indumentaria", "tipo": "donacion", "colegio_nuevo": colegio})
+        assert r.status_code == 201, r.text
+        assert r.json()["estado"] == "pendiente_colegio"
+        solicitud = next(s for s in client.get("/api/instituciones/solicitudes", headers=admin).json()
+                         if s["publicacion_id"] == r.json()["id"])
+        return r.json()["id"], solicitud["id"]
+
+    def mia(pub):
+        return next(p for p in client.get("/api/publicaciones/mias", headers=dueno).json() if p["id"] == pub)
+
+    resolver = lambda sol, **datos: client.post(f"/api/instituciones/solicitudes/{sol}/resolver", headers=admin, json=datos)  # noqa: E731
+    en_catalogo = lambda pub: pub in [p["id"] for p in client.get("/api/publicaciones/?limit=100").json()]  # noqa: E731
+
+    assert client.get("/api/instituciones/solicitudes", headers=otro).status_code == 403
+    assert client.post("/api/publicaciones/", headers=dueno, json={
+        "titulo": "Con los dos", "categoria": "utiles", "tipo": "donacion",
+        "institucion_id": institucion(), "colegio_nuevo": colegio}).status_code == 400
+
+    # Aceptada: se crea el colegio y se publica. Mientras tanto no se ve ni se puede reservar
+    pub, sol = publicar_pidiendo_colegio()
+    assert not en_catalogo(pub)
+    _, comprador = usuario()
+    assert comprar(comprador, pub).status_code == 400
+    assert resolver(sol, resultado="aceptada").status_code == 200
+    assert en_catalogo(pub)
+    creado = mia(pub)["institucion_id"]
+    assert sql("SELECT nombre FROM instituciones WHERE id = %s", (creado,))[0][0] == "Colegio Nuevo"
+    assert resolver(sol, resultado="aceptada").status_code == 409
+
+    # Duplicada: se asigna el colegio correcto, se publica y se avisa con cuál quedó
+    pub, sol = publicar_pidiendo_colegio()
+    assert resolver(sol, resultado="duplicada").status_code == 400
+    assert resolver(sol, resultado="duplicada", institucion_id=999999).status_code == 400
+    assert resolver(sol, resultado="duplicada", institucion_id=creado).status_code == 200
+    assert en_catalogo(pub)
+    assert mia(pub)["institucion_id"] == creado and "Colegio Nuevo" in mia(pub)["aviso"]
+    assert "aviso" not in client.get(f"/api/publicaciones/{pub}").json()
+
+    # Rechazada: queda en borrador y solo su dueño puede elegir otro colegio
+    pub, sol = publicar_pidiendo_colegio()
+    assert resolver(sol, resultado="rechazada").status_code == 200
+    assert mia(pub)["estado"] == "borrador" and mia(pub)["aviso"]
+    assert not en_catalogo(pub)
+    elegir = lambda headers, inst: client.put(f"/api/publicaciones/{pub}/institucion", headers=headers, json={"institucion_id": inst})  # noqa: E731
+    assert elegir(otro, creado).status_code == 403
+    assert elegir(dueno, 999999).status_code == 400
+    assert elegir(dueno, creado).status_code == 200
+    assert en_catalogo(pub) and mia(pub)["aviso"] is None
+    assert elegir(dueno, creado).status_code == 400
+
+    # Si el dueño la dio de baja mientras esperaba, resolver no la revive
+    pub, sol = publicar_pidiendo_colegio()
+    assert client.delete(f"/api/publicaciones/{pub}", headers=dueno).status_code == 200
+    assert resolver(sol, resultado="aceptada").status_code == 200
+    assert sql("SELECT estado FROM publicaciones WHERE id = %s", (pub,))[0][0] == "baja"
+
+
+def test_historial_trae_datos_del_articulo():
+    _, vendedor = usuario()
+    _, comprador = usuario()
+    pub = publicar(vendedor, tipo="donacion", precio=0)
+    assert comprar(comprador, pub).status_code == 201
+    fila = client.get("/api/transacciones/mis-transacciones", headers=vendedor).json()[0]
+    assert fila["titulo"] == "Buzo del colegio" and fila["tipo"] == "donacion" and fila["imagen"] is None
+    assert fila["qr_token"] is None
+
+
+def test_cors_permite_solo_el_frontend():
+    pedir = lambda origen: client.options("/api/publicaciones/", headers={  # noqa: E731
+        "Origin": origen, "Access-Control-Request-Method": "GET"}).headers.get("access-control-allow-origin")
+    assert pedir("http://localhost:5173") == "http://localhost:5173"
+    assert pedir("https://otro-sitio.test") is None
+
+
 def test_catalogo_paginado():
     _, vendedor = usuario()
     colegio = institucion(provincia="Tierra del Fuego", ciudad="Ushuaia")

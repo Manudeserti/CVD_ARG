@@ -13,6 +13,17 @@ export function Titulo({ children }: { children: ReactNode }) {
   return <h1 className="resaltado w-fit px-2 font-mano text-[42px] leading-[1.1] md:text-[52px]">{children}</h1>
 }
 
+/** Sobre fondo claro la tilde y la D pasan a tinta, porque el amarillo y el celeste no se leen. */
+export function Logo({ claro = false, className }: { claro?: boolean; className: string }) {
+  return (
+    <svg viewBox="0 -2 262 104" role="img" aria-label="CVD" className={className}>
+      <path d="M58 28.6A28 28 0 1 0 58 71.4" fill="none" stroke="var(--color-naranja)" strokeWidth="24" />
+      <path d="M94 46L126 80L172 8" fill="none" stroke={claro ? 'var(--color-tinta)' : 'var(--color-amarillo)'} strokeWidth="22" />
+      <path d="M194 10H218A40 40 0 0 1 218 90H194Z" fill={claro ? 'var(--color-tinta)' : 'var(--color-cielo)'} />
+    </svg>
+  )
+}
+
 export function Mensaje({ children, tipo = 'error' }: { children: ReactNode; tipo?: 'error' | 'info' }) {
   if (!children) return null
   return (
@@ -109,7 +120,7 @@ export function MenuSuperior() {
   return (
     <header className="sticky top-0 z-10 hidden bg-tinta text-white md:block">
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-2 px-6 lg:px-10">
-        <Link to="/" className="mr-6 text-xl font-bold tracking-wider text-naranja">CVD</Link>
+        <Link to="/" className="mr-6"><Logo className="h-10 w-auto" /></Link>
         <nav aria-label="Principal" className="flex items-center gap-1">
           {destinos.map((d) => (
             <NavLink key={d.a} to={d.a} end={d.a === '/'} className={({ isActive }) => `flex h-10 items-center gap-2 rounded-full px-4 text-sm font-semibold ${isActive ? 'bg-naranja text-tinta' : 'hover:bg-white/10'}`}>

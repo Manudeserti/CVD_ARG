@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { guardarUbicacion, SelectorUbicacion, SIN_UBICACION } from '../ubicacion'
-import { claseBoton, useInstituciones } from '../ui'
+import { claseBoton, Logo, useInstituciones } from '../ui'
 
 const CLAVE = 'cvd_vio_bienvenida'
 
@@ -45,7 +45,7 @@ export default function Bienvenida() {
   return (
     <div className="flex min-h-dvh flex-col lg:grid lg:grid-cols-2">
       <header className="flex flex-col gap-2.5 rounded-b-[36px] bg-tinta px-5 pt-5 pb-6 text-white md:px-10 md:py-10 lg:justify-center lg:gap-6 lg:rounded-none lg:px-16 xl:px-24">
-        <div className="text-xl font-bold tracking-wider text-naranja lg:text-2xl">CVD</div>
+        <Logo className="h-11 w-fit lg:h-16" />
         <h1 className="font-mano text-[62px] leading-[0.98] md:text-[88px] lg:text-[112px] xl:text-[136px]">
           <span className="block text-naranja">Comprá.</span>
           <span className="block text-amarillo">Vendé.</span>

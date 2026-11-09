@@ -27,7 +27,7 @@ export default function Transacciones() {
       <Mensaje>{error}</Mensaje>
       {items === null && !error && <Cargando />}
       {items?.length === 0 && <p className="py-8 text-center text-suave">Todavía no tenés operaciones.</p>}
-      <div className="grid gap-3 md:grid-cols-2">
+      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {items?.map((t, i) => (
           <Link key={t.id} to={`/transacciones/${t.id}`}>
             <TarjetaArticulo

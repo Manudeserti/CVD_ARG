@@ -35,7 +35,7 @@ export default function Solicitudes() {
       <Mensaje>{error}</Mensaje>
       {items === null && !error && <Cargando />}
       {items?.length === 0 && <p className="py-8 text-center text-suave">No hay solicitudes pendientes.</p>}
-      <div className="grid gap-3 md:grid-cols-2">
+      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {items?.map((s) => (
           <article key={s.id} className={`${claseTarjeta} flex flex-col gap-2 p-4`}>
             <h2 className="font-mano text-[28px] leading-[1.1]">{s.nombre}</h2>

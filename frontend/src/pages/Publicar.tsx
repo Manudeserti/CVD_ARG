@@ -2,11 +2,11 @@ import { useState, type ChangeEvent, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api, mensajeDe, type Tipo } from '../api'
 import { subirFoto } from '../fotos'
-import { claseBoton, claseCampo, claseEtiqueta, Icono, Mensaje, SelectorColegio, Titulo, useInstituciones } from '../ui'
+import { SelectorColegio, SIN_LUGAR, type Lugar } from '../ubicacion'
+import { claseBoton, claseCampo, claseEtiqueta, Icono, Mensaje, Titulo, useInstituciones } from '../ui'
 import { CATEGORIAS, TALLES } from './Catalogo'
 
 const MAX_FOTOS = 5
-const PROVINCIAS = ['Buenos Aires', 'CABA', 'Catamarca', 'Chaco', 'Chubut', 'Córdoba', 'Corrientes', 'Entre Ríos', 'Formosa', 'Jujuy', 'La Pampa', 'La Rioja', 'Mendoza', 'Misiones', 'Neuquén', 'Río Negro', 'Salta', 'San Juan', 'San Luis', 'Santa Cruz', 'Santa Fe', 'Santiago del Estero', 'Tierra del Fuego', 'Tucumán']
 
 export default function Publicar() {
   const instituciones = useInstituciones()
@@ -15,10 +15,10 @@ export default function Publicar() {
   const [subiendo, setSubiendo] = useState(false)
   const [datos, setDatos] = useState({ titulo: '', descripcion: '', categoria: 'indumentaria', talle: '', precio: '' })
   const [tipo, setTipo] = useState<Tipo>('venta')
-  const [ciudad, setCiudad] = useState('')
+  const [lugar, setLugar] = useState(SIN_LUGAR)
   const [colegio, setColegio] = useState<number | null>(null)
   const [pidiendoAlta, setPidiendoAlta] = useState(false)
-  const [nuevo, setNuevo] = useState({ nombre: '', provincia: 'Buenos Aires' })
+  const [nombreNuevo, setNombreNuevo] = useState('')
   const [error, setError] = useState('')
   const [enviando, setEnviando] = useState(false)
 
@@ -44,8 +44,8 @@ export default function Publicar() {
     }
   }
 
-  function cambiarCiudad(valor: string) {
-    setCiudad(valor)
+  function cambiarLugar(valor: Lugar) {
+    setLugar(valor)
     setColegio(null)
   }
 
@@ -67,7 +67,7 @@ export default function Publicar() {
         precio: tipo === 'venta' ? datos.precio : 0,
         imagenes_urls: fotos,
         institucion_id: pidiendoAlta ? null : colegio,
-        colegio_nuevo: pidiendoAlta ? { nombre: nuevo.nombre, ciudad: ciudad.trim(), provincia: nuevo.provincia } : null,
+        colegio_nuevo: pidiendoAlta ? { nombre: nombreNuevo, ciudad: lugar.ciudad.trim(), provincia: lugar.provincia } : null,
       })
       navegar('/mis-publicaciones')
     } catch (err) {
@@ -81,9 +81,10 @@ export default function Publicar() {
   )
 
   return (
-    <form onSubmit={enviar} className="mx-auto flex w-full max-w-xl flex-col gap-3">
-      <Titulo>Publicar</Titulo>
+    <form onSubmit={enviar} className="mx-auto grid w-full max-w-xl items-start gap-3 lg:max-w-5xl lg:grid-cols-2 lg:gap-x-10">
+      <div className="lg:col-span-2"><Titulo>Publicar</Titulo></div>
 
+      <div className="flex flex-col gap-3">
       <div className="flex flex-col gap-1.5">
         <div className="text-[13px] font-medium">Fotos (hasta {MAX_FOTOS})</div>
         <div className="flex flex-wrap gap-2">
@@ -139,15 +140,15 @@ export default function Publicar() {
         )}
       </div>
 
-      <SelectorColegio instituciones={instituciones} ciudad={ciudad} setCiudad={cambiarCiudad} colegio={pidiendoAlta ? null : colegio} setColegio={(id) => { setColegio(id); setPidiendoAlta(false) }} />
+      <label className={claseEtiqueta}>Descripción<textarea rows={2} maxLength={2000} className="rounded-2xl border border-linea bg-white px-3.5 py-3 text-[15px] lg:min-h-28" {...campo('descripcion')} /></label>
+      </div>
+
+      <div className="flex flex-col gap-3">
+      <SelectorColegio instituciones={instituciones} lugar={lugar} setLugar={cambiarLugar} colegio={pidiendoAlta ? null : colegio} setColegio={(id) => { setColegio(id); setPidiendoAlta(false) }} />
 
       {pidiendoAlta ? (
         <section className="flex flex-col gap-3 rounded-2xl border border-linea bg-white p-3.5">
-          <label className={claseEtiqueta}>Nombre del colegio<input className={claseCampo} required minLength={3} maxLength={150} value={nuevo.nombre} onChange={(e) => setNuevo({ ...nuevo, nombre: e.target.value })} /></label>
-          <label className={claseEtiqueta}>
-            Provincia
-            <select className={claseCampo} value={nuevo.provincia} onChange={(e) => setNuevo({ ...nuevo, provincia: e.target.value })}>{PROVINCIAS.map((p) => <option key={p}>{p}</option>)}</select>
-          </label>
+          <label className={claseEtiqueta}>Nombre del colegio<input className={claseCampo} required minLength={3} maxLength={150} value={nombreNuevo} onChange={(e) => setNombreNuevo(e.target.value)} /></label>
           <p className="text-sm text-suave">Tu publicación queda pendiente y se publica cuando demos de alta el colegio. Estará mañana.</p>
           <button type="button" className="min-h-11 text-sm underline" onClick={() => setPidiendoAlta(false)}>Mejor elijo uno de la lista</button>
         </section>
@@ -157,10 +158,9 @@ export default function Publicar() {
         </button>
       )}
 
-      <label className={claseEtiqueta}>Descripción<textarea rows={2} maxLength={2000} className="rounded-2xl border border-linea bg-white px-3.5 py-3 text-[15px]" {...campo('descripcion')} /></label>
-
       <Mensaje>{error}</Mensaje>
       <button className={claseBoton} disabled={enviando || subiendo}>{pidiendoAlta ? 'Publicar y pedir el alta' : 'Publicar'}</button>
+      </div>
     </form>
   )
 }

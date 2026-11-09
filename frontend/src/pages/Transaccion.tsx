@@ -103,7 +103,7 @@ export default function Transaccion() {
   const seCerro = estado === 'cancelado' || estado === 'reembolsado'
 
   return (
-    <div className="mx-auto flex w-full max-w-xl flex-col gap-3.5">
+    <div className="mx-auto flex w-full max-w-xl flex-col gap-3.5 md:max-w-2xl">
       <Titulo>Operaciones</Titulo>
       <TarjetaArticulo titulo={op.titulo ?? 'Artículo'} detalle={esComprador ? 'Estás comprando' : 'Estás vendiendo'} precio={precioTexto(op.tipo, op.monto)} foto={op.imagen} indice={0} />
       {!seCerro && <Pasos op={op} />}

@@ -40,27 +40,29 @@ export default function Detalle() {
   const esMia = usuario?.id === pub.vendedor_id
 
   return (
-    <div className="mx-auto flex w-full max-w-xl flex-col gap-3.5">
-      <div className="flex snap-x gap-2 overflow-x-auto">
+    <div className="mx-auto grid w-full max-w-xl gap-3.5 md:max-w-6xl md:grid-cols-2 md:items-start md:gap-8">
+      <div className="flex min-w-0 snap-x gap-2 overflow-x-auto">
         {(pub.imagenes_urls.length ? pub.imagenes_urls : [null]).map((url, i) => (
-          <Foto key={url ?? i} url={url} indice={i} alt={`Foto ${i + 1} de ${pub.titulo}`} className="h-72 w-full shrink-0 snap-center rounded-[20px]" />
+          <Foto key={url ?? i} url={url} indice={i} alt={`Foto ${i + 1} de ${pub.titulo}`} className="h-72 w-full shrink-0 snap-center rounded-[20px] md:h-[28rem] lg:h-[32rem]" />
         ))}
       </div>
-      <section className={`${claseTarjeta} flex flex-col gap-2 p-4`}>
-        <h1 className="font-mano text-[40px] leading-[1.05]">{pub.titulo}</h1>
-        <div className="text-[13px] text-suave">{detalleDe(pub, instituciones)}</div>
-        <div className="font-mano text-[34px] leading-none">{precioTexto(pub.tipo, pub.precio)}</div>
-        {pub.descripcion && <p className="leading-relaxed whitespace-pre-line">{pub.descripcion}</p>}
-      </section>
-      <Mensaje>{error}</Mensaje>
-      {pub.estado !== 'disponible'
-        ? <Mensaje tipo="info">Este artículo ya no está disponible.</Mensaje>
-        : esMia
-          ? <Mensaje tipo="info">Esta publicación es tuya.</Mensaje>
-          : <button type="button" className={claseBoton} disabled={enviando} onClick={reservar}>{pub.tipo === 'venta' ? 'Reservar' : 'Pedir esta donación'}</button>}
-      {pub.tipo === 'venta' && pub.estado === 'disponible' && !esMia && (
-        <p className="text-center text-sm text-suave italic">Tu plata queda retenida hasta que recibís el artículo.</p>
-      )}
+      <div className="flex flex-col gap-3.5 md:sticky md:top-24">
+        <section className={`${claseTarjeta} flex flex-col gap-2 p-4 lg:p-6`}>
+          <h1 className="font-mano text-[40px] leading-[1.05] lg:text-[52px]">{pub.titulo}</h1>
+          <div className="text-[13px] text-suave">{detalleDe(pub, instituciones)}</div>
+          <div className="font-mano text-[34px] leading-none lg:text-[44px]">{precioTexto(pub.tipo, pub.precio)}</div>
+          {pub.descripcion && <p className="leading-relaxed whitespace-pre-line">{pub.descripcion}</p>}
+        </section>
+        <Mensaje>{error}</Mensaje>
+        {pub.estado !== 'disponible'
+          ? <Mensaje tipo="info">Este artículo ya no está disponible.</Mensaje>
+          : esMia
+            ? <Mensaje tipo="info">Esta publicación es tuya.</Mensaje>
+            : <button type="button" className={claseBoton} disabled={enviando} onClick={reservar}>{pub.tipo === 'venta' ? 'Reservar' : 'Pedir esta donación'}</button>}
+        {pub.tipo === 'venta' && pub.estado === 'disponible' && !esMia && (
+          <p className="text-center text-sm text-suave italic">Tu plata queda retenida hasta que recibís el artículo.</p>
+        )}
+      </div>
     </div>
   )
 }

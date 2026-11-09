@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { NavLink } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import { api, type Institucion, type Publicacion, type Tipo } from './api'
+import { useSesion } from './sesion'
 
 export const claseBoton = 'flex min-h-13 w-full items-center justify-center rounded-full bg-naranja px-5 font-bold text-tinta disabled:opacity-60'
 export const claseSecundario = 'flex min-h-11 items-center justify-center gap-1.5 rounded-full border border-linea bg-white px-4 font-medium text-tinta disabled:opacity-60'
@@ -9,7 +10,7 @@ export const claseTarjeta = 'rounded-[20px] border border-linea bg-white shadow-
 export const claseEtiqueta = 'flex flex-col gap-1 text-[13px] font-medium'
 
 export function Titulo({ children }: { children: ReactNode }) {
-  return <h1 className="resaltado self-start px-2 font-mano text-[42px] leading-[1.1]">{children}</h1>
+  return <h1 className="resaltado w-fit px-2 font-mano text-[42px] leading-[1.1] md:text-[52px]">{children}</h1>
 }
 
 export function Mensaje({ children, tipo = 'error' }: { children: ReactNode; tipo?: 'error' | 'info' }) {
@@ -76,45 +77,9 @@ export function useInstituciones() {
   return instituciones
 }
 
-export const unicos = (valores: string[]) => [...new Set(valores)].sort((a, b) => a.localeCompare(b, 'es'))
-
 export function detalleDe(p: Publicacion, instituciones: Institucion[]) {
   const colegio = instituciones.find((i) => i.id === p.institucion_id)?.nombre
   return [p.talle && `Talle ${p.talle === 'Unico' ? 'único' : p.talle}`, colegio].filter(Boolean).join(' · ') || p.categoria
-}
-
-/** Primero la ciudad, después los colegios de esa ciudad: con muchos colegios un desplegable no sirve. */
-export function SelectorColegio({ instituciones, ciudad, setCiudad, colegio, setColegio }: {
-  instituciones: Institucion[]
-  ciudad: string
-  setCiudad: (c: string) => void
-  colegio: number | null
-  setColegio: (id: number) => void
-}) {
-  const buscada = ciudad.trim().toLowerCase()
-  const delaCiudad = instituciones.filter((i) => i.ciudad.toLowerCase() === buscada)
-  return (
-    <>
-      <label className={claseEtiqueta}>
-        Ciudad
-        <input className={claseCampo} list="ciudades" value={ciudad} onChange={(e) => setCiudad(e.target.value)} autoComplete="off" />
-        <datalist id="ciudades">{unicos(instituciones.map((i) => i.ciudad)).map((c) => <option key={c} value={c} />)}</datalist>
-      </label>
-      {delaCiudad.length > 0 && (
-        <fieldset className="flex flex-col gap-1">
-          <legend className="mb-1 text-[13px] font-medium">Colegio</legend>
-          <div className="max-h-60 overflow-y-auto rounded-2xl border border-linea bg-white">
-            {delaCiudad.map((i) => (
-              <label key={i.id} className={`flex min-h-12 items-center gap-2.5 border-b border-linea px-3.5 last:border-b-0 ${colegio === i.id ? 'bg-amarillo/40 font-semibold' : ''}`}>
-                <input type="radio" name="colegio" className="size-[18px] accent-tinta" checked={colegio === i.id} onChange={() => setColegio(i.id)} />
-                {i.nombre}
-              </label>
-            ))}
-          </div>
-        </fieldset>
-      )}
-    </>
-  )
 }
 
 const iconos = {
@@ -139,9 +104,33 @@ const destinos = [
   { a: '/transacciones', nombre: 'Operaciones', icono: iconos.operaciones },
 ]
 
+export function MenuSuperior() {
+  const { usuario, salir } = useSesion()
+  return (
+    <header className="sticky top-0 z-10 hidden bg-tinta text-white md:block">
+      <div className="mx-auto flex h-16 max-w-7xl items-center gap-2 px-6 lg:px-10">
+        <Link to="/" className="mr-6 text-xl font-bold tracking-wider text-naranja">CVD</Link>
+        <nav aria-label="Principal" className="flex items-center gap-1">
+          {destinos.map((d) => (
+            <NavLink key={d.a} to={d.a} end={d.a === '/'} className={({ isActive }) => `flex h-10 items-center gap-2 rounded-full px-4 text-sm font-semibold ${isActive ? 'bg-naranja text-tinta' : 'hover:bg-white/10'}`}>
+              <Icono tamano={18}>{d.icono}</Icono>
+              {d.nombre}
+            </NavLink>
+          ))}
+        </nav>
+        <div className="ml-auto">
+          {usuario
+            ? <button type="button" className="flex h-10 items-center rounded-full px-4 text-sm font-semibold hover:bg-white/10" onClick={salir}>Salir</button>
+            : <Link to="/ingresar" className="flex h-10 items-center rounded-full bg-naranja px-5 text-sm font-bold text-tinta">Ingresar</Link>}
+        </div>
+      </div>
+    </header>
+  )
+}
+
 export function MenuInferior() {
   return (
-    <nav aria-label="Principal" className="fixed inset-x-3 bottom-3 z-10 mx-auto grid h-17 max-w-md grid-cols-4 items-center rounded-full bg-tinta px-2">
+    <nav aria-label="Principal" className="fixed inset-x-3 bottom-3 z-10 mx-auto grid h-17 max-w-md grid-cols-4 items-center rounded-full bg-tinta px-2 md:hidden">
       {destinos.map((d) => (
         <NavLink key={d.a} to={d.a} end={d.a === '/'} aria-label={d.nombre} className={({ isActive }) => `flex size-13 items-center justify-center justify-self-center rounded-full ${isActive ? 'bg-naranja text-tinta' : 'text-white'}`}>
           <Icono>{d.icono}</Icono>

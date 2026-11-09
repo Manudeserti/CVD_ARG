@@ -2,7 +2,8 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api, mensajeDe, type EstadoPublicacion, type Publicacion } from '../api'
 import { useSesion } from '../sesion'
-import { Cargando, claseBoton, claseSecundario, Mensaje, Panel, precioTexto, SelectorColegio, TarjetaArticulo, Titulo, detalleDe, useInstituciones } from '../ui'
+import { SelectorColegio, SIN_LUGAR } from '../ubicacion'
+import { Cargando, claseBoton, claseSecundario, Mensaje, Panel, precioTexto, TarjetaArticulo, Titulo, detalleDe, useInstituciones } from '../ui'
 
 const ESTADOS: Record<EstadoPublicacion, string> = {
   disponible: 'Publicada',
@@ -20,7 +21,7 @@ export default function MisPublicaciones() {
   const [items, setItems] = useState<Publicacion[] | null>(null)
   const [error, setError] = useState('')
   const [editando, setEditando] = useState<Publicacion | null>(null)
-  const [ciudad, setCiudad] = useState('')
+  const [lugar, setLugar] = useState(SIN_LUGAR)
   const [colegio, setColegio] = useState<number | null>(null)
 
   const cargar = useCallback(() => {
@@ -46,7 +47,7 @@ export default function MisPublicaciones() {
       await api(`/api/publicaciones/${editando!.id}/institucion`, 'PUT', { institucion_id: colegio })
       setEditando(null)
       setColegio(null)
-      setCiudad('')
+      setLugar(SIN_LUGAR)
       cargar()
     } catch (e) {
       setError(mensajeDe(e))
@@ -63,7 +64,7 @@ export default function MisPublicaciones() {
       <Mensaje>{error}</Mensaje>
       {items === null && !error && <Cargando />}
       {items?.length === 0 && <p className="py-8 text-center text-suave">Todavía no publicaste nada.</p>}
-      <div className="grid gap-3 md:grid-cols-2">
+      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {items?.map((p, i) => (
           <article key={p.id} className="flex flex-col gap-2">
             <TarjetaArticulo titulo={p.titulo} detalle={detalleDe(p, instituciones)} precio={precioTexto(p.tipo, p.precio)} foto={p.imagenes_urls[0]} indice={i} />
@@ -79,7 +80,7 @@ export default function MisPublicaciones() {
         ))}
       </div>
       <Panel abierto={editando !== null} cerrar={() => setEditando(null)} titulo="Elegí el colegio">
-        <SelectorColegio instituciones={instituciones} ciudad={ciudad} setCiudad={(c) => { setCiudad(c); setColegio(null) }} colegio={colegio} setColegio={setColegio} />
+        <SelectorColegio instituciones={instituciones} lugar={lugar} setLugar={(l) => { setLugar(l); setColegio(null) }} colegio={colegio} setColegio={setColegio} />
         <button type="button" className={claseBoton} disabled={colegio === null} onClick={publicarConColegio}>Publicar</button>
       </Panel>
     </>

@@ -13,12 +13,13 @@ import Solicitudes from './pages/Solicitudes'
 import Transaccion from './pages/Transaccion'
 import Transacciones from './pages/Transacciones'
 import { Privada, ProveedorSesion } from './sesion'
-import { MenuInferior } from './ui'
+import { MenuInferior, MenuSuperior } from './ui'
 
 function ConMenu() {
   return (
     <>
-      <main className="mx-auto flex max-w-5xl flex-col gap-3.5 px-4 pt-3.5 pb-24">
+      <MenuSuperior />
+      <main className="mx-auto flex max-w-7xl flex-col gap-3.5 px-4 pt-3.5 pb-24 md:gap-5 md:px-6 md:pt-8 md:pb-12 lg:px-10">
         <Outlet />
       </main>
       <MenuInferior />

@@ -8,7 +8,7 @@ type Vuelta = { desde?: string; motivo?: string } | null
 
 function Marco({ titulo, motivo, children }: { titulo: string; motivo?: string; children: ReactNode }) {
   return (
-    <main className="mx-auto flex max-w-md flex-col gap-3.5 px-4 pt-6 pb-8">
+    <main className="mx-auto flex max-w-md flex-col gap-3.5 px-4 pt-6 pb-8 md:mt-14 md:rounded-3xl md:border md:border-linea md:bg-white md:p-8 md:shadow-[0_2px_8px_rgba(23,35,59,0.06)]">
       <Link to="/" className="text-xl font-bold tracking-wider text-naranja">CVD</Link>
       <Titulo>{titulo}</Titulo>
       {motivo && <Mensaje tipo="info">{motivo}</Mensaje>}

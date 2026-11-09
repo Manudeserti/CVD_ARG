@@ -1,0 +1,39 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-tinta: #17233b;
+  --color-suave: #4a556b;
+  --color-naranja: #d97757;
+  --color-amarillo: #f6cf5b;
+  --color-cielo: #a9d6f0;
+  --color-rosa: #f5b8c4;
+  --color-menta: #a8e0c0;
+  --color-papel: #fff8ee;
+  --color-cuadricula: #efe3d0;
+  --color-linea: #e6dccb;
+  --font-sans: Inter, system-ui, sans-serif;
+  --font-mano: Caveat, cursive;
+}
+
+body {
+  margin: 0;
+  color: var(--color-tinta);
+  background-color: var(--color-papel);
+  background-image:
+    linear-gradient(var(--color-cuadricula) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-cuadricula) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-tinta);
+  outline-offset: 2px;
+}
+
+dialog::backdrop {
+  background: rgb(23 35 59 / 45%);
+}
+
+.resaltado {
+  background: linear-gradient(transparent 60%, var(--color-amarillo) 60%, var(--color-amarillo) 90%, transparent 90%);
+}

@@ -15,6 +15,7 @@ import sys
 from pathlib import Path
 from uuid import uuid4
 
+import httpx
 import psycopg2
 import pytest
 
@@ -32,7 +33,7 @@ sys.path.insert(0, str(BACKEND))
 
 from fastapi.testclient import TestClient  # noqa: E402
 from main import app  # noqa: E402
-from utils import pagos  # noqa: E402
+from utils import fotos, pagos  # noqa: E402
 
 client = TestClient(app)
 CRON = {"Authorization": f"Bearer {os.environ['CRON_SECRET']}"}
@@ -369,6 +370,43 @@ def test_validaciones_de_datos():
     con_publicaciones = institucion()
     publicar(vendedor, institucion_id=con_publicaciones)
     assert client.delete(f"/api/instituciones/{con_publicaciones}", headers=admin).status_code == 409
+
+
+def test_fotos_de_publicaciones(monkeypatch):
+    monkeypatch.setenv("SUPABASE_URL", "https://proyecto.supabase.co")
+    monkeypatch.setenv("SUPABASE_SERVICE_KEY", "clave-de-prueba")
+    respuesta_storage = httpx.Response(200, json={"token": "token-firmado"})
+    monkeypatch.setattr(fotos.httpx, "post", lambda url, **kwargs: respuesta_storage)
+
+    _, vendedor = usuario()
+    _, otro = usuario()
+    pedir = lambda tipo, headers=vendedor: client.post(  # noqa: E731
+        "/api/publicaciones/fotos", headers=headers, json={"tipo_archivo": tipo})
+    publicar_con = lambda urls, headers=vendedor: client.post("/api/publicaciones/", headers=headers, json={  # noqa: E731
+        "titulo": "Buzo con foto", "categoria": "indumentaria", "tipo": "donacion", "imagenes_urls": urls})
+
+    assert pedir("image/jpeg", headers={}).status_code == 401
+    assert pedir("application/pdf").status_code == 422
+
+    r = pedir("image/jpeg")
+    assert r.status_code == 200, r.text
+    assert r.json()["url_subida"].endswith("?token=token-firmado")
+    url = r.json()["url_publica"]
+
+    creada = publicar_con([url])
+    assert creada.status_code == 201, creada.text
+    assert creada.json()["imagenes_urls"] == [url]
+
+    # Solo fotos propias, con el formato exacto, y hasta 5
+    carpeta = url.rsplit("/", 1)[0]
+    assert publicar_con([url], headers=otro).status_code == 400
+    assert publicar_con(["https://otro-sitio.test/foto.jpg"]).status_code == 400
+    assert publicar_con([f"{carpeta}/../{uuid4()}.jpg"]).status_code == 400
+    assert publicar_con([f"{carpeta}/{uuid4()}.svg"]).status_code == 400
+    assert publicar_con([url] * 6).status_code == 422
+
+    respuesta_storage.status_code = 500
+    assert pedir("image/png").status_code == 502
 
 
 def test_catalogo_paginado():

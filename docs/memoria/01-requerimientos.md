@@ -14,7 +14,7 @@
 | Código | Requerimiento | Estado |
 |---|---|---|
 | RF-01 | Registro e inicio de sesión con correo y contraseña | Hecho |
-| RF-02 | Publicar artículos de tipo venta (precio > 0) o donación (sin precio), con categoría, talle, institución e imágenes | Hecho (falta subir imágenes: Sprint C) |
+| RF-02 | Publicar artículos de tipo venta (precio > 0) o donación (sin precio), con categoría, talle, institución e imágenes | Backend hecho; pantalla en Sprint C |
 | RF-03 | Catálogo público con filtros combinables: provincia, ciudad, institución, categoría, tipo y talle | Hecho |
 | RF-04 | Ver y dar de baja las publicaciones propias | Hecho |
 | RF-05 | Iniciar una compra o solicitud de donación, que reserva el artículo | Hecho |
@@ -47,6 +47,7 @@ Instituciones por demanda, alertas automáticas por correo, panel de administrac
 | RN-11 | Una publicación con una operación en curso no se puede dar de baja. |
 | RN-12 | Un usuario puede tener como máximo 3 donaciones pendientes de retirar a la vez. Las ventas no tienen tope. |
 | RN-13 | Una venta tiene precio mayor a 0 y una donación precio 0; la base de datos lo garantiza con una restricción. |
+| RN-14 | Una publicación tiene como máximo 5 fotos (JPG, PNG o WebP, hasta 5 MB cada una), y todas tienen que haber sido subidas por su autor. |
 
 ## Requerimientos no funcionales
 

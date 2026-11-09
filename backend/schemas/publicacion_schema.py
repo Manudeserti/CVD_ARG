@@ -26,7 +26,10 @@ class PublicacionBase(BaseModel):
     imagenes_urls: List[str] = Field(default=[])
 
 class PublicacionCreate(PublicacionBase):
-    pass 
+    imagenes_urls: List[str] = Field(default=[], max_length=5)
+
+class FotoSubida(BaseModel):
+    tipo_archivo: Literal['image/jpeg', 'image/png', 'image/webp']
 
 class PublicacionResponse(PublicacionBase):
     id: UUID

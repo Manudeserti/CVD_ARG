@@ -1,7 +1,8 @@
 import psycopg2
 from fastapi import APIRouter, HTTPException, status, Depends, Query
 from database.database import get_db_connection, error_interno
-from schemas.publicacion_schema import PublicacionCreate, PublicacionResponse
+from schemas.publicacion_schema import PublicacionCreate, PublicacionResponse, FotoSubida
+from utils import fotos
 from utils.security import get_usuario_actual
 from uuid import UUID
 from typing import Optional
@@ -10,6 +11,19 @@ router = APIRouter(
     prefix="/api/publicaciones",
     tags=["Publicaciones"]
 )
+
+# --- ENDPOINT POST (Pedir URL para subir una foto) ---
+@router.post("/fotos", status_code=status.HTTP_200_OK)
+def pedir_url_de_foto(foto: FotoSubida, usuario_actual: dict = Depends(get_usuario_actual)):
+    """
+    Devuelve url_subida (el navegador hace PUT del archivo, con su Content-Type) y url_publica
+    (se manda en imagenes_urls al crear la publicación).
+    """
+    try:
+        return fotos.crear_url_subida(usuario_actual["id"], foto.tipo_archivo)
+    except Exception as e:
+        raise error_interno("El almacenamiento de fotos no respondió correctamente", 502)
+
 
 # --- ENDPOINT POST (Crear publicación) ---
 @router.post("/", response_model=PublicacionResponse, status_code=status.HTTP_201_CREATED)
@@ -33,6 +47,9 @@ def crear_publicacion(
             status_code=400, 
             detail="Las donaciones no pueden tener un precio asignado."
         )
+
+    if not all(fotos.es_foto_del_usuario(url, usuario_actual["id"]) for url in publicacion.imagenes_urls):
+        raise HTTPException(status_code=400, detail="Alguna de las fotos no fue subida por este usuario.")
 
     conexion = None
     cursor = None

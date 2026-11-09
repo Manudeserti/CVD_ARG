@@ -14,6 +14,8 @@
 |---|---|---|
 | `DATABASE_URL` | Conexión a PostgreSQL | Supabase → Connect → Transaction pooler (puerto 6543) |
 | `SECRET_KEY` | Firma de los tokens JWT (32 bytes o más) | `python -c "import secrets; print(secrets.token_urlsafe(48))"` |
+| `SUPABASE_URL` | URL del proyecto, sin barra final: `https://<id>.supabase.co` | El id es el que aparece en la dirección del panel: `supabase.com/dashboard/project/<id>` |
+| `SUPABASE_SERVICE_KEY` | Clave secreta de Supabase (`sb_secret_...`). Solo va en el backend, nunca en el frontend | Supabase → Project Settings (engranaje) → API Keys → Secret keys |
 | `MP_ACCESS_TOKEN` | Credencial privada de Mercado Pago | Mercado Pago Developers → Tus integraciones → la aplicación → Credenciales de prueba |
 | `MP_WEBHOOK_SECRET` | Clave para verificar la firma de los webhooks | Mercado Pago Developers → la aplicación → Webhooks → Configurar notificaciones |
 | `BACKEND_URL` | URL pública del backend, sin barra final | Vercel, después del primer despliegue |
@@ -28,6 +30,12 @@
    ```sql
    UPDATE usuarios SET rol = 'admin' WHERE email = '...';
    ```
+
+## Fotos de las publicaciones
+
+En Supabase → Storage, crear un bucket llamado `publicaciones`: público, con límite de 5 MB por archivo y tipos permitidos `image/jpeg`, `image/png` e `image/webp`.
+
+Para subir una foto, el frontend pide `POST /api/publicaciones/fotos` con `{"tipo_archivo": "image/jpeg"}`, hace `PUT` del archivo a `url_subida` con ese mismo `Content-Type`, y manda `url_publica` en `imagenes_urls` al crear la publicación.
 
 ## Ejecución local
 

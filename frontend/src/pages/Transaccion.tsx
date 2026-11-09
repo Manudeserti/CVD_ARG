@@ -7,6 +7,7 @@ import { Cargando, claseBoton, claseSecundario, claseTarjeta, Mensaje, precioTex
 
 const REINTENTOS_PAGO = 10
 const ESPERA_PAGO_MS = 3000
+const ESPERA_ENTREGA_MS = 5000
 
 function Pasos({ op }: { op: Operacion }) {
   const pasos = op.tipo === 'donacion' ? ['Reservado', 'Entregado'] : ['Reservado', 'Pagado', 'Entregado']
@@ -68,6 +69,14 @@ export default function Transaccion() {
     }, ESPERA_PAGO_MS)
     return () => clearInterval(reloj)
   }, [pagoEnCamino, cargar])
+
+  // Nadie le avisa al comprador cuando el vendedor escanea: consultamos mientras el QR está a la vista
+  const qrVisible = enEncuentro && esComprador
+  useEffect(() => {
+    if (!qrVisible) return
+    const reloj = setInterval(() => cargar().catch(() => undefined), ESPERA_ENTREGA_MS)
+    return () => clearInterval(reloj)
+  }, [qrVisible, cargar])
 
   if (!cargada) return <Cargando />
   if (!op) return <><Titulo>Operaciones</Titulo><Mensaje>{error || 'No encontramos esa operación.'}</Mensaje></>

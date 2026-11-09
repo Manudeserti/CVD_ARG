@@ -18,3 +18,8 @@ fecha,actividad,horas,descripcion,fuente
 2026-11-03,7 Testing y despliegue,0.5,Tests nuevos; migración de Supabase; prueba en Vercel,estimado del autor
 2026-11-03,8 Memoria y manuales,0.5,Capítulos 01-03 y reconstrucción del registro de horas,estimado del autor
 2026-09-14,1 Requerimientos,31.5,Relevamiento; propuesta; encuesta y protocolo (mayo a septiembre de 2026),estimado del autor
+2026-11-09,2 Arquitectura y modelo de datos,1.2,Lectura de documentos de la cátedra; plan; bocetos de interfaz y decisiones,estimado confirmado por el autor
+2026-11-09,3 Backend y API,0.5,Fotos con Supabase Storage; colegios a pedido; CORS; historial con datos del artículo,estimado confirmado por el autor
+2026-11-09,6 Frontend,0.6,Frontend en React: catálogo; publicación; pago; QR y panel de solicitudes,estimado confirmado por el autor
+2026-11-09,7 Testing y despliegue,0.3,Tests del backend y prueba de punta a punta en Chrome,estimado confirmado por el autor
+2026-11-09,8 Memoria y manuales,0.2,Diseño de interfaz; requerimientos y despliegue del frontend,estimado confirmado por el autor

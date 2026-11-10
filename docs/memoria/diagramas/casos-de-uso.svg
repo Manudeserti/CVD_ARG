@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 1000" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#111">
+  <defs>
+    <g id="actor" fill="none" stroke="#111" stroke-width="1.6">
+      <circle cx="0" cy="-38" r="12"/>
+      <path d="M0 -26V8M-20 -12H20M0 8L-16 34M0 8L16 34"/>
+    </g>
+    <marker id="abierta" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#111" stroke-width="1.2"/></marker>
+  </defs>
+  <rect width="1060" height="1000" fill="#fff"/>
+  <rect x="225" y="15" width="620" height="970" fill="none" stroke="#111" stroke-width="1.4"/>
+  <text x="535" y="36" text-anchor="middle" font-weight="700">Plataforma CVD</text>
+
+  <g fill="none" stroke="#111" stroke-width="1.1">
+    <path d="M112 113L250 70M112 113L250 125M112 113L250 180"/>
+    <path d="M112 333L250 260M112 333L250 315M112 333L250 370M112 333L250 450M112 333L250 505M112 333L250 560"/>
+    <path d="M112 668L250 450M112 668L250 505M112 668L250 560M112 668L250 640M112 668L250 695M112 668L250 750"/>
+    <path d="M112 868L250 850M112 868L250 905"/>
+    <path d="M550 315L938 388M550 505L938 388M772 887L938 400M810 905L938 888"/>
+    <path d="M590 695H552" stroke-dasharray="6 4" marker-end="url(#abierta)"/>
+    <path d="M90 200V292M62 668H40V240H90"/>
+    <path d="M90 186L82 200H98Z" fill="#fff"/>
+  </g>
+  <text x="571" y="686" text-anchor="middle" font-size="11">«extend»</text>
+
+  <g text-anchor="middle">
+    <use href="#actor" x="90" y="125"/><text x="90" y="178">Visitante</text>
+    <use href="#actor" x="90" y="345"/><text x="90" y="397">Comprador</text><text x="90" y="412">o receptor</text>
+    <use href="#actor" x="90" y="680"/><text x="90" y="732">Vendedor</text><text x="90" y="747">o donante</text>
+    <use href="#actor" x="90" y="880"/><text x="90" y="932">Administrador</text>
+    <use href="#actor" x="960" y="400"/><text x="960" y="340">Mercado Pago</text>
+    <use href="#actor" x="960" y="900"/><text x="960" y="952">Vercel Cron</text>
+  </g>
+
+  <g fill="#fff" stroke="#111" stroke-width="1.2">
+    <ellipse cx="400" cy="70" rx="150" ry="23"/><ellipse cx="400" cy="125" rx="150" ry="23"/><ellipse cx="400" cy="180" rx="150" ry="23"/>
+    <ellipse cx="400" cy="260" rx="150" ry="23"/><ellipse cx="400" cy="315" rx="150" ry="23"/><ellipse cx="400" cy="370" rx="150" ry="23"/>
+    <ellipse cx="400" cy="450" rx="150" ry="23"/><ellipse cx="400" cy="505" rx="150" ry="23"/><ellipse cx="400" cy="560" rx="150" ry="23"/>
+    <ellipse cx="400" cy="640" rx="150" ry="23"/><ellipse cx="400" cy="695" rx="150" ry="23"/><ellipse cx="400" cy="750" rx="150" ry="23"/>
+    <ellipse cx="400" cy="850" rx="150" ry="23"/><ellipse cx="400" cy="905" rx="150" ry="23"/>
+    <ellipse cx="700" cy="695" rx="110" ry="23"/><ellipse cx="700" cy="905" rx="110" ry="23"/>
+  </g>
+  <g text-anchor="middle">
+    <text x="400" y="75">CU-01 Registrarse</text>
+    <text x="400" y="130">CU-02 Iniciar sesión</text>
+    <text x="400" y="185">CU-03 Explorar el catálogo</text>
+    <text x="400" y="265">CU-07 Reservar un artículo</text>
+    <text x="400" y="320">CU-08 Pagar la reserva</text>
+    <text x="400" y="375">CU-10 Mostrar el QR de entrega</text>
+    <text x="400" y="455">CU-09 Ver los datos de contacto</text>
+    <text x="400" y="510">CU-12 Cancelar una operación</text>
+    <text x="400" y="565">CU-13 Consultar las operaciones</text>
+    <text x="400" y="645">CU-11 Confirmar la entrega (escaneo)</text>
+    <text x="400" y="700">CU-04 Publicar un artículo</text>
+    <text x="400" y="755">CU-06 Gestionar mis publicaciones</text>
+    <text x="400" y="855">CU-15 Gestionar las instituciones</text>
+    <text x="400" y="910">CU-16 Resolver solicitud de colegio</text>
+    <text x="700" y="700">CU-05 Pedir alta de colegio</text>
+    <text x="700" y="910">CU-14 Vencer operaciones</text>
+  </g>
+</svg>

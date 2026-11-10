@@ -10,6 +10,8 @@ erDiagram
     INSTITUCIONES |o--o{ PUBLICACIONES : "pertenece a"
     PUBLICACIONES ||--o{ TRANSACCIONES_ESCROW : genera
     USUARIOS ||--o{ TRANSACCIONES_ESCROW : "compra / vende"
+    PUBLICACIONES ||--o| SOLICITUDES_INSTITUCION : espera
+    USUARIOS ||--o{ SOLICITUDES_INSTITUCION : solicita
 
     USUARIOS {
         uuid id PK
@@ -50,6 +52,15 @@ erDiagram
         text id_pago_externo
         text estado_pago
         uuid qr_token UK
+    }
+    SOLICITUDES_INSTITUCION {
+        uuid id PK
+        uuid publicacion_id FK
+        uuid solicitante_id FK
+        text nombre
+        text ciudad
+        text provincia
+        text estado
     }
 ```
 
@@ -101,6 +112,8 @@ stateDiagram-v2
 | `reservado` | Tiene una operación en curso | No |
 | `vendido` | Se escaneó el QR (también para donaciones entregadas) | No |
 | `baja` | El dueño la retiró | No |
+| `pendiente_colegio` | Espera que se resuelva el alta de su colegio | No |
+| `borrador` | El alta del colegio se rechazó y el dueño tiene que elegir otro | No |
 
 Una operación cancelada, reembolsada o vencida devuelve la publicación a `disponible`.
 

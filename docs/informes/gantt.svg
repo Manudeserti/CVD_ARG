@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1480 698" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#17233b">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1480 718" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#17233b">
 <defs><pattern id="rayas" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" fill="#fff"/><rect width="3" height="7" fill="#c8641e"/></pattern></defs>
-<rect width="1480" height="698" fill="#fff"/>
+<rect width="1480" height="718" fill="#fff"/>
 <text x="20.0" y="32" font-size="20" font-weight="700">Trabajo Final CVD: diagrama de Gantt actualizado</text>
 <text x="20.0" y="54" >Situación al 09/11/2026. Responsable de todas las tareas: Manuel Deserti. Entrega prevista: 26/12/2026.</text>
 <text x="20.0" y="84" font-weight="700">Tarea</text>
@@ -31,7 +31,7 @@
 <rect x="1025.4" y="99" width="43.0" height="9" fill="#a8afbc"/>
 <rect x="526.2" y="112" width="469.1" height="15" fill="#2469a6"/>
 <rect x="1206.1" y="112" width="30.1" height="15" fill="#2469a6"/>
-<rect x="1240.5" y="112" width="12.9" height="15" fill="url(#rayas)" stroke="#c8641e"/>
+<rect x="1240.5" y="112" width="12.9" height="15" fill="url(#rayas)" stroke="#c8641e" stroke-width="1"/>
 <line x1="20" y1="136" x2="1460" y2="136" stroke="#e3e6ec"/>
 <text x="20.0" y="163" >2. Arquitectura, datos y UI/UX</text>
 <text x="268.0" y="163" fill="#c8641e" font-weight="700">Demorada</text>
@@ -40,7 +40,7 @@
 <rect x="857.5" y="156" width="5.0" height="15" fill="#2469a6"/>
 <rect x="1206.1" y="156" width="5.0" height="15" fill="#2469a6"/>
 <rect x="1236.2" y="156" width="5.0" height="15" fill="#2469a6"/>
-<rect x="1240.5" y="156" width="12.9" height="15" fill="url(#rayas)" stroke="#c8641e"/>
+<rect x="1240.5" y="156" width="12.9" height="15" fill="url(#rayas)" stroke="#c8641e" stroke-width="1"/>
 <line x1="20" y1="180" x2="1460" y2="180" stroke="#e3e6ec"/>
 <text x="20.0" y="207" >3. Backend y API</text>
 <text x="268.0" y="207" fill="#2f7d4f" font-weight="700">Finalizada</text>
@@ -74,26 +74,29 @@
 <text x="346.0" y="383" >4, 5, 6</text>
 <rect x="1378.2" y="363" width="43.0" height="9" fill="#a8afbc"/>
 <rect x="1206.1" y="376" width="30.1" height="15" fill="#2469a6"/>
-<rect x="1240.5" y="376" width="107.6" height="15" fill="url(#rayas)" stroke="#c8641e"/>
+<rect x="1240.5" y="376" width="107.6" height="15" fill="url(#rayas)" stroke="#b3261e" stroke-width="2.5"/>
 <line x1="20" y1="400" x2="1460" y2="400" stroke="#e3e6ec"/>
 <text x="20.0" y="427" >8a. Marco teórico y estado del arte</text>
 <text x="268.0" y="427" fill="#c8641e" font-weight="700">Demorada</text>
 <text x="346.0" y="427" >–</text>
-<rect x="1240.5" y="420" width="86.1" height="15" fill="url(#rayas)" stroke="#c8641e"/>
+<rect x="1240.5" y="420" width="86.1" height="15" fill="url(#rayas)" stroke="#c8641e" stroke-width="1"/>
 <line x1="20" y1="444" x2="1460" y2="444" stroke="#e3e6ec"/>
 <text x="20.0" y="471" >8b. Memoria</text>
 <text x="268.0" y="471" fill="#2469a6" font-weight="700">En curso</text>
 <text x="346.0" y="471" >1, 2, 7, 8a</text>
 <rect x="1421.3" y="451" width="17.2" height="9" fill="#a8afbc"/>
 <rect x="1206.1" y="464" width="30.1" height="15" fill="#2469a6"/>
-<rect x="1240.5" y="464" width="180.7" height="15" fill="url(#rayas)" stroke="#c8641e"/>
+<rect x="1240.5" y="464" width="180.7" height="15" fill="url(#rayas)" stroke="#b3261e" stroke-width="2.5"/>
 <line x1="20" y1="488" x2="1460" y2="488" stroke="#e3e6ec"/>
 <text x="20.0" y="515" >8c. Manuales de usuario y técnico</text>
 <text x="268.0" y="515" fill="#2469a6" font-weight="700">En curso</text>
 <text x="346.0" y="515" >6, 7</text>
 <rect x="1421.3" y="495" width="17.2" height="9" fill="#a8afbc"/>
 <rect x="1206.1" y="508" width="5.0" height="15" fill="#2469a6"/>
-<rect x="1296.5" y="508" width="94.7" height="15" fill="url(#rayas)" stroke="#c8641e"/>
+<rect x="1296.5" y="508" width="94.7" height="15" fill="url(#rayas)" stroke="#c8641e" stroke-width="1"/>
+<defs><marker id="punta" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#b3261e"/></marker></defs>
+<path d="M1348.1 391V462" stroke="#b3261e" stroke-width="2" fill="none" marker-end="url(#punta)"/>
+<path d="M1421.3 479V537H1429.5" stroke="#b3261e" stroke-width="2" fill="none" marker-end="url(#punta)"/>
 <line x1="20" y1="532" x2="1460" y2="532" stroke="#e3e6ec"/>
 <text x="20.0" y="559" font-weight="700">Hitos</text>
 <path d="M1124.3 539l7 8l-7 8l-7-8z" fill="#17233b"/>
@@ -117,5 +120,8 @@
 <text x="892.0" y="645" >Pausa del proyecto</text>
 <line x1="1047" x2="1047" y1="632" y2="647" stroke="#b3261e" stroke-width="2"/>
 <text x="1072.0" y="645" >Fecha del informe</text>
+<rect x="1220" y="632" width="34" height="15" fill="url(#rayas)" stroke="#b3261e" stroke-width="2.5"/>
+<text x="1262.0" y="645" >Camino crítico</text>
 <text x="20.0" y="678" font-size="12">Las barras de las tareas 1 a 5 anteriores a la fecha de inicio prevista (21/09) corresponden a la etapa de propuesta, encuesta y al backend inicial.</text>
+<text x="20.0" y="698" font-size="12" fill="#b3261e">Camino crítico: 7. Testing y despliegue → 8b. Memoria → Entrega final. Una demora en cualquiera de ellas corre la entrega; el margen es de 4 días.</text>
 </svg>

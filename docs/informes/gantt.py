@@ -23,6 +23,10 @@ TAREAS = [
     ("8b. Memoria", "En curso", "1, 2, 7, 8a", (d(22, 12), d(26, 12)), [(d(2, 11), d(9, 11))], (d(10, 11), d(22, 12))),
     ("8c. Manuales de usuario y técnico", "En curso", "6, 7", (d(22, 12), d(26, 12)), [(d(2, 11), d(2, 11))], (d(23, 11), d(15, 12))),
 ]
+# Camino crítico (Instructivo 7.9.2): tareas sin holgura, cuya demora corre la entrega.
+# 7 tiene que terminar para cerrar la memoria (8b), y sin memoria no hay entrega.
+CRITICAS = ("7.", "8b.")
+ROJO = "#b3261e"
 HITOS = [
     (d(14, 10), "1.er informe previsto (no presentado)"),
     (d(13, 11), "Envío al director"),
@@ -51,7 +55,7 @@ def texto(px, py, contenido, **atributos):
     return f'<text x="{px:.1f}" y="{py}" {extras}>{escape(contenido)}</text>'
 
 
-alto_total = Y0 + FILA * len(TAREAS) + ALTO_HITOS + 100
+alto_total = Y0 + FILA * len(TAREAS) + ALTO_HITOS + 120
 partes = [
     f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1480 {alto_total}" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#17233b">',
     '<defs><pattern id="rayas" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" fill="#fff"/><rect width="3" height="7" fill="#c8641e"/></pattern></defs>',
@@ -83,7 +87,17 @@ for fila, (nombre, estado, depende, previsto, trabajado, nuevo) in enumerate(TAR
     for desde, hasta in trabajado:
         partes.append(barra(desde, hasta, y + 20, 15, fill=COLOR["Finalizada"] if estado == "Finalizada" else COLOR["En curso"]))
     if nuevo:
-        partes.append(barra(*nuevo, y + 20, 15, fill="url(#rayas)", stroke="#c8641e"))
+        critica = nombre.startswith(CRITICAS)
+        partes.append(barra(*nuevo, y + 20, 15, fill="url(#rayas)", stroke=ROJO if critica else "#c8641e", stroke_width=2.5 if critica else 1))
+
+# Flechas del camino crítico: fin de 7 → fin de 8b → entrega
+fila = {nombre.split(" ")[0]: i for i, (nombre, *_) in enumerate(TAREAS)}
+fin = {nombre.split(" ")[0]: nuevo[1] for nombre, _, _, _, _, nuevo in TAREAS if nuevo}
+y7, y8b = Y0 + fila["7."] * FILA + 35, Y0 + fila["8b."] * FILA + 20
+y_entrega = Y0 + len(TAREAS) * FILA + 7
+partes.append(f'<defs><marker id="punta" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="{ROJO}"/></marker></defs>')
+partes.append(f'<path d="M{x(fin["7."]):.1f} {y7}V{y8b - 2}" stroke="{ROJO}" stroke-width="2" fill="none" marker-end="url(#punta)"/>')
+partes.append(f'<path d="M{x(fin["8b."]):.1f} {y8b + 15}V{y_entrega - 2}H{x(ENTREGA) - 9:.1f}" stroke="{ROJO}" stroke-width="2" fill="none" marker-end="url(#punta)"/>')
 
 y_hitos = Y0 + len(TAREAS) * FILA
 partes.append(f'<line x1="20" y1="{y_hitos}" x2="{X0 + ANCHO}" y2="{y_hitos}" stroke="#e3e6ec"/>')
@@ -106,11 +120,13 @@ leyenda = [
     (690, '<rect x="690" y="{y}" width="34" height="15" fill="url(#rayas)" stroke="#c8641e"/>', "Reprogramado"),
     (850, '<rect x="850" y="{y}" width="34" height="15" fill="#eceef2"/>', "Pausa del proyecto"),
     (1030, '<line x1="1047" x2="1047" y1="{y}" y2="{y2}" stroke="#b3261e" stroke-width="2"/>', "Fecha del informe"),
+    (1220, '<rect x="1220" y="{y}" width="34" height="15" fill="url(#rayas)" stroke="#b3261e" stroke-width="2.5"/>', "Camino crítico"),
 ]
 for px, forma, etiqueta in leyenda:
     partes.append(forma.format(y=y_ley, y2=y_ley + 15))
     partes.append(texto(px + 42, y_ley + 13, etiqueta))
 partes.append(texto(20, y_ley + 46, "Las barras de las tareas 1 a 5 anteriores a la fecha de inicio prevista (21/09) corresponden a la etapa de propuesta, encuesta y al backend inicial.", font_size=12))
+partes.append(texto(20, y_ley + 66, f"Camino crítico: 7. Testing y despliegue → 8b. Memoria → Entrega final. Una demora en cualquiera de ellas corre la entrega; el margen es de {(ENTREGA - fin['8b.']).days} días.", font_size=12, fill=ROJO))
 partes.append("</svg>")
 
 Path(__file__).with_name("gantt.svg").write_text("\n".join(partes), encoding="utf-8")

@@ -3,7 +3,7 @@ from datetime import date
 from pathlib import Path
 from xml.sax.saxutils import escape
 
-FECHA_INFORME = date(2026, 11, 9)
+FECHA_INFORME = date(2026, 11, 17)
 INICIO, FIN = date(2026, 5, 1), date(2026, 12, 31)
 ENTREGA = date(2026, 12, 26)
 PAUSA = (date(2026, 8, 22), date(2026, 11, 2))
@@ -12,15 +12,15 @@ d = lambda dia, mes: date(2026, mes, dia)  # noqa: E731
 
 # nombre, estado, depende de, previsto en el protocolo, trabajado, reprogramado
 TAREAS = [
-    ("1. Relevamiento y especificación", "Demorada", "–", (d(21, 9), d(1, 10)), [(d(28, 5), d(14, 9)), (d(2, 11), d(9, 11))], (d(10, 11), d(13, 11))),
-    ("2. Arquitectura, datos y UI/UX", "Demorada", "1", (d(1, 10), d(15, 10)), [(d(13, 8), d(13, 8)), (d(2, 11), d(2, 11)), (d(9, 11), d(9, 11))], (d(10, 11), d(13, 11))),
+    ("1. Relevamiento y especificación", "Demorada", "–", (d(21, 9), d(1, 10)), [(d(28, 5), d(14, 9)), (d(2, 11), d(9, 11)), (d(16, 11), d(16, 11))], (d(17, 11), d(26, 11))),
+    ("2. Arquitectura, datos y UI/UX", "Demorada", "1", (d(1, 10), d(15, 10)), [(d(13, 8), d(13, 8)), (d(2, 11), d(2, 11)), (d(9, 11), d(9, 11)), (d(16, 11), d(16, 11))], (d(17, 11), d(26, 11))),
     ("3. Backend y API", "Finalizada", "2", (d(15, 10), d(3, 11)), [(d(9, 8), d(22, 8)), (d(2, 11), d(9, 11))], None),
     ("4. Módulo transaccional", "Finalizada", "3", (d(3, 11), d(15, 11)), [(d(14, 8), d(16, 8)), (d(2, 11), d(3, 11))], None),
     ("5. Validación QR", "Finalizada", "3, 4", (d(15, 11), d(25, 11)), [(d(14, 8), d(14, 8)), (d(9, 11), d(9, 11))], None),
     ("6. Frontend responsive", "Finalizada", "3", (d(25, 11), d(12, 12)), [(d(9, 11), d(9, 11))], None),
-    ("7. Testing y despliegue", "En curso", "4, 5, 6", (d(12, 12), d(22, 12)), [(d(2, 11), d(9, 11))], (d(10, 11), d(5, 12))),
-    ("8a. Marco teórico y estado del arte", "Demorada", "–", None, [], (d(10, 11), d(30, 11))),
-    ("8b. Memoria", "En curso", "1, 2, 7, 8a", (d(22, 12), d(26, 12)), [(d(2, 11), d(9, 11))], (d(10, 11), d(22, 12))),
+    ("7. Testing y despliegue", "En curso", "4, 5, 6", (d(12, 12), d(22, 12)), [(d(2, 11), d(9, 11))], (d(18, 11), d(5, 12))),
+    ("8a. Marco teórico y estado del arte", "Demorada", "–", None, [], (d(18, 11), d(30, 11))),
+    ("8b. Memoria", "En curso", "1, 2, 7, 8a", (d(22, 12), d(26, 12)), [(d(2, 11), d(9, 11)), (d(16, 11), d(16, 11))], (d(17, 11), d(22, 12))),
     ("8c. Manuales de usuario y técnico", "En curso", "6, 7", (d(22, 12), d(26, 12)), [(d(2, 11), d(2, 11))], (d(23, 11), d(15, 12))),
 ]
 # Camino crítico (Instructivo 7.9.2): tareas sin holgura, cuya demora corre la entrega.
@@ -29,7 +29,7 @@ CRITICAS = ("7.", "8b.")
 ROJO = "#b3261e"
 HITOS = [
     (d(14, 10), "1.er informe previsto (no presentado)"),
-    (d(13, 11), "Envío al director"),
+    (d(17, 11), "Envío al director"),
     (d(19, 11), "Informes de avance"),
     (ENTREGA, "Entrega final"),
 ]

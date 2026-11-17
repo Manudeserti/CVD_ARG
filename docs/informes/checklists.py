@@ -21,41 +21,41 @@ GANTT = ("Nuevo diagrama de Gantt actualizado presentado", T, None)
 PRIMERO = [
     ("Introducción", P, j(
         "borrador con contexto, motivación, problema y alcance, basado en el protocolo y la encuesta.",
-        "versión final revisada con el director.",
+        "versión final con las correcciones del director.",
         CAUSA, "no afecta otras tareas ni la fecha de entrega.",
-        "reescribir el borrador y revisarlo con el director.", "18/11/2026.")),
+        "reescribir el borrador e incorporar las observaciones del director.", "26/11/2026.")),
     ("Objetivos", P, j(
         "objetivo general definido en el protocolo y borrador de ocho objetivos específicos.",
         "validar los objetivos específicos con el director.",
         CAUSA, "los requerimientos ya están vinculados a esta propuesta y podrían ajustarse.",
-        "revisarlos con el director antes de presentar.", "18/11/2026.")),
+        "ajustarlos con las observaciones del director.", "26/11/2026.")),
     ("Marco teórico o estado del arte", N, j(
         "solo la comparación con Colmena Escolar y ScoolApp incluida en el protocolo.",
         "búsqueda y selección de bibliografía, marco teórico y estado del arte con citas en APA 7.",
         CAUSA, "no demora la implementación, ya avanzada, pero condiciona la redacción del informe final.",
-        "seleccionar y leer las fuentes desde el 10/11 y revisar el avance con el director.", "30/11/2026.")),
+        "seleccionar y leer las fuentes desde el 18/11 y revisar el avance con el director.", "30/11/2026.")),
     ("Metodología", P, j(
         "borrador con las metodologías de relevamiento, desarrollo y validación.",
-        "versión final revisada con el director.",
+        "versión final con las correcciones del director.",
         CAUSA, "no afecta otras tareas ni la fecha de entrega.",
-        "reescribir el borrador y revisarlo con el director.", "18/11/2026.")),
+        "reescribir el borrador e incorporar las observaciones del director.", "26/11/2026.")),
     ("Requerimientos preliminares", T, None),
     GANTT,
 ]
 
 SEGUNDO = [
     ("Requerimientos completos", P, j(
-        "requerimientos funcionales y no funcionales, reglas de negocio, restricciones, diagrama de casos de uso y especificación de los casos principales.",
+        "requerimientos funcionales y no funcionales, reglas de negocio, restricciones, diagrama de casos de uso y especificación en formato completo de los casos principales, según la notación de Larman.",
         "validación con el director y definición de la meta de tiempo de respuesta (RNF-10).",
         CAUSA + " Por eso la formalización quedó después del código.",
         "no afecta la implementación ni la fecha de entrega.",
-        "revisar el documento con el director.", "18/11/2026.")),
+        "incorporar las observaciones del director.", "26/11/2026.")),
     ("Diseño del sistema", P, j(
-        "arquitectura, diagramas de despliegue y paquetes, modelo de dominio, diseño de datos, diagramas de estados y de secuencia, seguridad y patrones.",
-        "validación con el director.",
+        "arquitectura en capas, diagramas de despliegue (con componentes) y de paquetes, modelo del dominio, modelo de datos, diagramas de estados (incluida la navegación) y de secuencia, seguridad y patrones. Los diagramas se rehicieron según la notación UML de Larman.",
+        "validación con el director y definir si se agrega un diagrama de clases de diseño.",
         CAUSA + " Por eso parte de la documentación del diseño se hizo después de implementar.",
         "no afecta la implementación ni la fecha de entrega.",
-        "revisar el documento con el director.", "18/11/2026.")),
+        "incorporar las observaciones del director.", "26/11/2026.")),
     ("Implementación", T, None),
     ("Plan de pruebas", P, j(
         "estrategia, tipos de prueba, entornos, criterios de aceptación, 36 casos de prueba y matriz de trazabilidad con los requerimientos. Hay pruebas automáticas de API y de punta a punta, y verificaciones manuales de pago y escaneo.",

@@ -91,18 +91,18 @@ La API valida lo mismo para devolver mensajes claros, pero la restricción en la
 
 ## Estados de una transacción
 
-```mermaid
-stateDiagram-v2
-    [*] --> pendiente: el comprador inicia la operación
-    pendiente --> retenido: Mercado Pago aprueba el pago (solo ventas)
-    pendiente --> liberado: el donante escanea el QR (donaciones)
-    retenido --> liberado: el vendedor escanea el QR
-    pendiente --> cancelado: cancela una parte / vence el plazo
-    retenido --> reembolsado: cancela una parte / vence el plazo
-    liberado --> [*]
-    cancelado --> [*]
-    reembolsado --> [*]
-```
+![Diagrama de estados de una operación](diagramas/estados-operacion.svg)
+
+El diagrama sigue la notación de Larman (2003, cap. 29):
+- Cada transición se rotula con el evento que la dispara.
+- Entre corchetes va la condición de guarda, que tiene que cumplirse para que la transición ocurra.
+- Después de la barra va la acción que se ejecuta al pasar de estado.
+
+Los estados llevan el mismo nombre que el valor de `estado_pago` en la base.
+
+- **`cancelar`** lo dispara una de las partes (CU-12) o el Planificador de tareas cuando vence un plazo (CU-14), que ejecuta la misma cancelación. Si el pago estaba retenido, la acción `reembolsar` le pide la devolución a Mercado Pago.
+- **`confirmarEntrega [donación]`**: una donación no tiene pago, así que se entrega directamente desde `Pendiente`.
+- **`pagoAprobado / reembolsar`** desde `Cancelado` es el pago tardío: el comprador paga una reserva que ya venció, y el sistema le devuelve el dinero.
 
 ## Estados de una publicación
 
@@ -120,3 +120,7 @@ Una operación cancelada, reembolsada o vencida devuelve la publicación a `disp
 ## Concurrencia
 
 Las operaciones que leen un estado y después lo cambian (comprar, escanear, cancelar, vencer, dar de baja) bloquean la fila con `SELECT ... FOR UPDATE` dentro de la misma transacción. Si dos compradores intentan reservar el mismo artículo a la vez, el segundo espera a que termine el primero y después encuentra el artículo `reservado`. Lo mismo evita que una cancelación y un escaneo simultáneos dejen la operación en un estado inconsistente.
+
+## Referencias
+
+Larman, C. (2003). *UML y patrones: Una introducción al análisis y diseño orientado a objetos y al proceso unificado* (2.ª ed.). Pearson Educación.

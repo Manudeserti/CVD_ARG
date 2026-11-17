@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 370" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#111">
+<defs><marker id="flecha" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#111" stroke-width="1.2"/></marker></defs>
+<rect width="1100" height="370" fill="#fff"/>
+<circle cx="60" cy="200" r="7" fill="#111"/>
+<rect x="140" y="180" width="140" height="40" rx="14" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<text x="210.0" y="204.0" text-anchor="middle">Pendiente</text>
+<rect x="490" y="60" width="140" height="40" rx="14" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<text x="560.0" y="84.0" text-anchor="middle">Retenido</text>
+<rect x="830" y="60" width="140" height="40" rx="14" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<text x="900.0" y="84.0" text-anchor="middle">Liberado</text>
+<rect x="490" y="300" width="140" height="40" rx="14" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<text x="560.0" y="324.0" text-anchor="middle">Cancelado</text>
+<rect x="830" y="300" width="140" height="40" rx="14" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<text x="900.0" y="324.0" text-anchor="middle">Reembolsado</text>
+<path d="M67 200H139" fill="none" stroke="#111" stroke-width="1.1" marker-end="url(#flecha)"/>
+<text x="103" y="192" text-anchor="middle">reservar</text>
+<path d="M280 190L489 92" fill="none" stroke="#111" stroke-width="1.1" marker-end="url(#flecha)"/>
+<text x="330" y="128" text-anchor="start">pagoAprobado</text>
+<path d="M630 80H829" fill="none" stroke="#111" stroke-width="1.1" marker-end="url(#flecha)"/>
+<text x="730" y="72" text-anchor="middle">confirmarEntrega</text>
+<path d="M210 180V25H900V59" fill="none" stroke="#111" stroke-width="1.1" marker-end="url(#flecha)"/>
+<text x="560" y="19" text-anchor="middle">confirmarEntrega [donación]</text>
+<path d="M280 210L489 318" fill="none" stroke="#111" stroke-width="1.1" marker-end="url(#flecha)"/>
+<text x="345" y="288" text-anchor="start">cancelar</text>
+<path d="M630 95L830 300" fill="none" stroke="#111" stroke-width="1.1" marker-end="url(#flecha)"/>
+<text x="742" y="205" text-anchor="start">cancelar / reembolsar</text>
+<path d="M630 320H829" fill="none" stroke="#111" stroke-width="1.1" marker-end="url(#flecha)"/>
+<text x="730" y="312" text-anchor="middle">pagoAprobado / reembolsar</text>
+</svg>

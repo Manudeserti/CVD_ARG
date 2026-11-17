@@ -67,22 +67,13 @@ Las clases conceptuales salieron de los casos de uso del capítulo 06 y de la li
 
 El diagrama de estados de la operación está en el capítulo 02, y los de secuencia de pagar y cancelar, en el capítulo 03. Este es el diagrama de estados de una publicación:
 
-```mermaid
-stateDiagram-v2
-    [*] --> disponible: se publica con un colegio de la lista
-    [*] --> pendiente_colegio: se pide el alta de un colegio
-    pendiente_colegio --> disponible: solicitud aceptada o duplicada
-    pendiente_colegio --> borrador: solicitud rechazada
-    borrador --> disponible: el dueño elige otro colegio
-    disponible --> reservado: alguien lo reserva
-    reservado --> disponible: la operación se cancela o vence
-    reservado --> vendido: se escanea el QR
-    disponible --> baja: el dueño lo retira
-    pendiente_colegio --> baja: el dueño lo retira
-    borrador --> baja: el dueño lo retira
-    vendido --> [*]
-    baja --> [*]
-```
+![Diagrama de estados de una publicación](diagramas/estados-publicacion.svg)
+
+Sigue la misma notación que el de la operación: evento, `[condición de guarda]` y `/ acción`. Los estados llevan el nombre del valor de `estado` en la base.
+
+- **Superestado `SinReserva`:** agrupa los tres estados en los que la publicación no tiene una operación en curso. Desde cualquiera de ellos el dueño puede darla de baja (RN-11). Larman (2003, fig. 29.5) usa estados anidados para esto: los subestados heredan la transición del superestado, y una sola flecha `darDeBaja` reemplaza a tres.
+- **Rombo después de `publicar`:** es una bifurcación. La publicación empieza en `Disponible` o en `PendienteDeColegio`, según si el colegio estaba en la lista.
+- **`cancelar`** cubre tanto la cancelación de una parte como el vencimiento de un plazo, igual que en el diagrama de la operación.
 
 ## Diseño de datos
 

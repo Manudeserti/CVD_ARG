@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 480" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#111">
+<defs><marker id="flecha" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#111" stroke-width="1.2"/></marker></defs>
+<rect width="1100" height="480" fill="#fff"/>
+<circle cx="50" cy="200" r="7" fill="#111"/><rect x="180" y="40" width="520" height="330" rx="18" fill="none" stroke="#111" stroke-width="1.2"/><text x="196" y="62" font-weight="700">SinReserva</text><path d="M130 192L138 200L130 208L122 200Z" fill="#fff" stroke="#111"/>
+<rect x="230" y="180" width="160" height="40" rx="14" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<text x="310.0" y="204.0" text-anchor="middle">PendienteDeColegio</text>
+<rect x="230" y="300" width="160" height="40" rx="14" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<text x="310.0" y="324.0" text-anchor="middle">Borrador</text>
+<rect x="510" y="80" width="140" height="40" rx="14" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<text x="580.0" y="104.0" text-anchor="middle">Disponible</text>
+<rect x="770" y="80" width="140" height="40" rx="14" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<text x="840.0" y="104.0" text-anchor="middle">Reservado</text>
+<rect x="770" y="220" width="140" height="40" rx="14" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<text x="840.0" y="244.0" text-anchor="middle">Vendido</text>
+<rect x="370" y="420" width="140" height="40" rx="14" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<text x="440.0" y="444.0" text-anchor="middle">Baja</text>
+<path d="M57 200H121" fill="none" stroke="#111" stroke-width="1.1" marker-end="url(#flecha)"/>
+<text x="89" y="192" text-anchor="middle">publicar</text>
+<path d="M138 200H229" fill="none" stroke="#111" stroke-width="1.1" marker-end="url(#flecha)"/>
+<text x="184" y="193" text-anchor="middle">[colegio nuevo]</text>
+<path d="M130 192V100H509" fill="none" stroke="#111" stroke-width="1.1" marker-end="url(#flecha)"/>
+<text x="330" y="93" text-anchor="middle">[colegio en la lista]</text>
+<path d="M390 190L529 121" fill="none" stroke="#111" stroke-width="1.1" marker-end="url(#flecha)"/>
+<text x="440" y="192" text-anchor="start">resolverSolicitud</text>
+<text x="440" y="206" text-anchor="start">[aceptada o duplicada]</text>
+<path d="M310 220V299" fill="none" stroke="#111" stroke-width="1.1" marker-end="url(#flecha)"/>
+<text x="318" y="265" text-anchor="start">resolverSolicitud [rechazada]</text>
+<path d="M390 320H580V121" fill="none" stroke="#111" stroke-width="1.1" marker-end="url(#flecha)"/>
+<text x="470" y="313" text-anchor="middle">elegirColegio</text>
+<path d="M650 95H769" fill="none" stroke="#111" stroke-width="1.1" marker-end="url(#flecha)"/>
+<text x="710" y="88" text-anchor="middle">reservar</text>
+<path d="M770 110H651" fill="none" stroke="#111" stroke-width="1.1" marker-end="url(#flecha)"/>
+<text x="710" y="128" text-anchor="middle">cancelar</text>
+<path d="M840 120V219" fill="none" stroke="#111" stroke-width="1.1" marker-end="url(#flecha)"/>
+<text x="850" y="175" text-anchor="start">confirmarEntrega</text>
+<path d="M440 370V419" fill="none" stroke="#111" stroke-width="1.1" marker-end="url(#flecha)"/>
+<text x="450" y="400" text-anchor="start">darDeBaja</text>
+</svg>

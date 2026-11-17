@@ -30,10 +30,10 @@ PRIMERO = [
         CAUSA, "los requerimientos ya están vinculados a esta propuesta y podrían ajustarse.",
         "ajustarlos con las observaciones del director.", "26/11/2026.")),
     ("Marco teórico o estado del arte", N, j(
-        "solo la comparación con Colmena Escolar y ScoolApp incluida en el protocolo.",
-        "búsqueda y selección de bibliografía, marco teórico y estado del arte con citas en APA 7.",
-        CAUSA, "no demora la implementación, ya avanzada, pero condiciona la redacción del informe final.",
-        "seleccionar y leer las fuentes desde el 18/11 y revisar el avance con el director.", "30/11/2026.")),
+        "comparación con soluciones existentes (Colmena Escolar y ScoolApp) en el protocolo, encuesta con 381 respuestas, relevamiento normativo de la retención de fondos (BCRA, UIF, Ley 24.240) y documentación técnica oficial de Mercado Pago. Las decisiones técnicas se registraron con las alternativas evaluadas, y el diseño sigue la notación UML de Larman.",
+        "búsqueda de bibliografía académica y redacción del marco teórico y del estado del arte con citas en APA 7.",
+        CAUSA, "no demora la implementación, ya avanzada. La bibliografía se usa para fundamentar las decisiones registradas y, si alguna fuente lo indica, revisarlas.",
+        "seleccionar y leer las fuentes desde el 18/11, vincular cada concepto con el diseño, la implementación y las pruebas, y revisar el avance con el director.", "30/11/2026.")),
     ("Metodología", P, j(
         "borrador con las metodologías de relevamiento, desarrollo y validación.",
         "versión final con las correcciones del director.",
@@ -47,13 +47,13 @@ SEGUNDO = [
     ("Requerimientos completos", P, j(
         "requerimientos funcionales y no funcionales, reglas de negocio, restricciones, diagrama de casos de uso y especificación en formato completo de los casos principales, según la notación de Larman.",
         "validación con el director y definición de la meta de tiempo de respuesta (RNF-10).",
-        CAUSA + " Por eso la formalización quedó después del código.",
+        CAUSA + " Los requerimientos ya estaban definidos en el protocolo y en la encuesta; su formalización en casos de uso se completó después del código.",
         "no afecta la implementación ni la fecha de entrega.",
         "incorporar las observaciones del director.", "26/11/2026.")),
     ("Diseño del sistema", P, j(
         "arquitectura en capas, diagramas de despliegue (con componentes) y de paquetes, modelo del dominio, modelo de datos, diagramas de estados (incluida la navegación) y de secuencia, seguridad y patrones. Los diagramas se rehicieron según la notación UML de Larman.",
         "validación con el director y definir si se agrega un diagrama de clases de diseño.",
-        CAUSA + " Por eso parte de la documentación del diseño se hizo después de implementar.",
+        CAUSA + " Las decisiones de diseño se tomaron al implementar, evaluando alternativas, y quedaron registradas; los diagramas UML se formalizaron después.",
         "no afecta la implementación ni la fecha de entrega.",
         "incorporar las observaciones del director.", "26/11/2026.")),
     ("Implementación", T, None),

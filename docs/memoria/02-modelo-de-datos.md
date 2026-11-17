@@ -2,56 +2,24 @@
 
 > Borrador. El esquema completo está en [`backend/database/schema.sql`](../../backend/database/schema.sql) y los cambios sobre la base existente en `backend/database/migraciones/`.
 
-## Entidades
+## Modelo de datos
 
-```mermaid
-erDiagram
-    USUARIOS ||--o{ PUBLICACIONES : publica
-    INSTITUCIONES |o--o{ PUBLICACIONES : "pertenece a"
-    PUBLICACIONES ||--o{ TRANSACCIONES_ESCROW : genera
-    USUARIOS ||--o{ TRANSACCIONES_ESCROW : "compra / vende"
+El modelo de datos usa el perfil UML de modelado de datos (Larman, 2003, cap. 34, fig. 34.2):
+- Cada tabla es una clase con el estereotipo «Table».
+- Cada columna figura con su tipo de PostgreSQL. Las claves primarias se marcan con «PK» y las ajenas con «FK».
+- Las relaciones son asociaciones con multiplicidad. Un 1 del lado de la tabla referenciada indica que la clave ajena es obligatoria (`NOT NULL`), y un 0..1, que puede quedar vacía.
+- Como en el libro, las claves ajenas obligatorias llevan además un rombo relleno del lado de la tabla referenciada. Ese rombo de agregación indica que no puede existir una fila sin su fila relacionada; por ejemplo, una transacción sin su publicación. No significa que se borre en cascada: las filas no se borran (las publicaciones se dan de baja con un estado).
 
-    USUARIOS {
-        uuid id PK
-        text email UK
-        text nombre
-        text apellido
-        text password_hash
-        text telefono
-        text rol
-        int intentos_fallidos
-        timestamptz bloqueado_hasta
-    }
-    INSTITUCIONES {
-        int id PK
-        text nombre
-        text ciudad
-        text provincia
-    }
-    PUBLICACIONES {
-        uuid id PK
-        uuid vendedor_id FK
-        int institucion_id FK
-        text titulo
-        text categoria
-        text talle
-        text tipo
-        numeric precio
-        text estado
-        text_array imagenes_urls
-    }
-    TRANSACCIONES_ESCROW {
-        uuid id PK
-        uuid publicacion_id FK
-        uuid comprador_id FK
-        uuid vendedor_id FK
-        numeric monto
-        numeric comision_plataforma
-        text id_pago_externo
-        text estado_pago
-        uuid qr_token UK
-    }
-```
+![Modelo de datos](diagramas/modelo-de-datos.svg)
+
+Las columnas y los tipos son los de `schema.sql`. Las restricciones que no se ven en el diagrama son:
+- `email` y `qr_token` son únicos.
+- Los valores permitidos de `rol`, `categoria`, `tipo` y de cada `estado` se controlan con `CHECK`.
+- Está la restricción `precio_segun_tipo`, que se explica más abajo.
+
+Que una publicación tenga como máximo una solicitud de colegio (0..1) lo garantiza el código y no la base. La solicitud solo se crea al publicar. Si se rechaza, el dueño elige otro colegio de la lista y no se crea otra.
+
+Este modelo no es el modelo del dominio del capítulo 07: aquel muestra clases conceptuales del problema y este, cómo se guardan los datos.
 
 Decisiones del modelo:
 
@@ -80,18 +48,18 @@ La API valida lo mismo para devolver mensajes claros, pero la restricción en la
 
 ## Estados de una transacción
 
-```mermaid
-stateDiagram-v2
-    [*] --> pendiente: el comprador inicia la operación
-    pendiente --> retenido: Mercado Pago aprueba el pago (solo ventas)
-    pendiente --> liberado: el donante escanea el QR (donaciones)
-    retenido --> liberado: el vendedor escanea el QR
-    pendiente --> cancelado: cancela una parte / vence el plazo
-    retenido --> reembolsado: cancela una parte / vence el plazo
-    liberado --> [*]
-    cancelado --> [*]
-    reembolsado --> [*]
-```
+![Diagrama de estados de una operación](diagramas/estados-operacion.svg)
+
+El diagrama sigue la notación de Larman (2003, cap. 29):
+- Cada transición se rotula con el evento que la dispara.
+- Entre corchetes va la condición de guarda, que tiene que cumplirse para que la transición ocurra.
+- Después de la barra va la acción que se ejecuta al pasar de estado.
+
+Los estados llevan el mismo nombre que el valor de `estado_pago` en la base.
+
+- **`cancelar`** lo dispara una de las partes (CU-12) o el Planificador de tareas cuando vence un plazo (CU-14), que ejecuta la misma cancelación. Si el pago estaba retenido, la acción `reembolsar` le pide la devolución a Mercado Pago.
+- **`confirmarEntrega [donación]`**: una donación no tiene pago, así que se entrega directamente desde `Pendiente`.
+- **`pagoAprobado / reembolsar`** desde `Cancelado` es el pago tardío: el comprador paga una reserva que ya venció, y el sistema le devuelve el dinero.
 
 ## Estados de una publicación
 
@@ -101,9 +69,15 @@ stateDiagram-v2
 | `reservado` | Tiene una operación en curso | No |
 | `vendido` | Se escaneó el QR (también para donaciones entregadas) | No |
 | `baja` | El dueño la retiró | No |
+| `pendiente_colegio` | Espera que se resuelva el alta de su colegio | No |
+| `borrador` | El alta del colegio se rechazó y el dueño tiene que elegir otro | No |
 
 Una operación cancelada, reembolsada o vencida devuelve la publicación a `disponible`.
 
 ## Concurrencia
 
 Las operaciones que leen un estado y después lo cambian (comprar, escanear, cancelar, vencer, dar de baja) bloquean la fila con `SELECT ... FOR UPDATE` dentro de la misma transacción. Si dos compradores intentan reservar el mismo artículo a la vez, el segundo espera a que termine el primero y después encuentra el artículo `reservado`. Lo mismo evita que una cancelación y un escaneo simultáneos dejen la operación en un estado inconsistente.
+
+## Referencias
+
+Larman, C. (2003). *UML y patrones: Una introducción al análisis y diseño orientado a objetos y al proceso unificado* (2.ª ed.). Pearson Educación.

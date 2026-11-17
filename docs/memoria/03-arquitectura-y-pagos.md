@@ -4,17 +4,7 @@
 
 ## Componentes
 
-```mermaid
-flowchart LR
-    U[Navegador del usuario] -->|HTTPS| F[Frontend React<br/>Vercel]
-    F -->|API REST + JWT| B[Backend FastAPI<br/>Vercel Functions]
-    B -->|SQL| D[(PostgreSQL<br/>Supabase)]
-    F -->|Fotos| S[Supabase Storage]
-    B -->|Preferencias, pagos, reembolsos| MP[Mercado Pago]
-    MP -->|Webhook firmado| B
-    U -->|Paga| MP
-    C[Vercel Cron<br/>diario] -->|GET /vencer| B
-```
+El diagrama de despliegue y componentes está en el [capítulo 07](07-diseno-del-sistema.md#diagrama-de-despliegue-y-componentes).
 
 | Componente | Responsabilidad |
 |---|---|
@@ -24,30 +14,42 @@ flowchart LR
 | Mercado Pago | Cobro al comprador y devoluciones (sandbox en el prototipo) |
 | Vercel Cron | Vencimiento diario de operaciones; mantiene activa la base |
 
-## Flujo de una venta
+## Diagramas de secuencia de la integración con Mercado Pago
 
-```mermaid
-sequenceDiagram
-    actor C as Comprador
-    participant B as Backend
-    participant MP as Mercado Pago
-    actor V as Vendedor
+Son diagramas de interacción de diseño, con la notación de Larman (2003, cap. 15). Los participantes son las piezas del software que colaboran en cada caso de uso:
+- `:PantallaDeOperación` es la pantalla del frontend (`Transaccion.tsx`). Es una instancia, por eso va subrayada.
+- `transaccion_router` y `pago_router` reciben los pedidos.
+- `pagos` es el módulo que habla con Mercado Pago.
 
-    C->>B: POST /transacciones (reserva el artículo)
-    B-->>C: transacción "pendiente" + qr_token
-    C->>B: POST /transacciones/{id}/pago
-    B->>MP: crear preferencia (external_reference = id)
-    MP-->>B: init_point
-    B-->>C: url_pago
-    C->>MP: paga en Checkout Pro
-    MP->>B: webhook (firmado, data.id = pago)
-    B->>MP: GET /v1/payments/{pago}
-    B->>B: "pendiente" → "retenido"
-    C->>B: GET /transacciones/{id}/contacto
-    Note over C,V: Coordinan el encuentro
-    V->>B: POST /transacciones/liberar (escanea el QR del comprador)
-    B->>B: "retenido" → "liberado", artículo "vendido"
-```
+Estos tres son módulos de Python sin clases, que se usan llamando a sus funciones. Larman (2003, fig. 15.27) dibuja los mensajes a una clase, y no a una instancia, con el nombre sin subrayar.
+
+Los mensajes son las funciones reales del código, con sus parámetros. Las llamadas a Mercado Pago, que es un sistema externo, se nombran por su intención. Los accesos a la base de datos no son mensajes entre objetos, así que figuran como notas.
+
+Además:
+- Las cajas de activación muestran quién tiene el control en cada momento.
+- Los retornos van en línea punteada.
+- Una condición entre corchetes indica que el mensaje se envía solo si se cumple.
+- El asterisco marca una iteración.
+
+Hay un diagrama por caso de uso. Se muestran los dos que pasan por Mercado Pago, que son las integraciones críticas del sistema. La reserva y la confirmación de la entrega no involucran sistemas externos, y sus pasos están en el capítulo 06.
+
+### CU-08 · Pagar la reserva
+
+![Diagrama de secuencia de CU-08 Pagar la reserva](diagramas/secuencia-pagar.svg)
+
+Antes de crear la preferencia, `iniciar_pago` lee la operación y verifica que sea una venta pendiente del comprador que pide pagar. Cuando llega el aviso, `pago_router` no se fía de su contenido: verifica la firma y le consulta el pago a Mercado Pago (RNF-07).
+
+El pago se confirma por dos caminos que no dependen entre sí:
+- Mercado Pago le avisa al backend que recibió el pago (`webhook_mercadopago`).
+- Mercado Pago lleva al comprador de vuelta a la pantalla de la operación (`volver`).
+
+Como el aviso puede llegar después de que el comprador vuelve, la pantalla consulta las operaciones cada 5 segundos hasta ver la suya retenida.
+
+### CU-12 · Cancelar una operación
+
+![Diagrama de secuencia de CU-12 Cancelar una operación](diagramas/secuencia-cancelar.svg)
+
+Antes de llamar a `_cancelar`, `cancelar_transaccion` lee la operación con bloqueo de fila, para que una cancelación y un escaneo simultáneos no se pisen. También verifica que el usuario sea parte de la operación y que esta siga pendiente o retenida. La devolución se pide antes de modificar la base. Los dos cambios en la base, el de la operación y el de la publicación, se confirman juntos al final.
 
 ## Decisiones de diseño del pago
 
@@ -66,3 +68,7 @@ sequenceDiagram
 | Pago de una reserva | 24 horas | La venta pasa a `cancelado` y el artículo vuelve al catálogo |
 | Encuentro (venta) | 7 días | Se cancela y el pago se devuelve (`reembolsado`) |
 | Encuentro (donación) | 4 días | Se cancela y el artículo vuelve al catálogo |
+
+## Referencias
+
+Larman, C. (2003). *UML y patrones: Una introducción al análisis y diseño orientado a objetos y al proceso unificado* (2.ª ed.). Pearson Educación.

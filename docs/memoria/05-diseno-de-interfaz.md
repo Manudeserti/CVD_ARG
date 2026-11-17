@@ -10,20 +10,17 @@ El estilo surgió de comparar cuatro direcciones visuales: fondo de hoja cuadric
 
 ## Mapa de navegación
 
-```mermaid
-flowchart TD
-    B["/bienvenida (solo la primera vez)"] --> C
-    C["/ Catálogo y filtros"] --> D["/publicaciones/:id Detalle"]
-    D -->|Sin sesión| I["/ingresar"]
-    I <--> R["/registro"]
-    D -->|Reservar| O["/transacciones/:id Operación"]
-    O -->|Pagar| MP[Mercado Pago]
-    MP -->|Vuelve| O
-    T["/transacciones Historial"] --> O
-    O -->|Vendedor| E["/escanear"]
-    E --> O
-    P["/publicar"] --> M["/mis-publicaciones"]
-```
+La navegación se modela con un diagrama de estados, como propone Larman (2003, cap. 29) para las ventanas de una aplicación:
+- Cada pantalla es un estado.
+- Cada acción del usuario es una transición, con su condición de guarda entre corchetes cuando la tiene.
+
+![Diagrama de estados de la navegación](diagramas/navegacion.svg)
+
+- **Superestado `ConMenu`:** agrupa las pantallas que muestran el menú. Las cuatro opciones del menú (`irACatálogo`, `irAPublicar`, `irAMisArtículos` e `irAOperaciones`) salen del borde del superestado, así que valen desde cualquiera de esas pantallas.
+- **`pedirIngreso [sin sesión]`:** ocurre al tocar "Ingresar" o al intentar algo que requiere cuenta, como publicar, reservar o ver las operaciones.
+- **H, pseudo-estado de historia de UML:** al ingresar o registrarse, la aplicación vuelve a la pantalla en la que estaba el usuario.
+- **El rombo inicial** elige la primera pantalla: la bienvenida solo aparece en la primera visita.
+- **`MercadoPago` y `Escanear`** quedan fuera del menú: el primero es el sitio externo de pago, y el segundo ocupa toda la pantalla con la cámara.
 
 | Ruta | Función | Requerimientos | Sesión |
 |---|---|---|---|
@@ -49,3 +46,7 @@ flowchart TD
 | `cancelado`, `reembolsado` | Solo informativo | Solo informativo |
 
 El QR se muestra únicamente en los estados en los que se puede escanear (RN-06). La tabla sigue las reglas RN-04 a RN-10.
+
+## Referencias
+
+Larman, C. (2003). *UML y patrones: Una introducción al análisis y diseño orientado a objetos y al proceso unificado* (2.ª ed.). Pearson Educación.

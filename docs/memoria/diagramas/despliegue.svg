@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 720" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#111">
+<defs><marker id="dep" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#111" stroke-width="1.1"/></marker></defs>
+<rect width="1180" height="720" fill="#fff"/>
+<path d="M30 230L42 218H312V478L300 490" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<path d="M300 230L312 218" fill="none" stroke="#111" stroke-width="1.2"/>
+<rect x="30" y="230" width="270" height="260" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<text x="40" y="250" text-decoration="underline">: Dispositivo del usuario</text>
+<rect x="58" y="270" width="222" height="190" fill="#fff" stroke="#111"/>
+<rect x="50" y="280" width="16" height="10" fill="#fff" stroke="#111"/>
+<rect x="50" y="298" width="16" height="10" fill="#fff" stroke="#111"/>
+<text x="173.0" y="288" text-anchor="middle" font-size="11">«browser»</text>
+<text x="173.0" y="303" text-anchor="middle" text-decoration="underline">:Navegador</text>
+<rect x="88" y="340" width="172" height="50" fill="#fff" stroke="#111"/>
+<rect x="80" y="350" width="16" height="10" fill="#fff" stroke="#111"/>
+<rect x="80" y="368" width="16" height="10" fill="#fff" stroke="#111"/>
+<text x="178.0" y="358" text-anchor="middle" font-size="11">«SPA»</text>
+<text x="178.0" y="373" text-anchor="middle" text-decoration="underline">:Frontend</text>
+<path d="M370 60L382 48H802V648L790 660" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<path d="M790 60L802 48" fill="none" stroke="#111" stroke-width="1.2"/>
+<rect x="370" y="60" width="420" height="600" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<text x="380" y="80" text-decoration="underline">: Vercel</text>
+<rect x="430" y="110" width="330" height="60" fill="#fff" stroke="#111"/>
+<rect x="422" y="120" width="16" height="10" fill="#fff" stroke="#111"/>
+<rect x="422" y="138" width="16" height="10" fill="#fff" stroke="#111"/>
+<text x="599.0" y="128" text-anchor="middle" font-size="11">«archivos estáticos»</text>
+<text x="599.0" y="143" text-anchor="middle" text-decoration="underline">:FrontendCompilado</text>
+<rect x="430" y="270" width="330" height="170" fill="#fff" stroke="#111"/>
+<rect x="422" y="280" width="16" height="10" fill="#fff" stroke="#111"/>
+<rect x="422" y="298" width="16" height="10" fill="#fff" stroke="#111"/>
+<text x="599.0" y="288" text-anchor="middle" font-size="11">«función serverless»</text>
+<text x="599.0" y="303" text-anchor="middle" text-decoration="underline">:Backend</text>
+<rect x="430" y="560" width="330" height="60" fill="#fff" stroke="#111"/>
+<rect x="422" y="570" width="16" height="10" fill="#fff" stroke="#111"/>
+<rect x="422" y="588" width="16" height="10" fill="#fff" stroke="#111"/>
+<text x="599.0" y="578" text-anchor="middle" font-size="11">«planificador»</text>
+<text x="599.0" y="593" text-anchor="middle" text-decoration="underline">:VercelCron</text>
+<path d="M870 60L882 48H1162V308L1150 320" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<path d="M1150 60L1162 48" fill="none" stroke="#111" stroke-width="1.2"/>
+<rect x="870" y="60" width="280" height="260" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<text x="880" y="80" text-decoration="underline">: Supabase</text>
+<rect x="910" y="110" width="220" height="60" fill="#fff" stroke="#111"/>
+<rect x="902" y="120" width="16" height="10" fill="#fff" stroke="#111"/>
+<rect x="902" y="138" width="16" height="10" fill="#fff" stroke="#111"/>
+<text x="1024.0" y="128" text-anchor="middle" font-size="11">«almacenamiento»</text>
+<text x="1024.0" y="143" text-anchor="middle" text-decoration="underline">:Storage</text>
+<rect x="910" y="230" width="220" height="60" fill="#fff" stroke="#111"/>
+<rect x="902" y="240" width="16" height="10" fill="#fff" stroke="#111"/>
+<rect x="902" y="258" width="16" height="10" fill="#fff" stroke="#111"/>
+<text x="1024.0" y="248" text-anchor="middle" font-size="11">«database»</text>
+<text x="1024.0" y="263" text-anchor="middle" text-decoration="underline">:PostgreSQL</text>
+<path d="M870 400L882 388H1162V648L1150 660" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<path d="M1150 400L1162 388" fill="none" stroke="#111" stroke-width="1.2"/>
+<rect x="870" y="400" width="280" height="260" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<text x="880" y="420" text-decoration="underline">: Mercado Pago</text>
+<rect x="910" y="450" width="220" height="60" fill="#fff" stroke="#111"/>
+<rect x="902" y="460" width="16" height="10" fill="#fff" stroke="#111"/>
+<rect x="902" y="478" width="16" height="10" fill="#fff" stroke="#111"/>
+<text x="1024.0" y="468" text-anchor="middle" font-size="11">«servicio»</text>
+<text x="1024.0" y="483" text-anchor="middle" text-decoration="underline">:APIDePagos</text>
+<rect x="910" y="570" width="220" height="60" fill="#fff" stroke="#111"/>
+<rect x="902" y="580" width="16" height="10" fill="#fff" stroke="#111"/>
+<rect x="902" y="598" width="16" height="10" fill="#fff" stroke="#111"/>
+<text x="1024.0" y="588" text-anchor="middle" font-size="11">«servicio»</text>
+<text x="1024.0" y="603" text-anchor="middle" text-decoration="underline">:CheckoutPro</text>
+<path d="M422 140H407" stroke="#111"/>
+<circle cx="407" cy="140" r="5" fill="#fff" stroke="#111"/>
+<text x="404" y="126" text-anchor="end" font-size="11">HTTPS</text>
+<path d="M422 330H407" stroke="#111"/>
+<circle cx="407" cy="330" r="5" fill="#fff" stroke="#111"/>
+<text x="404" y="316" text-anchor="end" font-size="11">API REST</text>
+<path d="M760 380H785" stroke="#111"/>
+<circle cx="785" cy="380" r="5" fill="#fff" stroke="#111"/>
+<text x="792" y="370" text-anchor="start" font-size="11">webhook</text>
+<path d="M1020 110V92" stroke="#111"/>
+<circle cx="1020" cy="92" r="5" fill="#fff" stroke="#111"/>
+<text x="1030" y="90" text-anchor="start" font-size="11">HTTPS</text>
+<path d="M902 260H888" stroke="#111"/>
+<circle cx="888" cy="260" r="5" fill="#fff" stroke="#111"/>
+<text x="885" y="246" text-anchor="end" font-size="11">SQL</text>
+<path d="M902 480H888" stroke="#111"/>
+<circle cx="888" cy="480" r="5" fill="#fff" stroke="#111"/>
+<text x="885" y="500" text-anchor="end" font-size="11">API REST</text>
+<path d="M1020 630V645" stroke="#111"/>
+<circle cx="1020" cy="645" r="5" fill="#fff" stroke="#111"/>
+<text x="1030" y="650" text-anchor="start" font-size="11">HTTPS</text>
+<path d="M260 352L403 144" fill="none" stroke="#111" stroke-dasharray="6 4" marker-end="url(#dep)"/>
+<path d="M260 372L401 330" fill="none" stroke="#111" stroke-dasharray="6 4" marker-end="url(#dep)"/>
+<path d="M170 270V30H1020V85" fill="none" stroke="#111" stroke-dasharray="6 4" marker-end="url(#dep)"/>
+<path d="M170 460V700H1020V652" fill="none" stroke="#111" stroke-dasharray="6 4" marker-end="url(#dep)"/>
+<path d="M430 590H398V337" fill="none" stroke="#111" stroke-dasharray="6 4" marker-end="url(#dep)"/>
+<path d="M760 280L850 200V92H1013" fill="none" stroke="#111" stroke-dasharray="6 4" marker-end="url(#dep)"/>
+<path d="M760 300L882 258" fill="none" stroke="#111" stroke-dasharray="6 4" marker-end="url(#dep)"/>
+<path d="M760 425L882 478" fill="none" stroke="#111" stroke-dasharray="6 4" marker-end="url(#dep)"/>
+<path d="M905 452L790 385" fill="none" stroke="#111" stroke-dasharray="6 4" marker-end="url(#dep)"/>
+</svg>

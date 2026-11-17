@@ -80,7 +80,7 @@ Esta operación es una excepción controlada a la decisión 002: dinero propio, 
 
 ### Cobertura automática
 
-El resto de los caminos de devolución (cancelación con pago retenido, pago tardío de una reserva vencida, vencimiento a los 7 días) están cubiertos por los tests automáticos, que simulan las respuestas de Mercado Pago (capítulo 05).
+El resto de los caminos de devolución (cancelación con pago retenido, pago tardío de una reserva vencida, vencimiento a los 7 días) están cubiertos por los tests automáticos, que simulan las respuestas de Mercado Pago (capítulo 08).
 
 ## Camino a producción
 

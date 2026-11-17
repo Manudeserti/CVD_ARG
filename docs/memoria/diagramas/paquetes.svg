@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 610" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#111">
+<defs><marker id="dep" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#111" stroke-width="1.1"/></marker></defs>
+<rect width="1100" height="610" fill="#fff"/>
+<path d="M20 20H160V40H20Z" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<rect x="20" y="40" width="1060" height="150" fill="none" stroke="#111" stroke-width="1.2"/>
+<text x="28" y="35" font-weight="700">Presentación</text>
+<path d="M40 55H110V75H40Z" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<rect x="40" y="75" width="530" height="95" fill="none" stroke="#111" stroke-width="1.2"/>
+<text x="48" y="70">pages</text>
+<rect x="55" y="95" width="92" height="30" fill="#fff" stroke="#111"/>
+<text x="101.0" y="114" text-anchor="middle">Catalogo</text>
+<rect x="157" y="95" width="92" height="30" fill="#fff" stroke="#111"/>
+<text x="203.0" y="114" text-anchor="middle">Publicar</text>
+<rect x="259" y="95" width="92" height="30" fill="#fff" stroke="#111"/>
+<text x="305.0" y="114" text-anchor="middle">Transaccion</text>
+<rect x="361" y="95" width="92" height="30" fill="#fff" stroke="#111"/>
+<text x="407.0" y="114" text-anchor="middle">Escanear</text>
+<rect x="463" y="95" width="92" height="30" fill="#fff" stroke="#111"/>
+<text x="509.0" y="114" text-anchor="middle">...</text>
+<rect x="610" y="95" width="82" height="30" fill="#fff" stroke="#111"/>
+<text x="651.0" y="114" text-anchor="middle">api</text>
+<rect x="702" y="95" width="82" height="30" fill="#fff" stroke="#111"/>
+<text x="743.0" y="114" text-anchor="middle">sesion</text>
+<rect x="794" y="95" width="82" height="30" fill="#fff" stroke="#111"/>
+<text x="835.0" y="114" text-anchor="middle">ubicacion</text>
+<rect x="886" y="95" width="82" height="30" fill="#fff" stroke="#111"/>
+<text x="927.0" y="114" text-anchor="middle">fotos</text>
+<rect x="978" y="95" width="82" height="30" fill="#fff" stroke="#111"/>
+<text x="1019.0" y="114" text-anchor="middle">ui</text>
+<path d="M20 230H160V250H20Z" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<rect x="20" y="250" width="1060" height="150" fill="none" stroke="#111" stroke-width="1.2"/>
+<text x="28" y="245" font-weight="700">Dominio</text>
+<path d="M40 265H112V285H40Z" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<rect x="40" y="285" width="760" height="95" fill="none" stroke="#111" stroke-width="1.2"/>
+<text x="48" y="280">routers</text>
+<rect x="55" y="305" width="138" height="30" fill="#fff" stroke="#111"/>
+<text x="124.0" y="324" text-anchor="middle">usuario_router</text>
+<rect x="203" y="305" width="138" height="30" fill="#fff" stroke="#111"/>
+<text x="272.0" y="324" text-anchor="middle">publicacion_router</text>
+<rect x="351" y="305" width="138" height="30" fill="#fff" stroke="#111"/>
+<text x="420.0" y="324" text-anchor="middle">transaccion_router</text>
+<rect x="499" y="305" width="138" height="30" fill="#fff" stroke="#111"/>
+<text x="568.0" y="324" text-anchor="middle">pago_router</text>
+<rect x="647" y="305" width="138" height="30" fill="#fff" stroke="#111"/>
+<text x="716.0" y="324" text-anchor="middle">institucion_router</text>
+<path d="M850 265H922V285H850Z" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<rect x="850" y="285" width="210" height="95" fill="none" stroke="#111" stroke-width="1.2"/>
+<text x="858" y="280">schemas</text>
+<path d="M20 440H180V460H20Z" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<rect x="20" y="460" width="1060" height="150" fill="none" stroke="#111" stroke-width="1.2"/>
+<text x="28" y="455" font-weight="700">Servicios Técnicos</text>
+<path d="M40 475H110V495H40Z" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<rect x="40" y="495" width="420" height="95" fill="none" stroke="#111" stroke-width="1.2"/>
+<text x="48" y="490">utils</text>
+<rect x="55" y="515" width="125" height="30" fill="#fff" stroke="#111"/>
+<text x="117.5" y="534" text-anchor="middle">security</text>
+<rect x="190" y="515" width="125" height="30" fill="#fff" stroke="#111"/>
+<text x="252.5" y="534" text-anchor="middle">pagos</text>
+<rect x="325" y="515" width="125" height="30" fill="#fff" stroke="#111"/>
+<text x="387.5" y="534" text-anchor="middle">fotos</text>
+<path d="M560 475H640V495H560Z" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<rect x="560" y="495" width="260" height="95" fill="none" stroke="#111" stroke-width="1.2"/>
+<text x="568" y="490">database</text>
+<path d="M570 110H609" fill="none" stroke="#111" stroke-dasharray="6 4" marker-end="url(#dep)"/>
+<path d="M651 125V284" fill="none" stroke="#111" stroke-dasharray="6 4" marker-end="url(#dep)"/>
+<text x="658" y="205" font-size="11">«HTTP»</text>
+<path d="M800 320H849" fill="none" stroke="#111" stroke-dasharray="6 4" marker-end="url(#dep)"/>
+<path d="M250 380V494" fill="none" stroke="#111" stroke-dasharray="6 4" marker-end="url(#dep)"/>
+<path d="M690 380V494" fill="none" stroke="#111" stroke-dasharray="6 4" marker-end="url(#dep)"/>
+</svg>

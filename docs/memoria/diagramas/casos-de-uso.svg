@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 1000" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#111">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 880" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#111">
   <defs>
     <g id="actor" fill="none" stroke="#111" stroke-width="1.6">
       <circle cx="0" cy="-38" r="12"/>
@@ -6,55 +6,67 @@
     </g>
     <marker id="abierta" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#111" stroke-width="1.2"/></marker>
   </defs>
-  <rect width="1060" height="1000" fill="#fff"/>
-  <rect x="225" y="15" width="620" height="970" fill="none" stroke="#111" stroke-width="1.4"/>
+  <rect width="1060" height="880" fill="#fff"/>
+  <rect x="225" y="15" width="620" height="850" fill="none" stroke="#111" stroke-width="1.4"/>
   <text x="535" y="36" text-anchor="middle" font-weight="700">Plataforma CVD</text>
 
+  <!-- asociaciones: actores principales a la izquierda, de apoyo a la derecha -->
   <g fill="none" stroke="#111" stroke-width="1.1">
-    <path d="M112 113L250 70M112 113L250 125M112 113L250 180"/>
-    <path d="M112 333L250 260M112 333L250 315M112 333L250 370M112 333L250 450M112 333L250 505M112 333L250 560"/>
-    <path d="M112 668L250 450M112 668L250 505M112 668L250 560M112 668L250 640M112 668L250 695M112 668L250 750"/>
-    <path d="M112 868L250 850M112 868L250 905"/>
-    <path d="M550 315L938 388M550 505L938 388M772 887L938 400M810 905L938 888"/>
-    <path d="M590 695H552" stroke-dasharray="6 4" marker-end="url(#abierta)"/>
-    <path d="M90 200V292M62 668H40V240H90"/>
-    <path d="M90 186L82 200H98Z" fill="#fff"/>
+    <path d="M112 90L250 70M112 90L250 125"/>
+    <path d="M112 262L250 205M112 262L250 260M112 262L250 340M112 262L250 395M112 262L250 450"/>
+    <path d="M112 560L250 340M112 560L250 395M112 560L250 450M112 560L250 530M112 560L250 585"/>
+    <path d="M112 702L250 665M112 702L250 720"/>
+    <path d="M180 820H250"/>
+    <path d="M900 290L550 260M900 300L515 435"/>
+    <!-- generalización: Comprador y Vendedor son Visitantes registrados -->
+    <path d="M90 166V212M62 560H40V190H90"/>
+    <path d="M90 152L82 166H98Z" fill="#fff"/>
+    <!-- inclusiones -->
+    <path d="M550 530H598" stroke-dasharray="6 4" marker-end="url(#abierta)"/>
+    <path d="M550 820H820V450H552" stroke-dasharray="6 4" marker-end="url(#abierta)"/>
   </g>
-  <text x="571" y="686" text-anchor="middle" font-size="11">«extend»</text>
+  <text x="575" y="521" text-anchor="middle" font-size="11">«include»</text>
+  <text x="690" y="443" text-anchor="middle" font-size="11">«include»</text>
 
   <g text-anchor="middle">
-    <use href="#actor" x="90" y="125"/><text x="90" y="178">Visitante</text>
-    <use href="#actor" x="90" y="345"/><text x="90" y="397">Comprador</text><text x="90" y="412">o receptor</text>
-    <use href="#actor" x="90" y="680"/><text x="90" y="732">Vendedor</text><text x="90" y="747">o donante</text>
-    <use href="#actor" x="90" y="880"/><text x="90" y="932">Administrador</text>
-    <use href="#actor" x="960" y="400"/><text x="960" y="340">Mercado Pago</text>
-    <use href="#actor" x="960" y="900"/><text x="960" y="952">Vercel Cron</text>
+    <use href="#actor" x="90" y="90"/><text x="90" y="143">Visitante</text>
+    <use href="#actor" x="90" y="262"/><text x="90" y="315">Comprador</text><text x="90" y="330">o receptor</text>
+    <use href="#actor" x="90" y="560"/><text x="90" y="613">Vendedor</text><text x="90" y="628">o donante</text>
+    <use href="#actor" x="90" y="702"/><text x="90" y="755">Administrador</text>
+  </g>
+
+  <!-- actores que son sistemas: caja con «actor» (Larman, fig. 6.4) -->
+  <g fill="#fff" stroke="#111" stroke-width="1.2">
+    <rect x="30" y="792" width="150" height="56"/>
+    <rect x="900" y="268" width="130" height="44"/>
+  </g>
+  <g text-anchor="middle">
+    <text x="105" y="812" font-size="11">«actor»</text><text x="105" y="828">Planificador</text><text x="105" y="843">de tareas</text>
+    <text x="965" y="286" font-size="11">«actor»</text><text x="965" y="303">Mercado Pago</text>
   </g>
 
   <g fill="#fff" stroke="#111" stroke-width="1.2">
-    <ellipse cx="400" cy="70" rx="150" ry="23"/><ellipse cx="400" cy="125" rx="150" ry="23"/><ellipse cx="400" cy="180" rx="150" ry="23"/>
-    <ellipse cx="400" cy="260" rx="150" ry="23"/><ellipse cx="400" cy="315" rx="150" ry="23"/><ellipse cx="400" cy="370" rx="150" ry="23"/>
-    <ellipse cx="400" cy="450" rx="150" ry="23"/><ellipse cx="400" cy="505" rx="150" ry="23"/><ellipse cx="400" cy="560" rx="150" ry="23"/>
-    <ellipse cx="400" cy="640" rx="150" ry="23"/><ellipse cx="400" cy="695" rx="150" ry="23"/><ellipse cx="400" cy="750" rx="150" ry="23"/>
-    <ellipse cx="400" cy="850" rx="150" ry="23"/><ellipse cx="400" cy="905" rx="150" ry="23"/>
-    <ellipse cx="700" cy="695" rx="110" ry="23"/><ellipse cx="700" cy="905" rx="110" ry="23"/>
+    <ellipse cx="400" cy="70" rx="150" ry="23"/><ellipse cx="400" cy="125" rx="150" ry="23"/>
+    <ellipse cx="400" cy="205" rx="150" ry="23"/><ellipse cx="400" cy="260" rx="150" ry="23"/>
+    <ellipse cx="400" cy="340" rx="150" ry="23"/><ellipse cx="400" cy="395" rx="150" ry="23"/><ellipse cx="400" cy="450" rx="150" ry="23"/>
+    <ellipse cx="400" cy="530" rx="150" ry="23"/><ellipse cx="400" cy="585" rx="150" ry="23"/>
+    <ellipse cx="400" cy="665" rx="150" ry="23"/><ellipse cx="400" cy="720" rx="150" ry="23"/>
+    <ellipse cx="400" cy="820" rx="150" ry="23"/>
+    <ellipse cx="700" cy="530" rx="100" ry="23"/>
   </g>
   <g text-anchor="middle">
     <text x="400" y="75">CU-01 Registrarse</text>
-    <text x="400" y="130">CU-02 Iniciar sesión</text>
-    <text x="400" y="185">CU-03 Explorar el catálogo</text>
-    <text x="400" y="265">CU-07 Reservar un artículo</text>
-    <text x="400" y="320">CU-08 Pagar la reserva</text>
-    <text x="400" y="375">CU-10 Mostrar el QR de entrega</text>
-    <text x="400" y="455">CU-09 Ver los datos de contacto</text>
-    <text x="400" y="510">CU-12 Cancelar una operación</text>
-    <text x="400" y="565">CU-13 Consultar las operaciones</text>
-    <text x="400" y="645">CU-11 Confirmar la entrega (escaneo)</text>
-    <text x="400" y="700">CU-04 Publicar un artículo</text>
-    <text x="400" y="755">CU-06 Gestionar mis publicaciones</text>
-    <text x="400" y="855">CU-15 Gestionar las instituciones</text>
-    <text x="400" y="910">CU-16 Resolver solicitud de colegio</text>
-    <text x="700" y="700">CU-05 Pedir alta de colegio</text>
-    <text x="700" y="910">CU-14 Vencer operaciones</text>
+    <text x="400" y="130">CU-03 Explorar el catálogo</text>
+    <text x="400" y="210">CU-07 Reservar un artículo</text>
+    <text x="400" y="265">CU-08 Pagar la reserva</text>
+    <text x="400" y="345">CU-11 Confirmar la entrega</text>
+    <text x="400" y="400">CU-13 Consultar las operaciones</text>
+    <text x="400" y="455">CU-12 Cancelar una operación</text>
+    <text x="400" y="535">CU-04 Publicar un artículo</text>
+    <text x="400" y="590">CU-06 Gestionar mis publicaciones</text>
+    <text x="400" y="670">CU-15 Gestionar las instituciones</text>
+    <text x="400" y="725">CU-16 Resolver solicitud de colegio</text>
+    <text x="400" y="825">CU-14 Vencer las operaciones</text>
+    <text x="700" y="535">CU-05 Pedir alta de colegio</text>
   </g>
 </svg>

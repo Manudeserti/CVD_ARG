@@ -9,7 +9,7 @@
 - **Vendedor o donante:** usuario registrado que publica un artículo. Un mismo usuario cumple ambos roles en distintas operaciones.
 - **Administrador:** gestiona el listado de instituciones y resuelve las solicitudes de colegios.
 - **Mercado Pago:** sistema externo que procesa los pagos (sandbox en el prototipo).
-- **Vercel Cron:** tarea programada que dispara los vencimientos.
+- **Planificador de tareas:** sistema externo que dispara los vencimientos una vez por día. En el prototipo es Vercel Cron.
 
 ## Requerimientos funcionales del prototipo
 

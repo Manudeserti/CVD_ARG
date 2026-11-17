@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 450" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#111">
+<defs><marker id="llena" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 1L9 5L0 9Z" fill="#111"/></marker>
+<marker id="abierta" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M1 1L9 5L1 9" fill="none" stroke="#111" stroke-width="1.1"/></marker></defs>
+<rect width="1100" height="450" fill="#fff"/>
+<g fill="none" stroke="#111" stroke-width="1.4"><circle cx="70" cy="16" r="8"/><path d="M70 24V42M58 30H82M70 42L60 56M70 42L80 56"/></g>
+<text x="70" y="72" text-anchor="middle" text-decoration="underline">: Comprador o Vendedor</text>
+<path d="M70 78V440" stroke="#111" stroke-dasharray="4 4"/>
+<rect x="190" y="30" width="160" height="32" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<text x="270" y="51" text-anchor="middle" text-decoration="underline">:PantallaDeOperación</text>
+<path d="M270 62V440" stroke="#111" stroke-dasharray="4 4"/>
+<rect x="430" y="30" width="160" height="32" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<text x="510" y="51" text-anchor="middle">transaccion_router</text>
+<path d="M510 62V440" stroke="#111" stroke-dasharray="4 4"/>
+<rect x="670" y="30" width="160" height="32" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<text x="750" y="51" text-anchor="middle">pagos</text>
+<path d="M750 62V440" stroke="#111" stroke-dasharray="4 4"/>
+<rect x="910" y="30" width="160" height="32" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<text x="990" y="51" text-anchor="middle" text-decoration="underline">:MercadoPago</text>
+<path d="M990 62V440" stroke="#111" stroke-dasharray="4 4"/>
+<rect x="265" y="90" width="10" height="320" fill="#fff" stroke="#111"/>
+<rect x="505" y="120" width="10" height="260" fill="#fff" stroke="#111"/>
+<rect x="513" y="195" width="10" height="150" fill="#fff" stroke="#111"/>
+<rect x="745" y="265" width="10" height="65" fill="#fff" stroke="#111"/>
+<rect x="985" y="295" width="10" height="25" fill="#fff" stroke="#111"/>
+<path d="M70 90H265" stroke="#111" marker-end="url(#llena)"/>
+<text x="170.0" y="85" text-anchor="middle">cancelar()</text>
+<path d="M275 120H505" stroke="#111" marker-end="url(#llena)"/>
+<text x="390.0" y="115" text-anchor="middle">cancelar_transaccion(id)</text>
+<path d="M515 190H555V208H525" fill="none" stroke="#111" marker-end="url(#llena)"/>
+<text x="561" y="203">_cancelar(id, idPublicación, estado, idPago)</text>
+<path d="M523 265H745" stroke="#111" marker-end="url(#llena)"/>
+<text x="634.0" y="246" text-anchor="middle">[estado = retenido]</text>
+<text x="634.0" y="260" text-anchor="middle">reembolsar(idPago, claveDeIdempotencia)</text>
+<path d="M755 295H985" stroke="#111" marker-end="url(#llena)"/>
+<text x="870.0" y="276" text-anchor="middle">crearDevolución(idPago,</text>
+<text x="870.0" y="290" text-anchor="middle">claveDeIdempotencia)</text>
+<path d="M985 320H755" stroke="#111" stroke-dasharray="6 4" marker-end="url(#abierta)"/>
+<text x="870.0" y="315" text-anchor="middle">devolución</text>
+<path d="M505 380H275" stroke="#111" stroke-dasharray="6 4" marker-end="url(#abierta)"/>
+<text x="390.0" y="375" text-anchor="middle">nuevoEstado</text>
+<path d="M265 410H70" stroke="#111" stroke-dasharray="6 4" marker-end="url(#abierta)"/>
+<text x="170.0" y="405" text-anchor="middle">operación cancelada</text>
+<path d="M285 235H480L490 245V320H285Z M480 235V245H490" fill="#fff" stroke="#111"/>
+<text x="291" y="252" font-size="11">Después de la devolución, actualiza</text>
+<text x="291" y="267" font-size="11">la operación (reembolsada o</text>
+<text x="291" y="282" font-size="11">cancelada) y la publicación</text>
+<text x="291" y="297" font-size="11">(disponible). Si Mercado Pago</text>
+<text x="291" y="312" font-size="11">rechaza, no se confirma nada.</text>
+<path d="M490 277.5L510 300" stroke="#111" stroke-dasharray="3 3"/>
+</svg>

@@ -1,6 +1,6 @@
 # 07 · Diseño del sistema
 
-> Borrador. Reúne los diagramas UML que faltaban. El detalle del modelo relacional y de los estados está en el [capítulo 02](02-modelo-de-datos.md), y el flujo de pago con su diagrama de secuencia en el [capítulo 03](03-arquitectura-y-pagos.md).
+> Borrador. Reúne los diagramas UML que faltaban. El detalle del modelo relacional y de los estados está en el [capítulo 02](02-modelo-de-datos.md), y los diagramas de secuencia de pagar y cancelar en el [capítulo 03](03-arquitectura-y-pagos.md).
 
 ## Arquitectura
 
@@ -65,7 +65,7 @@ Las clases conceptuales salieron de los casos de uso del capítulo 06 y de la li
 
 ## Comportamiento
 
-Los diagramas de estados de la operación y de secuencia de una venta están en los capítulos 02 y 03. Este es el diagrama de estados de una publicación:
+El diagrama de estados de la operación está en el capítulo 02, y los de secuencia de pagar y cancelar, en el capítulo 03. Este es el diagrama de estados de una publicación:
 
 ```mermaid
 stateDiagram-v2

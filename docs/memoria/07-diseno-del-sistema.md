@@ -10,6 +10,27 @@ El sistema es cliente-servidor, con un frontend de una sola página y un backend
 
 ![Diagrama de despliegue y componentes](diagramas/despliegue.svg)
 
+Sigue la notación de Larman (2003, cap. 38), que muestra en un solo diagrama los nodos y los componentes que se ejecutan en cada uno (fig. 38.5):
+- Los **nodos**, dibujados como cubos, son unidades de proceso: el dispositivo del usuario y los tres servicios en la nube.
+- Los **componentes**, con el ícono de dos pestañas, son las piezas que se despliegan o se reemplazan.
+- Cada componente ofrece **interfaces**, los círculos, y los demás dependen de ellas con una línea punteada.
+
+Nodos y componentes van subrayados porque son instancias concretas.
+
+La estructura interna del backend (routers, schemas y servicios técnicos) no se repite acá: está en el diagrama de paquetes de la sección siguiente.
+
+| Dependencia | Para qué |
+|---|---|
+| `:Frontend` → HTTPS de `:FrontendCompilado` | El navegador descarga la aplicación |
+| `:Frontend` → API REST de `:Backend` | Todas las operaciones del usuario, con JWT |
+| `:Frontend` → HTTPS de `:Storage` | Subir las fotos con una URL firmada |
+| `:Frontend` → HTTPS de `:CheckoutPro` | El comprador paga en Mercado Pago |
+| `:VercelCron` → API REST de `:Backend` | Vencer las operaciones una vez por día (`GET /vencer`) |
+| `:Backend` → HTTPS de `:Storage` | Firmar las URL de subida de las fotos |
+| `:Backend` → SQL de `:PostgreSQL` | Leer y escribir los datos |
+| `:Backend` → API REST de `:APIDePagos` | Crear preferencias, consultar pagos y pedir devoluciones |
+| `:APIDePagos` → webhook de `:Backend` | Avisar que se recibió un pago |
+
 ### Arquitectura lógica en capas
 
 La arquitectura lógica sigue el patrón Capas (Larman, 2003, cap. 30) y se muestra con un diagrama de paquetes UML:

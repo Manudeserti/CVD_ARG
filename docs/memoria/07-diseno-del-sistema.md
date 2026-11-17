@@ -47,64 +47,21 @@ classDiagram
 
 ## Modelo de dominio
 
-Representa los conceptos del problema, sin detalles de la base de datos. Las reglas citadas están en el capítulo 01.
+El modelo del dominio muestra las clases conceptuales del problema: cosas del mundo real de las que hablan los usuarios, no clases del programa ni tablas de la base (Larman, 2003, cap. 10). Por eso no tiene operaciones ni claves ajenas. Las clases conceptuales se relacionan con asociaciones, no con atributos. Las reglas citadas están en el capítulo 01.
 
-```mermaid
-classDiagram
-    direction LR
-    class Usuario {
-        nombre
-        apellido
-        correo
-        teléfono
-        rol
-    }
-    class Institucion {
-        nombre
-        ciudad
-        provincia
-    }
-    class Publicacion {
-        título
-        descripción
-        categoría
-        talle
-        tipo: venta o donación
-        precio
-        fotos[0..5]
-        estado
-    }
-    class Operacion {
-        monto congelado
-        comisión
-        identificador del pago externo
-        código QR
-        estado
-        fecha de creación
-        fecha de liberación
-        reservar()
-        retener()
-        liberar()
-        cancelar()
-        vencer()
-    }
-    class SolicitudInstitucion {
-        nombre
-        ciudad
-        provincia
-        estado
-        resolver()
-    }
-    Usuario "1" --> "0..*" Publicacion : publica
-    Institucion "0..1" <-- "0..*" Publicacion : corresponde a
-    Publicacion "1" --> "0..*" Operacion : genera
-    Usuario "1" --> "0..*" Operacion : compra o recibe
-    Usuario "1" --> "0..*" Operacion : vende o dona
-    Publicacion "1" --> "0..1" SolicitudInstitucion : espera
-    Usuario "1" --> "0..*" SolicitudInstitucion : solicita
-```
+![Modelo del dominio](diagramas/modelo-del-dominio.svg)
 
-Una publicación puede tener varias operaciones a lo largo del tiempo, porque una operación cancelada la devuelve al catálogo, pero nunca más de una en curso (RN-03).
+Las clases conceptuales salieron de los casos de uso del capítulo 06 y de la lista de categorías de Larman: lugares (Provincia, Localidad, Institución), transacciones (Operación, Pago), sistemas externos (MercadoPago) y registros (SolicitudDeColegio).
+
+**Decisiones del modelo**
+
+- **Publicación es una generalización de Venta y Donación.** Las dos subclases se tratan distinto: la venta tiene precio, comisión y pago, y vence a las 24 horas si no se paga; la donación no tiene precio y cada receptor puede tener 3 pendientes como máximo (RN-01, RN-12). Larman (2003, cap. 26) justifica una subclase cuando tiene atributos, asociaciones o reglas propias. Publicación figura en cursiva porque es abstracta: toda publicación es una venta o una donación. En la base, las dos se guardan en una sola tabla con un discriminador de tipo (capítulo 02). El modelo del dominio no es el modelo de datos.
+- **Provincia y Localidad son clases conceptuales, no atributos de Institución.** Una ciudad es un lugar real, no un texto. Además, el catálogo se filtra por ellas (CU-03).
+- **Foto es una clase conceptual aparte.** Una publicación tiene hasta 5 fotos, y un atributo con varios valores va en otra clase (Larman, 2003, cap. 27). La relación es una composición: las fotos no existen sin su publicación.
+- **El pago es una clase conceptual.** Solo las ventas tienen pago (multiplicidad 0..1), y lo procesa Mercado Pago, que figura como sistema externo.
+- **No hay asociación entre la operación y su vendedor.** El vendedor se obtiene a través de la publicación, y Larman recomienda no mostrar asociaciones derivadas.
+- **Una publicación puede tener varias operaciones a lo largo del tiempo**, porque una operación cancelada la devuelve al catálogo, pero nunca más de una en curso (RN-03).
+- **Una publicación puede no tener institución** mientras espera el alta de su colegio (multiplicidad 0..1, RN-15).
 
 ## Comportamiento
 
@@ -167,3 +124,7 @@ El modelo físico, sus restricciones y la decisión de usar una sola entidad con
 | Bloqueo pesimista | `SELECT ... FOR UPDATE` en reservas, escaneos, cancelaciones y solicitudes | Evita carreras entre operaciones simultáneas |
 | Receptor idempotente | Webhook de pagos y clave de idempotencia en las devoluciones | Mercado Pago reintenta los avisos y una devolución no puede duplicarse |
 | Contexto de React | `sesion.tsx` | Comparte la sesión entre pantallas sin pasarla por cada componente |
+
+## Referencias
+
+Larman, C. (2003). *UML y patrones: Una introducción al análisis y diseño orientado a objetos y al proceso unificado* (2.ª ed.). Pearson Educación.

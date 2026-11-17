@@ -10,40 +10,27 @@ El sistema es cliente-servidor, con un frontend de una sola página y un backend
 
 ![Diagrama de despliegue y componentes](diagramas/despliegue.svg)
 
-### Paquetes
+### Arquitectura lógica en capas
 
-```mermaid
-classDiagram
-    direction LR
-    class main {
-        crea la aplicación y configura CORS
-    }
-    class routers {
-        endpoints y reglas de negocio
-    }
-    class schemas {
-        contratos de entrada y salida
-    }
-    class utils {
-        security, pagos, fotos
-    }
-    class database {
-        conexión a PostgreSQL
-    }
-    main ..> routers
-    routers ..> schemas
-    routers ..> utils
-    routers ..> database
-```
+La arquitectura lógica sigue el patrón Capas (Larman, 2003, cap. 30) y se muestra con un diagrama de paquetes UML:
+- Cada capa es un paquete.
+- Las dependencias van en línea punteada, siempre hacia la capa de abajo o dentro de la misma capa.
+- Como recomienda el libro, el diagrama muestra solo los elementos que ayudan a entender la estructura.
 
-| Paquete | Responsabilidad |
-|---|---|
-| `backend/routers` | Un módulo por recurso. Reciben el pedido, aplican las reglas de negocio y ejecutan la transacción SQL |
-| `backend/schemas` | Modelos Pydantic que validan lo que entra y definen lo que sale |
-| `backend/utils` | Seguridad (JWT, bcrypt, roles) e integraciones externas (Mercado Pago y Supabase Storage) |
-| `backend/database` | Conexión, esquema SQL y migraciones |
-| `frontend/src/pages` | Una pantalla por ruta |
-| `frontend/src` (`api.ts`, `sesion.tsx`, `ubicacion.tsx`, `fotos.ts`, `ui.tsx`) | Cliente de la API, sesión, ubicación, tratamiento de fotos y componentes compartidos |
+![Diagrama de paquetes de la arquitectura lógica](diagramas/paquetes.svg)
+
+No hay una capa de Aplicación separada. Los routers cumplen a la vez el rol de controlador, porque reciben los pedidos de la presentación, y el de reglas del dominio. Es la misma decisión que toma Larman en su caso de estudio, donde el controlador vive en la capa del Dominio mientras el sistema es chico (2003, fig. 30.2). La presentación depende del dominio solo a través de `api`, que hace los pedidos HTTP a la API REST.
+
+| Capa | Paquete | Responsabilidad |
+|---|---|---|
+| Presentación | `frontend/src/pages` | Una pantalla por ruta |
+| Presentación | `frontend/src` (`api.ts`, `sesion.tsx`, `ubicacion.tsx`, `fotos.ts`, `ui.tsx`) | Cliente de la API, sesión, ubicación, tratamiento de fotos y componentes compartidos |
+| Dominio | `backend/routers` | Un módulo por recurso. Reciben el pedido, aplican las reglas de negocio y ejecutan la transacción SQL |
+| Dominio | `backend/schemas` | Modelos Pydantic que validan lo que entra y definen lo que sale |
+| Servicios Técnicos | `backend/utils` | Seguridad (JWT, bcrypt, roles) e integraciones externas (Mercado Pago y Supabase Storage) |
+| Servicios Técnicos | `backend/database` | Conexión, esquema SQL y migraciones |
+
+`backend/main.py` crea la aplicación, configura CORS y registra los routers. No figura en el diagrama porque solo arma las piezas.
 
 ## Modelo de dominio
 

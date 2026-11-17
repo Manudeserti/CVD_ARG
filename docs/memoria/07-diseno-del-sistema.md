@@ -32,6 +32,17 @@ No hay una capa de Aplicación separada. Los routers cumplen a la vez el rol de 
 
 `backend/main.py` crea la aplicación, configura CORS y registra los routers. No figura en el diagrama porque solo arma las piezas.
 
+### Diagrama de clases de diseño
+
+> **PROVISORIO: evaluar si se borra esta sección.** Se dejó para justificar la ausencia del diagrama, pero puede no hacer falta.
+
+No se incluye un diagrama de clases de diseño (Larman, 2003, cap. 19). Ese diagrama muestra las clases del software con sus métodos, y en este sistema casi no las hay:
+- El backend sigue el estilo de guion de transacción (*transaction script*): cada operación del sistema es una función de un router que valida, aplica las reglas de negocio y ejecuta su transacción SQL.
+- El frontend está hecho con componentes funcionales de React.
+- Las únicas clases propias son los schemas de Pydantic, que solo tienen campos con tipo y repiten lo que ya muestra el modelo de datos del capítulo 02.
+
+Dibujar clases con métodos que no existen en el código haría que el diseño y la implementación no coincidieran. Por eso la estructura del software se muestra con el diagrama de paquetes de esta sección y su comportamiento con los diagramas de secuencia del capítulo 03.
+
 ## Modelo de dominio
 
 El modelo del dominio muestra las clases conceptuales del problema: cosas del mundo real de las que hablan los usuarios, no clases del programa ni tablas de la base (Larman, 2003, cap. 10). Por eso no tiene operaciones ni claves ajenas. Las clases conceptuales se relacionan con asociaciones, no con atributos. Las reglas citadas están en el capítulo 01.

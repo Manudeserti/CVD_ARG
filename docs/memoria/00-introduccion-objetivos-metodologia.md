@@ -22,7 +22,7 @@ El trabajo desarrolla un prototipo académico de plataforma web responsiva, con 
 
 - catálogo con filtros por provincia, ciudad, institución y tipo de artículo;
 - publicaciones de venta y de donación;
-- retención del pago mediante una billetera virtual hasta confirmar la entrega, con una comisión porcentual en las ventas;
+- retención del pago en la plataforma, mediante una pasarela de pago, hasta confirmar la entrega, con una comisión porcentual en las ventas;
 - validación presencial de la entrega con un código QR, también en las donaciones;
 - intercambio de los datos de contacto entre las partes de cada operación.
 

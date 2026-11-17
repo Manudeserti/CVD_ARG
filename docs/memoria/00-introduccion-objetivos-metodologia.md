@@ -44,7 +44,7 @@ Desarrollar una plataforma que centralice, optimice y asegure la compra, venta y
 | OE-2 | Diseñar la arquitectura, el modelo de datos y la interfaz de la plataforma | Diseño documentado y coherente con los requerimientos |
 | OE-3 | Implementar un catálogo que permita encontrar artículos por ubicación, institución y tipo | Casos de prueba del catálogo aprobados |
 | OE-4 | Implementar la publicación de artículos en venta y en donación | Casos de prueba de publicaciones aprobados |
-| OE-5 | Integrar una billetera virtual que retenga el pago hasta la entrega y lo devuelva si la operación no se concreta | Compra y devolución verificadas contra Mercado Pago |
+| OE-5 | Integrar una pasarela de pago (Mercado Pago) que permita retener los fondos en la plataforma hasta la entrega y devolverlos si la operación no se concreta | Compra y devolución verificadas contra Mercado Pago |
 | OE-6 | Implementar la validación presencial de la entrega mediante un código QR | Escaneo verificado con celulares reales |
 | OE-7 | Facilitar el contacto entre las partes de cada operación | Casos de prueba de contacto aprobados |
 | OE-8 | Desplegar la plataforma y validarla frente a los requerimientos | Plan de pruebas ejecutado sobre el sistema publicado |

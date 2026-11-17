@@ -29,9 +29,9 @@ PRIMERO = [
         "validar los objetivos específicos con el director.",
         CAUSA, "los requerimientos ya están vinculados a esta propuesta y podrían ajustarse.",
         "ajustarlos con las observaciones del director.", "26/11/2026.")),
-    ("Marco teórico o estado del arte", N, j(
+    ("Marco teórico o estado del arte", P, j(
         "comparación con soluciones existentes (Colmena Escolar y ScoolApp) en el protocolo, encuesta con 381 respuestas, relevamiento normativo de la retención de fondos (BCRA, UIF, Ley 24.240) y documentación técnica oficial de Mercado Pago. Las decisiones técnicas se registraron con las alternativas evaluadas, y el diseño sigue la notación UML de Larman.",
-        "búsqueda de bibliografía académica y redacción del marco teórico y del estado del arte con citas en APA 7.",
+        "falta la bibliografía académica y la redacción de las dos secciones con citas en APA 7. Marco teórico: economía circular, mercados entre particulares y confianza, retención de fondos, pasarelas de pago, códigos QR y seguridad de la API. Estado del arte: ampliar la comparación con otras alternativas (grupos de WhatsApp, Marketplace, plataformas de ropa usada) en una tabla con tecnología, limitaciones y diferencial.",
         CAUSA, "no demora la implementación, ya avanzada. La bibliografía se usa para fundamentar las decisiones registradas y, si alguna fuente lo indica, revisarlas.",
         "seleccionar y leer las fuentes desde el 18/11, vincular cada concepto con el diseño, la implementación y las pruebas, y revisar el avance con el director.", "30/11/2026.")),
     ("Metodología", P, j(

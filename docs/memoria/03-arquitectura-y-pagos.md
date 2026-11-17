@@ -4,17 +4,7 @@
 
 ## Componentes
 
-```mermaid
-flowchart LR
-    U[Navegador del usuario] -->|HTTPS| F[Frontend React<br/>Vercel]
-    F -->|API REST + JWT| B[Backend FastAPI<br/>Vercel Functions]
-    B -->|SQL| D[(PostgreSQL<br/>Supabase)]
-    F -->|Fotos| S[Supabase Storage]
-    B -->|Preferencias, pagos, reembolsos| MP[Mercado Pago]
-    MP -->|Webhook firmado| B
-    U -->|Paga| MP
-    C[Vercel Cron<br/>diario] -->|GET /vencer| B
-```
+El diagrama de despliegue y componentes está en el [capítulo 07](07-diseno-del-sistema.md#diagrama-de-despliegue-y-componentes).
 
 | Componente | Responsabilidad |
 |---|---|

@@ -25,3 +25,6 @@ fecha,actividad,horas,descripcion,fuente
 2026-11-09,8 Memoria y manuales,0.2,Diseño de interfaz; requerimientos y despliegue del frontend,estimado confirmado por el autor
 2026-11-09,6 Frontend,1.7,Diseño para PC y tablet; localidades oficiales; buscador de colegios; actualización automática del QR,estimado confirmado por el autor
 2026-11-09,7 Testing y despliegue,1.3,Migración; despliegue del frontend en Vercel; prueba de punta a punta; compra sandbox y escaneo en celulares reales,estimado confirmado por el autor
+2026-11-16,1 Requerimientos,1.0,Casos de uso rehechos según Larman (diagrama de contexto; formato completo; include),estimado confirmado por el autor
+2026-11-16,2 Arquitectura y modelo de datos,2.1,Modelo del dominio; secuencia; estados; paquetes; despliegue y modelo de datos según Larman,estimado confirmado por el autor
+2026-11-16,8 Memoria y manuales,0.3,Camino crítico en el Gantt y navegación como diagrama de estados,estimado confirmado por el autor

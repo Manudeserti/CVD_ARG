@@ -1,0 +1,298 @@
+<title>Fuentes del marco teórico</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=Inter:wght@400;500;600&family=Literata:ital,opsz,wght@0,7..72,400;1,7..72,400&display=swap">
+<style>
+/* Layout: lista de lectura en una columna, agrupada por tema; cada fuente es una ficha con referencia APA, qué leer y dónde se usa en el TF. */
+:root{
+  --bg:#f6f7f9; --card:#ffffff; --fg:#1b2230; --muted:#5a6475; --line:#dde2ea;
+  --accent:#1f4fbf; --accent-soft:#e6edfb; --warn:#9a5b00; --warn-soft:#fdf3e1; --ok:#1d7a4c;
+  --f-display:"Space Grotesk",system-ui,sans-serif; --f-body:"Inter",system-ui,sans-serif; --f-ref:"Literata",Georgia,serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12161d; --card:#1a2029; --fg:#e4e8ef; --muted:#9aa4b4; --line:#2b3340;
+  --accent:#86a8f5; --accent-soft:#1f2a42; --warn:#f0b65a; --warn-soft:#2f2614; --ok:#5fcf96; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161d; --card:#1a2029; --fg:#e4e8ef; --muted:#9aa4b4; --line:#2b3340;
+  --accent:#86a8f5; --accent-soft:#1f2a42; --warn:#f0b65a; --warn-soft:#2f2614; --ok:#5fcf96; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.6 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 64px}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:36px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.25}
+h1{font-size:2rem;font-weight:600}
+h2{font-size:1.3rem;font-weight:600}
+p{margin:0}
+a{color:var(--accent);text-underline-offset:2px;word-break:break-word}
+a:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+header{display:flex;flex-direction:column;gap:12px}
+.lead{color:var(--muted);max-width:65ch}
+.progress{font-variant-numeric:tabular-nums;font-weight:600;color:var(--accent)}
+.note{background:var(--warn-soft);border:1px solid color-mix(in srgb,var(--warn) 35%,transparent);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.note strong{color:var(--warn)}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.rules div{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:.92rem}
+.rules b{display:block;font-family:var(--f-display);font-weight:600;margin-bottom:2px}
+section{display:flex;flex-direction:column;gap:14px}
+.sec-head{display:flex;flex-direction:column;gap:4px;border-bottom:1px solid var(--line);padding-bottom:8px}
+.sec-head p{color:var(--muted);font-size:.93rem;max-width:65ch}
+.src{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:16px 18px;display:grid;grid-template-columns:auto 1fr;gap:4px 14px}
+.src input{width:18px;height:18px;margin-top:3px;accent-color:var(--accent);cursor:pointer}
+.src .body{display:flex;flex-direction:column;gap:8px;min-width:0}
+.src.done{opacity:.6}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:.72rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
+.tag.opt{background:transparent;border:1px solid var(--line);color:var(--muted)}
+.tag.have{background:transparent;border:1px solid var(--ok);color:var(--ok)}
+.ref{font-family:var(--f-ref);font-size:.98rem;line-height:1.55}
+.ref i{font-style:italic}
+dl{margin:0;display:grid;grid-template-columns:max-content 1fr;gap:4px 12px;font-size:.92rem}
+dt{color:var(--muted);font-weight:500}
+dd{margin:0;min-width:0}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+table{border-collapse:collapse;width:100%;min-width:720px;font-size:.9rem}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+th{font-family:var(--f-display);font-weight:600;font-size:.85rem;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:600}
+.flag{color:var(--warn);font-weight:600}
+@media (max-width:520px){dl{grid-template-columns:1fr}dt{margin-top:4px}}
+@media (prefers-reduced-motion:no-preference){.src{transition:opacity .2s}}
+</style>
+
+<div class="wrap">
+<header>
+  <h1>Fuentes del marco teórico</h1>
+  <p class="lead">Lista de lectura para el marco teórico y el estado del arte de CVD. Cada ficha dice qué parte leer y en qué capítulo o requisito del TF se usa, como pide el Instructivo (7.4): cada concepto tiene que conectarse con el diseño, la implementación o las pruebas.</p>
+  <p class="progress" id="progress" aria-live="polite">0 de 0 leídas</p>
+</header>
+
+<div class="rules">
+  <div><b>Todas verificadas</b>Cada fuente se comprobó el 18/11/2026 en la web: autores, año, revista y enlace. No hay referencias inventadas.</div>
+  <div><b>Vos decidís qué citar</b>Leé lo indicado y citá solo lo que hayas leído. Las referencias ya están en formato APA 7.</div>
+  <div><b>Prioridad</b><span class="tag">Imprescindible</span> sostiene una decisión del TF. <span class="tag opt">Complementaria</span> suma, pero se puede saltear.</div>
+</div>
+
+<div class="note">
+  <strong>Ojo con la tabla del protocolo</strong>
+  <p>Al verificar el estado del arte aparecieron dos diferencias con la comparación del protocolo. Colmena Escolar sí filtra por colegio, y Uniformerly (Reino Unido) permite regalar uniformes, o sea, donar. Conviene ajustar la tabla para que el diferencial quede en la retención del pago con validación por QR. Más detalle en la última sección.</p>
+</div>
+
+<!-- 1 -->
+<section>
+  <div class="sec-head"><h2>Problema: reutilización y economía circular</h2><p>Para la introducción: por qué importa que los artículos escolares vuelvan a circular.</p></div>
+
+  <article class="src" data-id="emf2017"><input type="checkbox" id="c-emf2017" aria-label="Marcar como leída"><div class="body">
+    <div class="tags"><span class="tag">Imprescindible</span></div>
+    <p class="ref">Ellen MacArthur Foundation. (2017). <i>A new textiles economy: Redesigning fashion’s future</i>. <a href="https://www.ellenmacarthurfoundation.org/publications/a-new-textiles-economy-redesigning-fashions-future" target="_blank" rel="noopener">ellenmacarthurfoundation.org</a></p>
+    <dl><dt>Qué leer</dt><dd>El resumen ejecutivo. Tiene los datos del desperdicio textil (menos del 1 % de la ropa usada se recicla) y la idea de mantener las prendas en uso el mayor tiempo posible.</dd>
+    <dt>Dónde se usa</dt><dd>Cap. 00, planteo del problema. Justifica el módulo de donaciones y la reventa de uniformes.</dd></dl>
+  </div></article>
+
+  <article class="src" data-id="kirchherr2017"><input type="checkbox" id="c-kirchherr2017" aria-label="Marcar como leída"><div class="body">
+    <div class="tags"><span class="tag">Imprescindible</span></div>
+    <p class="ref">Kirchherr, J., Reike, D., &amp; Hekkert, M. (2017). Conceptualizing the circular economy: An analysis of 114 definitions. <i>Resources, Conservation and Recycling, 127</i>, 221–232. <a href="https://doi.org/10.1016/j.resconrec.2017.09.005" target="_blank" rel="noopener">doi.org/10.1016/j.resconrec.2017.09.005</a></p>
+    <dl><dt>Qué leer</dt><dd>Introducción y la sección de resultados sobre las “4R” (reducir, reutilizar, reciclar, recuperar). Hay PDF libre en ResearchGate.</dd>
+    <dt>Dónde se usa</dt><dd>Cap. 00. Da una definición académica de economía circular y ubica a CVD en la “R” de reutilizar, que va antes que reciclar.</dd></dl>
+  </div></article>
+</section>
+
+<!-- 2 -->
+<section>
+  <div class="sec-head"><h2>Confianza entre desconocidos y retención del pago</h2><p>El fundamento teórico del módulo transaccional: por qué la plataforma retiene el dinero hasta la entrega.</p></div>
+
+  <article class="src" data-id="akerlof1970"><input type="checkbox" id="c-akerlof1970" aria-label="Marcar como leída"><div class="body">
+    <div class="tags"><span class="tag">Imprescindible</span></div>
+    <p class="ref">Akerlof, G. A. (1970). The market for “lemons”: Quality uncertainty and the market mechanism. <i>The Quarterly Journal of Economics, 84</i>(3), 488–500. <a href="https://doi.org/10.2307/1879431" target="_blank" rel="noopener">doi.org/10.2307/1879431</a></p>
+    <dl><dt>Qué leer</dt><dd>Las secciones I y II (unas 6 páginas). Es el texto clásico sobre información asimétrica en la venta de usados.</dd>
+    <dt>Dónde se usa</dt><dd>Cap. 00 y 03. Explica por qué en la compraventa de usados el comprador desconfía, y por qué hace falta un mecanismo de garantía.</dd></dl>
+  </div></article>
+
+  <article class="src" data-id="pavlou2004"><input type="checkbox" id="c-pavlou2004" aria-label="Marcar como leída"><div class="body">
+    <div class="tags"><span class="tag">Imprescindible</span></div>
+    <p class="ref">Pavlou, P. A., &amp; Gefen, D. (2004). Building effective online marketplaces with institution-based trust. <i>Information Systems Research, 15</i>(1), 37–59. <a href="https://doi.org/10.1287/isre.1040.0015" target="_blank" rel="noopener">doi.org/10.1287/isre.1040.0015</a></p>
+    <dl><dt>Qué leer</dt><dd>La introducción y el modelo teórico. Estudia tres mecanismos que generan confianza en el comprador: reputación, custodia de terceros (escrow) y garantías de pago. Hay PDF libre en core.ac.uk.</dd>
+    <dt>Dónde se usa</dt><dd>Cap. 03 y decisión 002. Es la fuente más directa para decir que la retención de fondos genera confianza en el comprador.</dd></dl>
+  </div></article>
+
+  <article class="src" data-id="hu2004"><input type="checkbox" id="c-hu2004" aria-label="Marcar como leída"><div class="body">
+    <div class="tags"><span class="tag">Imprescindible</span></div>
+    <p class="ref">Hu, X., Lin, Z., Whinston, A. B., &amp; Zhang, H. (2004). Hope or hype: On the viability of escrow services as trusted third parties in online auction environments. <i>Information Systems Research, 15</i>(3), 236–249. <a href="https://doi.org/10.1287/isre.1040.0027" target="_blank" rel="noopener">doi.org/10.1287/isre.1040.0027</a></p>
+    <dl><dt>Qué leer</dt><dd>Introducción y conclusiones. Analiza cuándo conviene un servicio de custodia de pagos y por qué en 2001 casi nadie lo usaba (≈6 % de los compradores). Hay PDF de los autores en Georgia Tech.</dd>
+    <dt>Dónde se usa</dt><dd>Cap. 03. Sirve para justificar que la retención venga incluida y no sea opcional: si se puede elegir, poca gente la usa.</dd></dl>
+  </div></article>
+
+  <article class="src" data-id="resnick2002"><input type="checkbox" id="c-resnick2002" aria-label="Marcar como leída"><div class="body">
+    <div class="tags"><span class="tag opt">Complementaria</span></div>
+    <p class="ref">Resnick, P., &amp; Zeckhauser, R. (2002). Trust among strangers in Internet transactions: Empirical analysis of eBay’s reputation system. En M. R. Baye (Ed.), <i>The economics of the Internet and e-commerce</i> (Advances in Applied Microeconomics, Vol. 11, pp. 127–157). <a href="https://doi.org/10.1016/S0278-0984(02)11030-3" target="_blank" rel="noopener">doi.org/10.1016/S0278-0984(02)11030-3</a></p>
+    <dl><dt>Qué leer</dt><dd>La introducción, donde explica por qué la gente le compra a desconocidos. Hay PDF libre en la página de Zeckhauser en Harvard. Confirmá la editorial del volumen para la referencia.</dd>
+    <dt>Dónde se usa</dt><dd>Cap. 00. También sirve si después agregás la calificación de usuarios, que es una de las opcionales.</dd></dl>
+  </div></article>
+</section>
+
+<!-- 3 -->
+<section>
+  <div class="sec-head"><h2>Marco legal argentino</h2><p>Ya relevado en la decisión 002 y el cap. 04. Acá solo queda leer el texto original de cada norma para poder citarla.</p></div>
+
+  <article class="src" data-id="bcra6859"><input type="checkbox" id="c-bcra6859" aria-label="Marcar como leída"><div class="body">
+    <div class="tags"><span class="tag">Imprescindible</span><span class="tag have">Ya en cap. 04</span></div>
+    <p class="ref">Banco Central de la República Argentina. (2019). <i>Comunicación “A” 6859: Proveedores de servicios de pago</i>. <a href="https://www.bcra.gob.ar/Pdfs/comytexord/A6859.pdf" target="_blank" rel="noopener">bcra.gob.ar</a></p>
+    <dl><dt>Qué leer</dt><dd>Los puntos sobre inscripción en el registro y sobre los fondos de los clientes. Revisá también la última modificatoria relevada, la “A” 8432.</dd>
+    <dt>Dónde se usa</dt><dd>Cap. 04 y R-02. Explica por qué el prototipo retiene los pagos con Mercado Pago y no por cuenta propia.</dd></dl>
+  </div></article>
+
+  <article class="src" data-id="uif"><input type="checkbox" id="c-uif" aria-label="Marcar como leída"><div class="body">
+    <div class="tags"><span class="tag">Imprescindible</span><span class="tag have">Ya en cap. 04</span></div>
+    <p class="ref">Ley N.° 27.739. (2024). Modificaciones al régimen de prevención del lavado de activos. <i>Boletín Oficial de la República Argentina</i>, 15 de marzo de 2024. Y Resolución UIF 200/2024.</p>
+    <dl><dt>Qué leer</dt><dd>Los artículos que agregan a los proveedores de servicios de pago como sujetos obligados. No pude confirmar el enlace exacto en Infoleg: buscá “27739” en infoleg.gob.ar.</dd>
+    <dt>Dónde se usa</dt><dd>Cap. 04. Las obligaciones que tendría la plataforma si custodiara dinero real.</dd></dl>
+  </div></article>
+
+  <article class="src" data-id="ley24240"><input type="checkbox" id="c-ley24240" aria-label="Marcar como leída"><div class="body">
+    <div class="tags"><span class="tag">Imprescindible</span><span class="tag have">Ya en cap. 04</span></div>
+    <p class="ref">Ley N.° 24.240. (1993). Defensa del consumidor. <i>Boletín Oficial de la República Argentina</i>. <a href="https://servicios.infoleg.gob.ar/infolegInternet/anexos/0-4999/638/texact.htm" target="_blank" rel="noopener">infoleg.gob.ar</a></p>
+    <dl><dt>Qué leer</dt><dd>El art. 40, sobre la responsabilidad de quienes intervienen en la cadena de venta.</dd>
+    <dt>Dónde se usa</dt><dd>Cap. 04. Qué responsabilidad tendría la plataforma como intermediaria.</dd></dl>
+  </div></article>
+
+  <article class="src" data-id="ley25326"><input type="checkbox" id="c-ley25326" aria-label="Marcar como leída"><div class="body">
+    <div class="tags"><span class="tag">Imprescindible</span></div>
+    <p class="ref">Ley N.° 25.326. (2000). Protección de los datos personales. <i>Boletín Oficial de la República Argentina</i>. <a href="https://servicios.infoleg.gob.ar/infolegInternet/anexos/60000-64999/64790/texact.htm" target="_blank" rel="noopener">infoleg.gob.ar</a></p>
+    <dl><dt>Qué leer</dt><dd>Los arts. 2 a 9: definiciones, consentimiento, calidad de los datos y seguridad.</dd>
+    <dt>Dónde se usa</dt><dd>No está en el TF todavía. La plataforma guarda nombre, mail, colegio y localidad de los usuarios, y la ley exige medidas de seguridad. Conecta con RNF-02 y RNF-04 y con el hash de contraseñas.</dd></dl>
+  </div></article>
+</section>
+
+<!-- 4 -->
+<section>
+  <div class="sec-head"><h2>Pasarela de pago</h2><p>Documentación técnica oficial, que el Instructivo acepta como fuente. Al citarla, poné la fecha de consulta.</p></div>
+
+  <article class="src" data-id="mp-webhooks"><input type="checkbox" id="c-mp-webhooks" aria-label="Marcar como leída"><div class="body">
+    <div class="tags"><span class="tag">Imprescindible</span></div>
+    <p class="ref">Mercado Pago. (s. f.). <i>Webhooks</i> [Documentación para desarrolladores]. Recuperado el 18 de noviembre de 2026, de <a href="https://www.mercadopago.com.ar/developers/es/docs/your-integrations/notifications/webhooks" target="_blank" rel="noopener">mercadopago.com.ar/developers</a></p>
+    <dl><dt>Qué leer</dt><dd>“Validar origen de la notificación”: la firma <code>x-signature</code> con HMAC-SHA256 y la respuesta 200.</dd>
+    <dt>Dónde se usa</dt><dd>Cap. 03 y 06 (CU de pago), RNF-07 y CP-13.</dd></dl>
+  </div></article>
+
+  <article class="src" data-id="mp-checkout"><input type="checkbox" id="c-mp-checkout" aria-label="Marcar como leída"><div class="body">
+    <div class="tags"><span class="tag">Imprescindible</span></div>
+    <p class="ref">Mercado Pago. (s. f.). <i>Configurar notificaciones: Checkout Pro</i> [Documentación para desarrolladores]. Recuperado el 18 de noviembre de 2026, de <a href="https://www.mercadopago.com.ar/developers/es/docs/checkout-pro-preferences/payment-notifications" target="_blank" rel="noopener">mercadopago.com.ar/developers</a></p>
+    <dl><dt>Qué leer</dt><dd>La página completa, y desde el menú lateral, la de creación de preferencias. Para la devolución, buscá “Reembolsos” en la referencia de la API.</dd>
+    <dt>Dónde se usa</dt><dd>Cap. 03 (secuencia de pagar y cancelar) y diagrama de estados de la operación.</dd></dl>
+  </div></article>
+
+  <article class="src" data-id="rfc2104"><input type="checkbox" id="c-rfc2104" aria-label="Marcar como leída"><div class="body">
+    <div class="tags"><span class="tag opt">Complementaria</span></div>
+    <p class="ref">Krawczyk, H., Bellare, M., &amp; Canetti, R. (1997). <i>HMAC: Keyed-hashing for message authentication</i> (RFC 2104). Internet Engineering Task Force. <a href="https://www.rfc-editor.org/rfc/rfc2104" target="_blank" rel="noopener">rfc-editor.org/rfc/rfc2104</a></p>
+    <dl><dt>Qué leer</dt><dd>Las secciones 1 y 2, unas 3 páginas.</dd>
+    <dt>Dónde se usa</dt><dd>RNF-07. Define qué es una firma HMAC y por qué solo la puede generar quien tiene la clave.</dd></dl>
+  </div></article>
+</section>
+
+<!-- 5 -->
+<section>
+  <div class="sec-head"><h2>Validación de la entrega por QR</h2></div>
+
+  <article class="src" data-id="iso18004"><input type="checkbox" id="c-iso18004" aria-label="Marcar como leída"><div class="body">
+    <div class="tags"><span class="tag">Imprescindible</span></div>
+    <p class="ref">International Organization for Standardization &amp; International Electrotechnical Commission. (2024). <i>Information technology — Automatic identification and data capture techniques — QR code bar code symbology specification</i> (ISO/IEC 18004:2024). <a href="https://www.iso.org/standard/83389.html" target="_blank" rel="noopener">iso.org/standard/83389</a></p>
+    <dl><dt>Qué leer</dt><dd>La norma es paga (CHF 227): alcanza con la página pública de ISO, que resume el alcance y la corrección de errores. Es la edición 4, de agosto de 2024, y reemplaza a la de 2015.</dd>
+    <dt>Dónde se usa</dt><dd>Módulo de validación (OE del QR), CU de confirmar entrega y CP-19. Fundamenta que el código se lee con cualquier cámara, sin hardware especial.</dd></dl>
+  </div></article>
+</section>
+
+<!-- 6 -->
+<section>
+  <div class="sec-head"><h2>API, sesiones y seguridad</h2></div>
+
+  <article class="src" data-id="fielding2000"><input type="checkbox" id="c-fielding2000" aria-label="Marcar como leída"><div class="body">
+    <div class="tags"><span class="tag">Imprescindible</span></div>
+    <p class="ref">Fielding, R. T. (2000). <i>Architectural styles and the design of network-based software architectures</i> [Tesis doctoral, University of California, Irvine]. <a href="https://ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm" target="_blank" rel="noopener">ics.uci.edu/~fielding</a></p>
+    <dl><dt>Qué leer</dt><dd>Solo el capítulo 5, “Representational State Transfer”, sobre todo 5.1 (las restricciones: cliente-servidor, sin estado, interfaz uniforme).</dd>
+    <dt>Dónde se usa</dt><dd>Cap. 07, arquitectura. Justifica la separación entre frontend y backend y una API sin estado de sesión en el servidor.</dd></dl>
+  </div></article>
+
+  <article class="src" data-id="rfc9110"><input type="checkbox" id="c-rfc9110" aria-label="Marcar como leída"><div class="body">
+    <div class="tags"><span class="tag opt">Complementaria</span></div>
+    <p class="ref">Fielding, R., Nottingham, M., &amp; Reschke, J. (Eds.). (2022). <i>HTTP semantics</i> (RFC 9110). Internet Engineering Task Force. <a href="https://www.rfc-editor.org/rfc/rfc9110#section-9.2.2" target="_blank" rel="noopener">rfc-editor.org/rfc/rfc9110</a></p>
+    <dl><dt>Qué leer</dt><dd>Solo la sección 9.2.2, “Idempotent Methods”, de media página.</dd>
+    <dt>Dónde se usa</dt><dd>Cap. 07, patrón “receptor idempotente”, y CP-13: el mismo aviso de pago dos veces no cambia nada.</dd></dl>
+  </div></article>
+
+  <article class="src" data-id="rfc7519"><input type="checkbox" id="c-rfc7519" aria-label="Marcar como leída"><div class="body">
+    <div class="tags"><span class="tag">Imprescindible</span></div>
+    <p class="ref">Jones, M., Bradley, J., &amp; Sakimura, N. (2015). <i>JSON Web Token (JWT)</i> (RFC 7519). Internet Engineering Task Force. <a href="https://www.rfc-editor.org/rfc/rfc7519" target="_blank" rel="noopener">rfc-editor.org/rfc/rfc7519</a></p>
+    <dl><dt>Qué leer</dt><dd>Las secciones 1 a 4: qué es un JWT y sus campos (<code>exp</code>, <code>sub</code>).</dd>
+    <dt>Dónde se usa</dt><dd>Sesión de usuario (PyJWT en el backend), RN-16 y CP-30: la sesión vencida lleva a ingresar de nuevo.</dd></dl>
+  </div></article>
+
+  <article class="src" data-id="owasp2025"><input type="checkbox" id="c-owasp2025" aria-label="Marcar como leída"><div class="body">
+    <div class="tags"><span class="tag">Imprescindible</span></div>
+    <p class="ref">OWASP Foundation. (2025). <i>OWASP Top 10:2025</i>. <a href="https://owasp.org/Top10/2025/" target="_blank" rel="noopener">owasp.org/Top10/2025</a></p>
+    <dl><dt>Qué leer</dt><dd>La lista y la ficha de A01, Broken Access Control. Es la edición vigente: se presentó en noviembre de 2025 y quedó final en enero de 2026. Confirmá el enlace al citarla.</dd>
+    <dt>Dónde se usa</dt><dd>Cap. 07 (tabla de amenazas) y 08 (CP-30, control de acceso). Sirve para decir qué riesgos se cubrieron y cuáles no.</dd></dl>
+  </div></article>
+
+  <article class="src" data-id="owasp-pw"><input type="checkbox" id="c-owasp-pw" aria-label="Marcar como leída"><div class="body">
+    <div class="tags"><span class="tag opt">Complementaria</span></div>
+    <p class="ref">OWASP Foundation. (s. f.). <i>Password storage cheat sheet</i>. Recuperado el 18 de noviembre de 2026, de <a href="https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html" target="_blank" rel="noopener">cheatsheetseries.owasp.org</a></p>
+    <dl><dt>Qué leer</dt><dd>La sección sobre bcrypt.</dd>
+    <dt>Dónde se usa</dt><dd>Registro e ingreso: el backend guarda las contraseñas con bcrypt. También conecta con la Ley 25.326.</dd></dl>
+  </div></article>
+</section>
+
+<!-- 7 -->
+<section>
+  <div class="sec-head"><h2>Metodología, modelado y pruebas</h2></div>
+
+  <article class="src" data-id="larman2003"><input type="checkbox" id="c-larman2003" aria-label="Marcar como leída"><div class="body">
+    <div class="tags"><span class="tag">Imprescindible</span><span class="tag have">Ya citada</span></div>
+    <p class="ref">Larman, C. (2003). <i>UML y patrones: Una introducción al análisis y diseño orientado a objetos y al proceso unificado</i> (2.ª ed.). Pearson Educación.</p>
+    <dl><dt>Qué leer</dt><dd>Para el marco teórico, los caps. 2 y 3 (desarrollo iterativo y Proceso Unificado). El resto ya está citado en los caps. 02 a 07.</dd>
+    <dt>Dónde se usa</dt><dd>Cap. 00, metodología: el TF se hizo en iteraciones (sprints A, B y C).</dd></dl>
+  </div></article>
+
+  <article class="src" data-id="myers2011"><input type="checkbox" id="c-myers2011" aria-label="Marcar como leída"><div class="body">
+    <div class="tags"><span class="tag opt">Complementaria</span></div>
+    <p class="ref">Myers, G. J., Sandler, C., &amp; Badgett, T. (2011). <i>The art of software testing</i> (3.ª ed.). John Wiley &amp; Sons.</p>
+    <dl><dt>Qué leer</dt><dd>El cap. 4, sobre diseño de casos de prueba: clases de equivalencia y valores límite.</dd>
+    <dt>Dónde se usa</dt><dd>Cap. 08. Respalda la estrategia de probar un camino válido y al menos uno prohibido por regla.</dd></dl>
+  </div></article>
+</section>
+
+<!-- 8 -->
+<section>
+  <div class="sec-head"><h2>Estado del arte</h2><p>El Instructivo pide comparar trabajos por tecnología, metodología, limitación y diferencial. Las apps comerciales no publican su tecnología ni su metodología, así que la tabla se centra en lo que sí se puede verificar: cómo protegen el pago.</p></div>
+
+  <div class="table-wrap"><table>
+    <thead><tr><th>Plataforma</th><th>Alcance</th><th>Cómo protege el pago</th><th>Limitación frente a CVD</th><th>Fuente</th></tr></thead>
+    <tbody>
+      <tr><td>Colmena Escolar</td><td>Argentina. Uniformes, libros y útiles entre familias del mismo colegio.</td><td>Según el protocolo, acuerdo entre las partes. Sin comisión: se financia con donaciones.</td><td>No retiene el pago ni valida la entrega. <span class="flag">Sí filtra por colegio</span>: el protocolo dice “búsqueda básica”.</td><td><a href="https://colmenaescolar.com.ar/" target="_blank" rel="noopener">colmenaescolar.com.ar</a></td></tr>
+      <tr><td>SCOOL</td><td>España. Uniformes de colegios y clubes; muestra primero los de tu colegio y localidad.</td><td>Solo conecta a las familias.</td><td>No retiene el pago. Plan Plus de 0,99 € al mes. <span class="flag">También filtra por colegio.</span></td><td><a href="https://scoolapp.com/" target="_blank" rel="noopener">scoolapp.com</a></td></tr>
+      <tr><td>Uniformerly</td><td>Reino Unido. Comprar, vender o regalar uniformes dentro de cada colegio.</td><td>No verificado.</td><td><span class="flag">Permite regalar</span>, así que las donaciones no son exclusivas de CVD.</td><td><a href="https://uniformerly.co.uk/news" target="_blank" rel="noopener">uniformerly.co.uk</a></td></tr>
+      <tr><td>Schooly</td><td>Irlanda. Uniformes, libros y equipo en colegios locales.</td><td>No verificado.</td><td>No opera en Argentina.</td><td><a href="https://apps.apple.com/us/app/id1525501933" target="_blank" rel="noopener">App Store</a></td></tr>
+      <tr><td>Mercado Libre</td><td>Argentina. Catálogo general.</td><td>Compra Protegida: devuelve el dinero si el producto no llega o es distinto. Hay 28 días para reclamar. No cubre pagos con QR ni fuera de la plataforma.</td><td>Protege con un reclamo posterior, no con una validación en el momento de la entrega. No organiza por colegio ni tiene donaciones.</td><td><a href="https://www.mercadolibre.com.ar/compra-protegida" target="_blank" rel="noopener">mercadolibre.com.ar</a></td></tr>
+      <tr><td>Vinted</td><td>Ropa usada, con envío.</td><td>Retiene el dinero hasta que el comprador confirma la recepción. Cobra una tasa de protección obligatoria; hay 2 días para reportar un problema.</td><td>Es el modelo más parecido al de CVD, pero solo para envíos. No es escolar.</td><td><a href="https://www.vinted.com/help/550-guia-de-proteccion-al-comprador" target="_blank" rel="noopener">vinted.com/help</a></td></tr>
+      <tr><td>Wallapop</td><td>España. Segunda mano general.</td><td>Wallapop Protect: el dinero queda en un depósito hasta que el comprador recibe y verifica el artículo. Hay 48 h para abrir una incidencia.</td><td>Solo con Wallapop Envíos. No es escolar.</td><td><a href="https://es.wallapop.com/envios-wallapop" target="_blank" rel="noopener">wallapop.com</a></td></tr>
+      <tr><td>Grupos de WhatsApp y Facebook Marketplace</td><td>Informal.</td><td>Ninguna: se paga en mano o por transferencia.</td><td>Es lo que usa la mayoría. Según tu encuesta, el 50,6 % usa grupos de WhatsApp y el 43,2 % Marketplace.</td><td>Tu encuesta (cap. 00)</td></tr>
+    </tbody>
+  </table></div>
+  <p class="lead">Con estas filas, el diferencial de CVD es el único que no aparece en ninguna otra plataforma: retener el pago y liberarlo con un QR escaneado en la entrega en persona, en una app organizada por colegio.</p>
+</section>
+</div>
+
+<script>
+(function(){
+  var KEY="fuentes-leidas", saved={};
+  try{saved=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){}
+  var cards=[].slice.call(document.querySelectorAll(".src")), out=document.getElementById("progress");
+  function paint(){
+    var n=0;cards.forEach(function(c){var on=c.querySelector("input").checked;c.classList.toggle("done",on);if(on)n++});
+    out.textContent=n+" de "+cards.length+" leídas";
+  }
+  cards.forEach(function(c){
+    var box=c.querySelector("input"), id=c.dataset.id;
+    box.checked=!!saved[id];
+    box.addEventListener("change",function(){saved[id]=box.checked;try{localStorage.setItem(KEY,JSON.stringify(saved))}catch(e){}paint()});
+  });
+  paint();
+})();
+</script>

@@ -6,7 +6,7 @@ El primer nivel son las 8 tareas del cronograma del protocolo, las mismas del Ga
 
 ![EDT](edt.png)
 
-El diagrama se genera con `python docs/gestion/edt.py` (las horas reales se leen de `horas.csv`). Para el PNG: `node docs/informes/svg-a-png.mjs <ruta absoluta a frontend> "<edt.svg>|<edt.png>|1850|579|2"`.
+El diagrama se genera con `python docs/gestion/edt.py` (las horas reales se leen de `horas.csv`). Para el PNG: `node docs/informes/svg-a-png.mjs <ruta absoluta a frontend> "<edt.svg>|<edt.png>|1850|584|2"`.
 
 ## Diccionario de la EDT
 
@@ -40,7 +40,7 @@ El diagrama se genera con `python docs/gestion/edt.py` (las horas reales se leen
 | 5.3 | Actualización automática del estado | La pantalla del QR se actualiza sola cada 5 s | Terminado |
 | **6** | **Frontend responsive** (prev. 35 h) | | Terminado |
 | 6.1 | Catálogo, publicación, cuenta y operaciones | `frontend/`, publicado en Vercel | Terminado |
-| 6.2 | Diseño para celular, tablet y PC | Capturas en tres anchos (`frontend/e2e/capturas`) | Terminado |
+| 6.2 | Diseño para celular, tablet y PC, y logo | Capturas en tres anchos (`frontend/e2e/capturas`); logo en el menú, el inicio y la pestaña del navegador | Terminado |
 | 6.3 | Localidades oficiales y buscador de colegios | Provincias y localidades de Georef (`localidades.json`) | Terminado |
 | 6.4 | Panel de solicitudes de colegios | Pantalla de administración mínima (RF-13) | Terminado |
 | **7** | **Testing y despliegue** (prev. 20 h) | | En curso |
@@ -57,9 +57,10 @@ El diagrama se genera con `python docs/gestion/edt.py` (las horas reales se leen
 | 8.4 | Manual de usuario | | Pendiente |
 | 8.5 | Informes de avance y Gantt | `docs/informes/` | En curso |
 | 8.6 | Registro de horas, uso de IA y bitácora | [`horas.csv`](../horas.csv), [`uso-de-ia.md`](../uso-de-ia.md), [`bitacora.md`](bitacora.md) | En curso |
+| 8.7 | Indicadores de retrabajo de la IA | Correcciones pedidas a la IA y errores que introdujo, por sesión (pedido del director del 23/11) | Pendiente |
 
 ## Observaciones
 
-- **Horas previstas y reales.** Se llevan 66,6 h de las 200 h del protocolo. La diferencia más grande está en las tareas 3 a 6 (21,6 h reales contra 120 h previstas), por el uso de IA desde noviembre. La tarea 1 es la única que superó lo previsto (33 h contra 20 h), por el relevamiento y la encuesta.
+- **Horas previstas y reales.** Se llevan 78,7 h de las 200 h del protocolo. La diferencia más grande está en las tareas 3 a 6 (27,0 h reales contra 120 h previstas), por el uso de IA desde noviembre. La tarea 1 es la única que superó lo previsto (33 h contra 20 h), por el relevamiento y la encuesta.
 - **Fuera de la EDT.** Las funcionalidades opcionales del protocolo (alertas, administración completa, calificación) no están incluidas. Se suman como paquete nuevo si el director lo aprueba.
 - **Estados.** "En revisión" quiere decir que el borrador está terminado y falta la revisión del director.

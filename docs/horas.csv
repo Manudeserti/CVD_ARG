@@ -1,20 +1,23 @@
 fecha,actividad,horas,descripcion,fuente
 2026-08-09,3 Backend y API,0.5,Creación del repositorio,git (estimado)
 2026-08-10,3 Backend y API,3.4,Setup de FastAPI y Supabase; schemas y división del main,git (estimado)
-2026-08-11,3 Backend y API,3.9,CRUD de instituciones; registro y login,git (estimado)
+2026-08-11,3 Backend y API,3.9,"Alta, baja y modificación de instituciones; registro y login",git (estimado)
 2026-08-13,3 Backend y API,1.5,Login con bcrypt y JWT,git (estimado)
 2026-08-13,2 Arquitectura y modelo de datos,1.5,Schemas de publicaciones y categorías,git (estimado)
 2026-08-14,4 Módulo transaccional,1.5,Provincia en instituciones y comisión en transacciones,git (estimado)
 2026-08-14,5 Validación QR,1.5,Historial de transacciones y liberación por QR,git (estimado)
 2026-08-16,4 Módulo transaccional,1.6,Manejo de errores y flujo de donaciones,git (estimado)
 2026-08-22,3 Backend y API,1.5,Normalización de usuarios y módulo de comunicación,git (estimado)
+2026-11-01,3 Backend y API,1.5,Análisis del código existente del backend,estimado del autor
+2026-11-01,4 Módulo transaccional,1.5,Análisis del código existente del módulo transaccional,estimado del autor
 2026-11-02,1 Requerimientos,0.5,Análisis del protocolo y capítulo 01,sesiones registradas
 2026-11-02,2 Arquitectura y modelo de datos,0.7,Stack del frontend y decisiones 001-003; capítulos 02-03,sesiones registradas
 2026-11-02,3 Backend y API,0.8,Seguridad del escrow; catálogo con filtros; instituciones,sesiones registradas
-2026-11-02,4 Módulo transaccional,1.8,Integración con Mercado Pago; pruebas en sandbox y devolución real,sesiones registradas
+2026-11-02,4 Módulo transaccional,1.8,Integración con Mercado Pago; pruebas en sandbox,sesiones registradas
 2026-11-02,7 Testing y despliegue,0.9,Tests de punta a punta; Supabase nuevo; despliegue en Vercel,sesiones registradas
 2026-11-02,8 Memoria y manuales,0.5,Capítulo 04 y manual técnico,sesiones registradas
 2026-11-03,3 Backend y API,0.8,Auditoría del backend y correcciones (decisiones con interview-me),estimado del autor
+2026-11-03,4 Módulo transaccional,1.4,Diagnóstico del rechazo de las devoluciones en el sandbox de Mercado Pago y verificación con dinero real,estimado del autor
 2026-11-03,7 Testing y despliegue,0.5,Tests nuevos; migración de Supabase; prueba en Vercel,estimado del autor
 2026-11-03,8 Memoria y manuales,0.5,Capítulos 01-03 y reconstrucción del registro de horas,estimado del autor
 2026-09-14,1 Requerimientos,31.5,Relevamiento; propuesta; encuesta y protocolo (mayo a septiembre de 2026),estimado del autor
@@ -25,8 +28,12 @@ fecha,actividad,horas,descripcion,fuente
 2026-11-09,8 Memoria y manuales,0.2,Diseño de interfaz; requerimientos y despliegue del frontend,estimado confirmado por el autor
 2026-11-09,6 Frontend,1.7,Diseño para PC y tablet; localidades oficiales; buscador de colegios; actualización automática del QR,estimado confirmado por el autor
 2026-11-09,7 Testing y despliegue,1.3,Migración; despliegue del frontend en Vercel; prueba de punta a punta; compra sandbox y escaneo en celulares reales,estimado confirmado por el autor
+2026-11-09,6 Frontend,1.0,Logo de la plataforma,estimado del autor
+2026-11-09,8 Memoria y manuales,2.0,Borradores de informes de avance; requerimientos; casos de uso; diseño y plan de pruebas,estimado del autor
 2026-11-16,1 Requerimientos,1.0,Casos de uso rehechos según Larman (diagrama de contexto; formato completo; include),estimado confirmado por el autor
 2026-11-16,2 Arquitectura y modelo de datos,2.1,Modelo del dominio; secuencia; estados; paquetes; despliegue y modelo de datos según Larman,estimado confirmado por el autor
 2026-11-16,8 Memoria y manuales,0.3,Camino crítico en el Gantt y navegación como diagrama de estados,estimado confirmado por el autor
 2026-11-17,8 Memoria y manuales,1.0,Informes de avance y Gantt al 17/11; mensaje al director; alcance del marco teórico según el Instructivo,estimado confirmado por el autor
 2026-11-18,8 Memoria y manuales,1.0,Búsqueda y verificación de fuentes para el marco teórico y el estado del arte,estimado confirmado por el autor
+2026-11-18,8 Memoria y manuales,1.5,Repaso de las pautas de los informes de avance; mails al director y a la cátedra,estimado del autor
+2026-11-27,8 Memoria y manuales,3.2,Lectura del mail del director y de los documentos de la cátedra; EDT y bitácora,estimado del autor

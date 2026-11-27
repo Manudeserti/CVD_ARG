@@ -43,7 +43,7 @@ EDT = [
     ]),
     ("6", "Frontend responsive", 35, "Terminado", [
         ("6.1", "Catálogo, publicación, cuenta y operaciones", "Terminado"),
-        ("6.2", "Diseño para celular, tablet y PC", "Terminado"),
+        ("6.2", "Diseño para celular, tablet y PC, y logo", "Terminado"),
         ("6.3", "Localidades oficiales y buscador de colegios", "Terminado"),
         ("6.4", "Panel de solicitudes de colegios", "Terminado"),
     ]),
@@ -62,6 +62,7 @@ EDT = [
         ("8.4", "Manual de usuario", "Pendiente"),
         ("8.5", "Informes de avance y Gantt", "En curso"),
         ("8.6", "Registro de horas, uso de IA y bitácora", "En curso"),
+        ("8.7", "Indicadores de retrabajo de la IA", "Pendiente"),
     ]),
 ]
 
@@ -135,7 +136,6 @@ for estado, (borde, relleno) in COLOR.items():
     leyenda.append(f'<rect x="{x_ley}" y="{y_ley}" width="26" height="14" rx="3" fill="{relleno}" stroke="{borde}" stroke-width="1.5"/>')
     leyenda.append(f'<text x="{x_ley + 34}" y="{y_ley + 12}">{estado}</text>')
     x_ley += 150
-leyenda.append(f'<text x="{x_ley + 20}" y="{y_ley + 12}" fill="#6a7180">En revisión: borrador terminado, falta la revisión del director. Prev.: horas del protocolo. Real: docs/horas.csv.</text>')
 alto_total = y_ley + 40
 
 svg = [

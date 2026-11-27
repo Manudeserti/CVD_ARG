@@ -1,12 +1,12 @@
 # Estructura de desglose del trabajo (EDT)
 
-Situación al 27/11/2026. **Borrador para revisar con el director.**
+Situación al 27/11/2026.
 
 El primer nivel son las 8 tareas del cronograma del protocolo, las mismas del Gantt y de [`docs/horas.csv`](../horas.csv). El segundo nivel son los paquetes de trabajo que efectivamente se hicieron o faltan hacer, armados a partir del registro de horas, del historial de git y de los capítulos de la memoria.
 
 ![EDT](edt.png)
 
-El diagrama se genera con `python docs/gestion/edt.py` (las horas reales se leen de `horas.csv`). Para el PNG: `node docs/informes/svg-a-png.mjs <ruta absoluta a frontend> "<edt.svg>|<edt.png>|1850|584|2"`.
+El diagrama se genera con `python docs/gestion/edt.py` (las horas reales se leen de `horas.csv`). Para el PNG: `node docs/informes/svg-a-png.mjs <ruta absoluta a frontend> "<edt.svg>|<edt.png>|1124|947|2"`.
 
 ## Diccionario de la EDT
 

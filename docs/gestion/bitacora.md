@@ -12,7 +12,7 @@
 ## 09/08/2026 y 10/08/2026 · 3,9 h
 
 - **Actividad realizada:** creación del repositorio; estructura del backend con FastAPI y conexión a Supabase; validación de los datos de entrada de las instituciones.
-- **Decisión adoptada:** backend en Python con FastAPI y base de datos PostgreSQL en Supabase. Validar los datos de entrada antes de que lleguen a la BD*
+- **Decisión adoptada:** backend en Python con FastAPI y base de datos PostgreSQL en Supabase. Validar los datos de entrada antes de que lleguen a la base de datos.
 - **Justificación:** Supabase tiene un plan gratuito. Usé Python en varios proyectos anteriormente. No se puede confiar en datos que carga un tercero ajeno al sistema.
 - **Evidencia generada:** commits del 09 y 10/08 en git.
 - **Impacto sobre el proyecto:** empieza la tarea 3, que el protocolo preveía para más adelante.
@@ -37,15 +37,15 @@
 
 - **Actividad realizada:** catálogo público; comisión en las transacciones; historial de transacciones y liberación de fondos por QR.
 - **Decisión adoptada:**
-    a. El vendedor se toma del token, no de los datos que manda el cliente.
-    b. Cada usuario puede ver sus transacciones, como comprador y como vendedor.
-    c. No se puede comprar un artículo propio ni uno que no esté disponible.
-    d. Solo el vendedor puede escanear el QR, y solo si el pago está pendiente.
+  1. El vendedor se toma del token, no de los datos que manda el cliente.
+  2. Cada usuario puede ver sus transacciones, como comprador y como vendedor.
+  3. No se puede comprar un artículo propio ni uno que no esté disponible.
+  4. Solo el vendedor puede escanear el QR, y solo si el pago está pendiente.
 - **Justificación:** 
-    a. Así nadie puede publicar a nombre de otro.
-    b. Cada usuario tiene registro de lo que hizo.
-    c. Evita que un artículo se venda dos veces o que alguien se compre a sí mismo.
-    d. El dinero se libera solo cuando el comprador recibe el artículo en persona.
+  1. Así nadie puede publicar a nombre de otro.
+  2. Cada usuario tiene registro de lo que hizo.
+  3. Evita que un artículo se venda dos veces o que alguien se compre a sí mismo.
+  4. El dinero se libera solo cuando el comprador recibe el artículo en persona.
 - **Evidencia generada:** commits del 14/08 en git.
 - **Impacto sobre el proyecto:** se adelanta parte de las tareas 4 y 5.
 

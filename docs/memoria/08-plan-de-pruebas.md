@@ -66,7 +66,7 @@ Referencias: `API` es una función de `test_flujo.py`, `E2E` es el recorrido de 
 | CP-16 | Visibilidad del QR | Solo lo ve el comprador, y sin pago no aparece | RN-04 | API `test_venta_completa`, `test_historial_trae_datos_del_articulo`; E2E | Automatizado |
 | CP-17 | Escanear | Solo el vendedor y solo con el pago retenido; el artículo queda vendido | RF-07, RN-05, RN-06 | API `test_venta_completa` | Automatizado |
 | CP-18 | Escaneo con la cámara | El celular del vendedor lee el QR del comprador y confirma | RF-07, RNF-09 | Manual | Ejecutado el 09/11/2026 |
-| CP-19 | Actualización de la pantalla del QR | Aparece la entrega confirmada sin recargar | RF-07 | E2E; Manual en dos celulares | E2E automatizado; manual pendiente |
+| CP-19 | Actualización de la pantalla del QR | Aparece la entrega confirmada sin recargar | RF-07 | E2E; Manual en dos celulares | E2E automatizado; manual en dos celulares hecho |
 | CP-20 | Datos de contacto | Solo las partes, y en las ventas recién con el pago retenido | RF-08, RN-10 | API `test_venta_completa`, `test_donacion_sin_pago` | Automatizado |
 | CP-21 | Cancelar con pago retenido | Devuelve el dinero, el artículo vuelve y el QR deja de servir | RF-09, RN-08 | API `test_cancelacion_reembolsa_y_devuelve_el_articulo_al_catalogo` | Automatizado |
 | CP-22 | Cancelar después de escanear | Se rechaza | RN-07 | API `test_venta_completa` | Automatizado |

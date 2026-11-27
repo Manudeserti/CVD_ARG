@@ -59,7 +59,7 @@ SEGUNDO = [
     ("Implementación", T, None),
     ("Plan de pruebas", P, j(
         "estrategia, tipos de prueba, entornos, criterios de aceptación, 36 casos de prueba y matriz de trazabilidad con los requerimientos. Hay pruebas automáticas de API y de punta a punta, y verificaciones manuales de pago y escaneo.",
-        "tres casos automáticos por agregar (CP-32 a CP-34), medición de tiempos (CP-35), prueba con usuarios (CP-36) y una verificación manual en dos celulares (CP-19).",
+        "tres casos automáticos por agregar (CP-32 a CP-34), medición de tiempos (CP-35) y prueba con usuarios (CP-36).",
         CAUSA, "se acorta el tiempo disponible para la validación, sin mover la fecha de entrega.",
         "completar los casos pendientes y acordar con el director el alcance de la prueba con usuarios.", "05/12/2026.")),
     GANTT,
